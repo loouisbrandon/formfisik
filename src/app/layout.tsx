@@ -23,6 +23,11 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "FORMFISIK",
   description: "Performance sem limites.",
+  icons: {
+    icon: "/images/logo.png",
+    shortcut: "/images/logo.png",
+    apple: "/images/logo.png",
+  },
 };
 
 export default function RootLayout({

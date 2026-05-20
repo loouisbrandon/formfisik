@@ -89,29 +89,32 @@
 }
 
 .dark {
-  --background: #ffffff;
-  --foreground: #111111;
-  --card: #ffffff;
-  --card-foreground: #111111;
-  --popover: #ffffff;
-  --popover-foreground: #111111;
-  --secondary: #e8e5f5;
-  --secondary-foreground: #1b1035;
-  --muted: #ececf0;
-  --muted-foreground: #4a4f57;
-  --accent: #eef7d0;
-  --accent-foreground: #111111;
-  --border: #d9dbe3;
-  --input: #ffffff;
-  --chart-2: #1b1035;
-  --chart-3: #64748b;
-  --chart-4: #0a0a0a;
-  --chart-5: #94a3b8;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #111111;
-  --sidebar-accent: #f1f2f7;
-  --sidebar-accent-foreground: #111111;
-  --sidebar-border: #d9dbe3;
+  --background: #0a0a0a;
+  --foreground: #f4f4f4;
+  --card: #0f1115;
+  --card-foreground: #f4f4f4;
+  --popover: #0f1115;
+  --popover-foreground: #f4f4f4;
+  --primary: #b6ff00;
+  --primary-foreground: #0a0a0a;
+  --secondary: #1b1035;
+  --secondary-foreground: #f4f4f4;
+  --muted: #141821;
+  --muted-foreground: #a8b0bc;
+  --accent: #1f2a08;
+  --accent-foreground: #f4f4f4;
+  --border: #232a36;
+  --input: #151a23;
+  --ring: #b6ff00;
+  --chart-2: #6bc6f4;
+  --chart-3: #8ea0ff;
+  --chart-4: #f4f4f4;
+  --chart-5: #8492a8;
+  --sidebar: #0a0c10;
+  --sidebar-foreground: #f4f4f4;
+  --sidebar-accent: #151a23;
+  --sidebar-accent-foreground: #f4f4f4;
+  --sidebar-border: #232a36;
 }
 
 @layer base {
@@ -166,6 +169,11 @@
     box-shadow: 0 4px 12px rgb(76 84 102 / 0.1), inset 0 1px 0 rgb(255 255 255 / 0.95);
   }
 
+  .dark .offerings-chip {
+    background: linear-gradient(145deg, rgb(17 20 28 / 0.92), rgb(10 12 18 / 0.9));
+    box-shadow: 0 8px 18px rgb(0 0 0 / 0.32), inset 0 1px 0 rgb(255 255 255 / 0.08);
+  }
+
   :root:not(.dark) .offerings-chip {
     background: linear-gradient(145deg, rgb(255 255 255 / 0.94), rgb(244 246 250 / 0.9));
     box-shadow: 0 6px 16px rgb(76 84 102 / 0.12), inset 0 1px 0 rgb(255 255 255 / 0.95);
@@ -176,6 +184,25 @@
       animation: none;
     }
   }
+}
+
+html {
+  scrollbar-color: #1b1035 transparent;
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1b1035;
+  border-radius: 9999px;
 }
 
 @keyframes offerings-marquee {

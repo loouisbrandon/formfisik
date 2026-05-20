@@ -2,45 +2,48 @@ import Image from "next/image"
 
 import { Container } from "@/components/layout/container"
 import { Button } from "@/components/ui/button"
+import gymBackground from "@/styles/gymff.png"
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden pb-14 pt-12 sm:pb-20 sm:pt-16">
-      <Container className="grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr]">
-        <div className="space-y-7">
-          <p className="text-ui text-xs font-semibold uppercase tracking-[0.24em] text-primary">
-            Performance sem limites
+    <section className="relative flex min-h-[88vh] items-end overflow-hidden pb-8 pt-28 sm:min-h-[92vh] sm:pb-12 sm:pt-36">
+      <Image
+        src={gymBackground}
+        alt="Academia FORMFISIK"
+        fill
+        priority
+        className="object-cover object-center"
+      />
+
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.72)_0%,rgba(0,0,0,0.56)_42%,rgba(0,0,0,0.68)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_22%,rgba(255,255,255,0.08),transparent_32%)]" />
+
+      <Container className="relative z-10 grid items-end gap-7 pb-4 lg:grid-cols-[1.1fr_0.9fr] lg:gap-8 lg:pb-8">
+        <div className="space-y-4">
+          <p className="text-ui text-xs font-medium uppercase tracking-[0.24em] text-zinc-100/90 sm:text-sm">
+            Plataforma online | Consultoria fitness premium
           </p>
 
-          <h1 className="text-heading max-w-xl text-4xl font-semibold uppercase leading-[1.02] tracking-[0.07em] text-foreground sm:text-5xl lg:text-6xl">
-            Evolua. Supere. <span className="text-primary">Seja FF.</span>
+          <h1 className="max-w-4xl text-[clamp(2rem,5.5vw,4.2rem)] font-medium uppercase leading-[0.96] tracking-[0.01em] text-white">
+            A formula da evolucao
           </h1>
 
-          <p className="max-w-lg text-base leading-7 text-muted-foreground sm:text-lg">
-            A plataforma premium para consultoria fitness com gestao de alunos, criacao de treinos
-            e entregas profissionais.
+          <p className="max-w-3xl pt-2 text-ui text-base leading-7 text-zinc-200 sm:text-[1.7rem] sm:leading-[1.35]">
+            A FORMFISIK conecta personal trainers e alunos com treinos inteligentes, gestao profissional e
+            entrega premium para resultados reais.
           </p>
-
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button className="text-ui h-11 px-6 text-base uppercase tracking-widest">Comecar agora</Button>
-            <Button
-              variant="outline"
-              className="text-ui h-11 px-6 text-base uppercase tracking-widest"
-            >
-              Sou profissional
-            </Button>
-          </div>
         </div>
 
-        <div className="relative mx-auto w-full max-w-sm sm:max-w-md">
-          <Image
-            src="/images/hero-mobile-mock.png"
-            alt="Mock mobile FORMFISIK"
-            width={1080}
-            height={2340}
-            priority
-            className="h-auto w-full drop-shadow-[0_26px_68px_rgba(0,0,0,0.7)]"
-          />
+        <div className="flex w-full flex-col gap-3 lg:max-w-[260px] lg:justify-self-end lg:pb-2">
+          <Button className="text-ui h-12 rounded-xl bg-primary text-base font-semibold uppercase tracking-[0.1em] text-primary-foreground shadow-[0_10px_24px_rgba(0,0,0,0.3)] hover:bg-primary/90 sm:h-13 sm:text-lg">
+            Comecar agora
+          </Button>
+          <Button
+            variant="outline"
+            className="text-ui h-12 rounded-xl border-white/45 bg-[#f4f4f4] text-base font-semibold uppercase tracking-[0.1em] text-black shadow-[0_10px_24px_rgba(0,0,0,0.24)] hover:bg-[#ececec] sm:h-13 sm:text-lg"
+          >
+            Sou profissional
+          </Button>
         </div>
       </Container>
     </section>
