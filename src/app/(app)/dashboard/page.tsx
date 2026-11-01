@@ -1,34 +1,12 @@
-import { Sidebar } from "@/components/layout/sidebar"
-import { Topbar } from "@/components/layout/topbar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
-const metrics = [
-  { label: "Alunos", value: "42" },
-  { label: "Treinos da semana", value: "18" },
-  { label: "Pendencias", value: "06" },
-]
-
-export default function DashboardPage() {
-  return (
-    <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-5 px-4 py-6 sm:px-6 lg:flex-row lg:px-8">
-      <Sidebar />
-
-      <section className="flex-1 space-y-5">
-        <Topbar />
-
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {metrics.map((metric) => (
-            <Card key={metric.label} className="premium-surface border-border/80">
-              <CardHeader>
-                <CardTitle className="text-ui text-sm uppercase tracking-wider text-muted-foreground">
-                  {metric.label}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-heading text-4xl text-primary">{metric.value}</CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-    </main>
-  )
+import { redirect } from 'next/navigation'
+import { requireUser } from '@/server/current-user'
+import { professionalDashboard } from '@/server/professional-dashboard'
+import { DashboardContent } from '@/modules/professional/dashboard-content'
+import { AccessUnavailable, DashboardAccessMonitor } from '@/modules/professional/access-monitor'
+export const metadata = { title: 'Dashboard profissional | FormFisik' }
+export default async function DashboardPage() {
+  const result = await professionalDashboard(await requireUser())
+  if (result.status === 'denied') redirect(result.destination)
+  if (result.status === 'unavailable') return <AccessUnavailable />
+  return <DashboardAccessMonitor><DashboardContent data={result.data} /></DashboardAccessMonitor>
 }

@@ -1,0 +1,1 @@
+export async function workoutApi<T>(path:string,body?:unknown,method='POST'):Promise<T>{const r=await fetch('/api/workouts'+path,{cache:'no-store',...(body!==undefined?{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})});const data=await r.json();if(!r.ok)throw Error(data.message??'Não foi possível concluir. Tente novamente.');return data}

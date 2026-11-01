@@ -1,0 +1,21 @@
+import {loadEnvConfig} from '@next/env'
+import {readFile} from 'node:fs/promises'
+import {createHash} from 'node:crypto'
+import {pathToFileURL} from 'node:url'
+import {exerciseFields} from '../src/modules/exercises/schema'
+import {foldExercise} from '../src/modules/exercises/taxonomy'
+import {transaction,insertExercise} from '../src/server/exercises/repository'
+const sha=(v:string)=>createHash('sha256').update(v).digest('hex')
+export async function auditCatalog(root=process.cwd()){
+ const dir=root+'/db/catalog/',manifest=JSON.parse(await readFile(dir+'manifest.json','utf8')),raw=await readFile(dir+'ptbr-source.json','utf8'),namesRaw=await readFile(dir+'original-names.json','utf8')
+ if(sha(raw)!==manifest.sourceSha256||sha(namesRaw)!==manifest.namesSha256)throw Error('Catalog checksum mismatch')
+ const rows=JSON.parse(raw) as {id:string;name:string;category:string;primaryMuscles:string[];secondaryMuscles:string[];equipment:string|null;level:string;instructions:string[];force:string|null;mechanic:string|null}[],names=new Map<string,string>((JSON.parse(namesRaw) as {id:string;name:string}[]).map(r=>[r.id,r.name]))
+ const ids=new Set<string>(),groups=new Map<string,string[]>()
+ for(const r of rows){if(ids.has(r.id)||!names.has(r.id))throw Error('Duplicate or unmatched source ID');ids.add(r.id);const key=foldExercise(r.name);groups.set(key,[...(groups.get(key)??[]),r.id])}
+ const rejected:{id:string;reasons:string[]}[]=[],flagged:{id:string;flags:string[]}[]=[]
+ const accepted=rows.flatMap(r=>{const f=exerciseFields.parse({name:r.name,category:r.category,primaryMuscles:r.primaryMuscles,secondaryMuscles:r.secondaryMuscles,equipment:r.equipment,level:r.level,instructions:r.instructions,aliases:names.get(r.id)===r.name?[]:[names.get(r.id)!]});const flags:string[]=[];if(r.name===names.get(r.id))flags.push('name_not_translated');if(groups.get(foldExercise(r.name))!.length>1)flags.push('similar_name_requires_review');if(!r.equipment)flags.push('equipment_not_informed');if(flags.length)flagged.push({id:r.id,flags});if(!r.instructions.length){rejected.push({id:r.id,reasons:['missing_instructions']});return []}return [{id:r.id,fields:f,flags,digest:sha(JSON.stringify(r)),metadata:{force:r.force,mechanic:r.mechanic,technicalReview:'pending_professional_review'}}]})
+ if(rows.length!==manifest.audited||accepted.length!==manifest.published||JSON.stringify(rejected)!==JSON.stringify(manifest.rejected)||JSON.stringify(flagged)!==JSON.stringify(manifest.flagged))throw Error('Audit differs from reviewed manifest')
+ return {manifest,accepted,rejected,flagged}
+}
+export async function importExercises(){const {manifest:m,accepted,rejected,flagged}=await auditCatalog();return transaction(async c=>{await c.query('SELECT pg_advisory_xact_lock(9009002)');const old=await c.query('SELECT * FROM exercise_datasets WHERE id=$1',[m.dataset]);if(old.rowCount&&(old.rows[0].checksum!==m.sourceSha256||old.rows[0].revision!==m.revision))throw Error('Dataset revision requires explicit migration and review');await c.query('INSERT INTO exercise_datasets(id,revision,license,source_url,checksum,audit) VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(id) DO UPDATE SET audit=EXCLUDED.audit',[m.dataset,m.revision,m.license,m.sourceUrl,m.sourceSha256,{audited:m.audited,published:accepted.length,rejected,flagged,technicalReview:m.technicalReview,mediaImported:false,sourceFile:m.sourceFile,originalSource:m.originalSource,originalRevision:m.originalRevision,originalLicense:m.originalLicense,namesSha256:m.namesSha256}]);let inserted=0;for(const r of accepted){const existing=await c.query('SELECT source_digest FROM exercise_entries WHERE source_dataset=$1 AND source_id=$2',[m.dataset,r.id]);if(existing.rowCount){if(existing.rows[0].source_digest!==r.digest)throw Error('Source definition changed');continue}await insertExercise(c,r.fields,{source:{dataset:m.dataset,id:r.id,digest:r.digest,flags:r.flags,metadata:r.metadata}});inserted++}return {audited:m.audited,published:accepted.length,rejected:rejected.length,flagged:flagged.length,inserted}})}
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){loadEnvConfig(process.cwd());importExercises().then(r=>{console.log(JSON.stringify(r));process.exit(0)}).catch(()=>{console.error('Catalog import failed. Check schema, manifest and database configuration.');process.exit(1)})}

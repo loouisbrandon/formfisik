@@ -1,0 +1,59 @@
+import assert from 'node:assert/strict'
+import {spawn} from 'node:child_process'
+import {mkdtemp,mkdir,writeFile,readFile,symlink,rm} from 'node:fs/promises'
+import {tmpdir} from 'node:os'
+import {join} from 'node:path'
+import {setTimeout as delay} from 'node:timers/promises'
+import {chromium} from '@playwright/test'
+import AxeBuilder from '@axe-core/playwright'
+async function main(){
+ const root=process.cwd(),directory=await mkdtemp(join(tmpdir(),'formfisik-students-ui-'))
+ const backend=spawn(process.execPath,['--conditions=react-server','--import','tsx','tests/helpers/students-browser-server.ts'],{stdio:['ignore','pipe','pipe','ipc'],env:process.env})
+ let server:ReturnType<typeof spawn>|undefined,browser
+ let output='';backend.stdout?.on('data',chunk=>output+=chunk);backend.stderr?.on('data',chunk=>output+=chunk)
+ try{
+  const ready=await new Promise<{token:string;foreignId:string}>((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Backend readiness timeout')),30000);backend.on('message',message=>{const data=message as {type:string;token:string;foreignId:string};if(data.type==='ready'){clearTimeout(timer);resolve(data)}});backend.once('exit',()=>reject(new Error('Backend exited')))})
+  await symlink(join(root,'node_modules'),join(directory,'node_modules'),'dir')
+  await writeFile(join(directory,'package.json'),JSON.stringify({private:true,dependencies:{next:'16.4.3',react:'19.2.4','react-dom':'19.2.4'}}))
+  await writeFile(join(directory,'tsconfig.json'),JSON.stringify({extends:join(root,'tsconfig.json'),compilerOptions:{paths:{'@/*':[join(root,'src/*')]}},include:['app/**/*.tsx','.next/**/*.ts']}))
+  await writeFile(join(directory,'next.config.js'),`module.exports={devIndicators:false,outputFileTracingRoot:${JSON.stringify(root)},webpack(config){config.resolve.alias['@']=${JSON.stringify(join(root,'src'))};return config}}`)
+  await writeFile(join(directory,'postcss.config.mjs'),await readFile(join(root,'postcss.config.mjs'),'utf8'))
+  await mkdir(join(directory,'app'),{recursive:true});await writeFile(join(directory,'app/layout.tsx'),`export {default} from ${JSON.stringify(join(root,'src/app/layout'))}`)
+  await mkdir(join(directory,'app/(private)'),{recursive:true})
+  await writeFile(join(directory,'app/(private)/layout.tsx'),`import {ProfessionalShell} from ${JSON.stringify(join(root,'src/modules/professional/shell'))};export default function Layout({children}:{children:React.ReactNode}){return <ProfessionalShell fullName="Profissional de teste" professional>{children}</ProfessionalShell>}`)
+  for(const [route,mode]of [['alunos','list'],['alunos/novo','new'],['alunos/[id]','profile'],['alunos/[id]/editar','edit']]){
+   const dir=join(directory,'app/(private)',route);await mkdir(dir,{recursive:true})
+   const dynamic=route.includes('[id]')
+   await writeFile(join(dir,'page.tsx'),`import {ProfessionalShell} from ${JSON.stringify(join(root,'src/modules/professional/shell'))};import {StudentArea} from ${JSON.stringify(join(root,'src/modules/students/student-area'))};import {DashboardAccessMonitor} from ${JSON.stringify(join(root,'src/modules/professional/access-monitor'))};export const metadata={title:'Alunos | FormFisik'};export default async function Page(${dynamic?'{params}:{params:Promise<{id:string}>}':''}){${dynamic?'const {id}=await params;':''}return <><DashboardAccessMonitor><StudentArea key={${dynamic?JSON.stringify(mode)+'+id':JSON.stringify(mode)}} mode=${JSON.stringify(mode)} ${dynamic?'id={id}':''}/></DashboardAccessMonitor></>}`)
+  }
+  await mkdir(join(directory,'app/(private)/dashboard'),{recursive:true})
+  await writeFile(join(directory,'app/(private)/dashboard/page.tsx'),`'use client';import {useEffect,useState} from 'react';import {ProfessionalShell} from ${JSON.stringify(join(root,'src/modules/professional/shell'))};import {DashboardContent} from ${JSON.stringify(join(root,'src/modules/professional/dashboard-content'))};import type {ProfessionalDashboard} from ${JSON.stringify(join(root,'src/modules/professional/dashboard'))};export default function Page(){const [data,setData]=useState<ProfessionalDashboard|null>(null);useEffect(()=>{fetch('/api/professional/dashboard').then(r=>r.json()).then(r=>setData(r.data))},[]);return <>{data?<DashboardContent data={data}/>:<p>Carregando</p>}</>}`)
+  server=spawn(process.execPath,[join(root,'node_modules/next/dist/bin/next'),'dev',directory,'--webpack','--port','3109'],{stdio:['ignore','pipe','pipe']})
+  server.stdout?.on('data',chunk=>output+=chunk);server.stderr?.on('data',chunk=>output+=chunk)
+  let available=false;for(let i=0;i<90;i++){try{if((await fetch('http://localhost:3109/alunos')).ok){available=true;break}}catch{}if(server.exitCode!==null)break;await delay(1000)}if(!available)throw new Error('Next readiness timeout')
+  browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/usr/bin/google-chrome',headless:true,args:['--no-sandbox']})
+  const context=await browser.newContext({viewport:{width:1440,height:1000}})
+  await context.addCookies([{name:'formfisik-session',value:ready.token,url:'http://localhost:3109',httpOnly:true,sameSite:'Lax'}])
+  await context.route('**/api/**',async route=>{const original=route.request(),url=new URL(original.url());const response=await fetch('http://127.0.0.1:3111'+url.pathname+url.search,{method:original.method(),headers:await original.allHeaders(),body:['GET','HEAD'].includes(original.method())?undefined:original.postData()});await route.fulfill({status:response.status,headers:Object.fromEntries(response.headers),body:Buffer.from(await response.arrayBuffer())})})
+  const page=await context.newPage();page.setDefaultTimeout(20000);page.setDefaultNavigationTimeout(45000)
+  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));await mkdir('test-results/008/browser',{recursive:true})
+  async function audit(name:string){for(const width of [1440,768,320]){await page.setViewportSize({width,height:900});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth));const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();assert.deepEqual(axe.violations.map(v=>({id:v.id,targets:v.nodes.map(n=>n.target)})),[]);await page.screenshot({path:`test-results/008/browser/${name}-${width}.png`,fullPage:true})}}
+  await page.goto('http://localhost:3109/alunos');await page.getByRole('heading',{name:'Nenhum aluno encontrado'}).waitFor();await audit('empty')
+  await page.getByRole('link',{name:'Cadastrar aluno',exact:true}).click();await page.getByRole('button',{name:'Cadastrar aluno',exact:true}).click();await page.getByText('Informe o nome completo.',{exact:true}).waitFor();assert.equal(await page.locator('#fullName').evaluate(el=>el===document.activeElement),true)
+  await page.getByLabel('Nome completo').fill('Ágata Gonçalves');await page.getByLabel('E-mail (opcional)',{exact:true}).fill('AGATA@example.test');await page.getByLabel('Telefone (opcional)',{exact:true}).fill('(11) 99999-1234');await page.getByLabel('Data de nascimento (opcional)',{exact:true}).fill('1995-04-12');await page.getByLabel('Observações administrativas (opcional)',{exact:true}).fill('Contato preferencial no período da tarde.');await audit('registration')
+  await page.getByRole('button',{name:'Cadastrar aluno',exact:true}).click();await page.waitForURL(/\/alunos\/[\da-f-]{36}$/);await page.getByRole('heading',{name:'Ágata Gonçalves',exact:true}).waitFor();await page.getByRole('status').filter({hasText:'Cadastro salvo com sucesso.'}).waitFor();const profileUrl=page.url();await page.getByText('agata@example.test',{exact:true}).waitFor();await audit('profile')
+  const downloadPromise=page.waitForEvent('download');await page.getByRole('button',{name:'Exportar PDF individual'}).click();await(await downloadPromise).saveAs('test-results/008/browser/individual.pdf')
+  await page.getByRole('link',{name:'Editar cadastro',exact:true}).click();await page.getByLabel('Nome completo').fill('Ágata Gonçalves Atualizada');await page.getByRole('button',{name:'Salvar alterações'}).click();await page.waitForURL(profileUrl);await page.getByRole('heading',{name:'Ágata Gonçalves Atualizada',exact:true}).waitFor()
+  await page.getByRole('button',{name:'Arquivar aluno',exact:true}).click();const dialog=page.getByRole('dialog',{name:'Arquivar aluno?',exact:true});await dialog.waitFor();assert.equal(await page.getByRole('button',{name:'Manter ativo',exact:true}).evaluate(el=>el===document.activeElement),true);await page.keyboard.press('Escape');await dialog.waitFor({state:'hidden'})
+  await page.getByRole('button',{name:'Arquivar aluno',exact:true}).click();assert.deepEqual((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations.map(v=>v.id),[]);await page.getByRole('button',{name:'Confirmar arquivamento'}).click();await page.getByRole('button',{name:'Reativar aluno'}).waitFor();await page.getByRole('button',{name:'Reativar aluno'}).click();await page.getByRole('button',{name:'Arquivar aluno',exact:true}).waitFor()
+  await page.getByRole('link',{name:'Voltar à listagem'}).click();await page.getByLabel('Pesquisar por nome').fill('Ágata');await page.getByRole('button',{name:'Aplicar filtros'}).click();await page.getByRole('link',{name:'Ágata Gonçalves Atualizada',exact:true}).waitFor();await audit('list')
+  const listDownload=page.waitForEvent('download');await page.getByRole('button',{name:'Exportar filtros em PDF'}).click();await(await listDownload).saveAs('test-results/008/browser/carteira.pdf')
+  await page.setViewportSize({width:1280,height:900});const zoom=await page.addStyleTag({content:'html{font-size:200%!important}'});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth));await page.screenshot({path:'test-results/008/browser/list-text-zoom-200.png',fullPage:true});await zoom.evaluate(el=>el.parentNode?.removeChild(el))
+  await page.goto('http://localhost:3109/dashboard');await page.getByRole('heading',{name:'Alunos ativos',exact:true}).waitFor();const metric=page.getByRole('article').filter({has:page.getByRole('heading',{name:'Alunos ativos',exact:true})});assert.match(await metric.innerText(),/1/);await page.getByRole('link',{name:'Cadastrar aluno',exact:true}).waitFor();await page.screenshot({path:'test-results/008/browser/dashboard-real-counts.png',fullPage:true})
+  await page.goto('http://localhost:3109/alunos/'+ready.foreignId);await page.getByRole('alert').filter({hasText:'Aluno não encontrado.'}).waitFor();assert.equal(await page.getByText('Confidencial de outro profissional',{exact:true}).count(),0)
+  await page.setViewportSize({width:320,height:900});await page.getByRole('button',{name:'Abrir navegação'}).click();await page.getByRole('dialog',{name:'Menu profissional'}).getByRole('link',{name:'Alunos',exact:true}).click();await page.getByRole('link',{name:'Ágata Gonçalves Atualizada',exact:true}).waitFor()
+  await page.getByRole('button',{name:'Sair da conta',exact:true}).click();await page.waitForURL('**/login');assert.deepEqual(errors,[])
+  console.info('Students E2E PASS: real PostgreSQL + opaque session + controlled provider; create/edit/archive/reactivate/search/filtered PDFs/IDOR/dashboard/mobile navigation/logout, axe at 3 widths, text zoom. UI harness is test-only; no production bypass.')
+ }catch(error){console.error(output.slice(-3000));throw error}finally{await browser?.close();server?.kill('SIGTERM');backend.kill('SIGTERM');if(server&&server.exitCode===null)await new Promise<void>(resolve=>server!.once('exit',()=>resolve()));if(backend.exitCode===null)await new Promise<void>(resolve=>backend.once('exit',()=>resolve()));await rm(directory,{recursive:true,force:true})}
+}
+main().catch(error=>{console.error(error instanceof Error?error.message:'Students E2E failed');process.exitCode=1})

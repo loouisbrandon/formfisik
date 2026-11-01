@@ -1,0 +1,765 @@
+{
+  "dataset": "gugeldev-exercicios-ptbr",
+  "revision": "6bb9118e46cf8d0ee98b42e0285bae5036d04a19",
+  "sourceUrl": "https://github.com/gugeldev/exercicios-bd-ptbr",
+  "sourceFile": "exercises/exercises-ptbr-full-translation.json",
+  "license": "CC0-1.0",
+  "originalSource": "https://github.com/yuhonas/free-exercise-db",
+  "originalRevision": "f00c92c7dcf1216a928a52c3706c7ce8e2f71ed5",
+  "originalLicense": "Unlicense",
+  "sourceSha256": "23d10d108bb811eb4daacdce611a7b28428a3ef03e6af817b73eddca792c983a",
+  "namesSha256": "4234f09708a4c1a7f8ee561a35e2297fc46c22ac17312a0e10302b1635a35760",
+  "audited": 873,
+  "published": 868,
+  "rejected": [
+    {
+      "id": "Iron_Cross",
+      "reasons": [
+        "missing_instructions"
+      ]
+    },
+    {
+      "id": "One-Arm_Kettlebell_Swings",
+      "reasons": [
+        "missing_instructions"
+      ]
+    },
+    {
+      "id": "Push_Press",
+      "reasons": [
+        "missing_instructions"
+      ]
+    },
+    {
+      "id": "Side_Bridge",
+      "reasons": [
+        "missing_instructions"
+      ]
+    },
+    {
+      "id": "Side_Jackknife",
+      "reasons": [
+        "missing_instructions"
+      ]
+    }
+  ],
+  "flagged": [
+    {
+      "id": "Adductor_Groin",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Alternate_Leg_Diagonal_Bound",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Ankle_Circles",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Ankle_On_The_Knee",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Arm_Circles",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Around_The_Worlds",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Bench_Press_with_Chains",
+      "flags": [
+        "similar_name_requires_review"
+      ]
+    },
+    {
+      "id": "Body-Up",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Bodyweight_Walking_Lunge",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Butterfly",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Calf_Stretch_Elbows_Against_Wall",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Calf_Stretch_Hands_Against_Wall",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Carioca_Quick_Step",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Cat_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Chain_Press",
+      "flags": [
+        "similar_name_requires_review"
+      ]
+    },
+    {
+      "id": "Chair_Lower_Back_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Childs_Pose",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Chin-Up",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Chin_To_Chest_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Circus_Bell",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Clean",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Crossover_Reverse_Lunge",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Cuban_Press",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Dancers_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Decline_Push-Up",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Dumbbell_Lunges",
+      "flags": [
+        "similar_name_requires_review"
+      ]
+    },
+    {
+      "id": "Dynamic_Back_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Dynamic_Chest_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Elbow_Circles",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Elbows_Back",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Face_Pull",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Floor_Glute-Ham_Raise",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Frog_Hops",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Groin_and_Back_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Groiners",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Hamstring_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Hug_Knees_To_Chest",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Inverted_Row",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Iron_Cross",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Iron_Crosses_stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "JM_Press",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Jogging_Treadmill",
+      "flags": [
+        "similar_name_requires_review"
+      ]
+    },
+    {
+      "id": "Knee_Across_The_Body",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Kneeling_Arm_Drill",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Kneeling_Forearm_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Kneeling_Hip_Flexor",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Landmine_180s",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Landmine_Linear_Jammer",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Leg-Up_Hamstring_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Leg_Press",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Linear_3-Part_Start_Technique",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Linear_Acceleration_Wall_Drill",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Looking_At_Ceiling",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Middle_Back_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Mountain_Climbers",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Moving_Claw_Series",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Muscle_Up",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "On_Your_Side_Quad_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "One_Arm_Against_Wall",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "One_Half_Locust",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "One_Knee_To_Chest",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Otis-Up",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Overhead_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Pallof_Press",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Pelvic_Tilt_Into_Bridge",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Power_Clean_from_Blocks",
+      "flags": [
+        "similar_name_requires_review"
+      ]
+    },
+    {
+      "id": "Prone_Manual_Hamstring",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Pull_Through",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Push_Press",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Runners_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Running_Treadmill",
+      "flags": [
+        "similar_name_requires_review"
+      ]
+    },
+    {
+      "id": "Scapular_Pull-Up",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Seated_Calf_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Seated_Floor_Hamstring_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Seated_Hamstring",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Seated_Overhead_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Shoulder_Circles",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Shoulder_Raise",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Shoulder_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Side-Lying_Floor_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Side_Lying_Groin_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Side_Neck_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Side_Standing_Long_Jump",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Side_Wrist_Pull",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Sit_Squats",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Snatch_Balance",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "Snatch_from_Blocks",
+      "flags": [
+        "similar_name_requires_review"
+      ]
+    },
+    {
+      "id": "Spinal_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Split_Squat_with_Dumbbells",
+      "flags": [
+        "similar_name_requires_review"
+      ]
+    },
+    {
+      "id": "Split_Squats",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Standing_Gastrocnemius_Calf_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Standing_Hip_Flexors",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Standing_Lateral_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Standing_Pelvic_Tilt",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Standing_Soleus_And_Achilles_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Standing_Toe_Touches",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Step_Mill",
+      "flags": [
+        "name_not_translated"
+      ]
+    },
+    {
+      "id": "The_Straddle",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Trail_Running_Walking",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Tricep_Side_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Triceps_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Upper_Back-Leg_Grab",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Upper_Back_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Upward_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Windmills",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    },
+    {
+      "id": "Worlds_Greatest_Stretch",
+      "flags": [
+        "equipment_not_informed"
+      ]
+    }
+  ],
+  "duplicateNames": [
+    {
+      "name": "supino com correntes",
+      "ids": [
+        "Bench_Press_with_Chains",
+        "Chain_Press"
+      ]
+    },
+    {
+      "name": "afundo com halteres",
+      "ids": [
+        "Dumbbell_Lunges",
+        "Split_Squat_with_Dumbbells"
+      ]
+    },
+    {
+      "name": "corrida na esteira",
+      "ids": [
+        "Jogging_Treadmill",
+        "Running_Treadmill"
+      ]
+    },
+    {
+      "name": "arranco a partir de blocos",
+      "ids": [
+        "Power_Clean_from_Blocks",
+        "Snatch_from_Blocks"
+      ]
+    }
+  ],
+  "technicalReview": "pending_professional_review",
+  "mediaImported": false,
+  "canonicalTaxonomy": {
+    "category": [
+      "alongamento",
+      "cardio",
+      "forca",
+      "levantamento-olimpico",
+      "pliometria",
+      "powerlifting",
+      "strongman"
+    ],
+    "level": [
+      "avancado",
+      "iniciante",
+      "intermediario"
+    ],
+    "equipment": [
+      "barra",
+      "barra-w",
+      "bola-de-exercicio",
+      "bola-medicinal",
+      "cabo",
+      "faixas",
+      "halteres",
+      "kettlebell",
+      "maquina",
+      "outros",
+      "peso-do-corpo",
+      "rolo-de-espuma"
+    ]
+  },
+  "muscles": [
+    "abdominais",
+    "abdutores",
+    "adutores",
+    "antebracos",
+    "biceps",
+    "dorsais",
+    "gluteos",
+    "inferior-das-costas",
+    "isquiotibiais",
+    "meio-das-costas",
+    "ombros",
+    "panturrilhas",
+    "peito",
+    "pescoco",
+    "quadriceps",
+    "trapezio",
+    "triceps"
+  ]
+}

@@ -1,7 +1,7 @@
 import Image from "next/image"
 
 import { Container } from "@/components/layout/container"
-import { Button } from "@/components/ui/button"
+import Link from "next/link"
 import gymBackground from "@/styles/gymff.png"
 
 export function HeroSection() {
@@ -35,15 +35,14 @@ export function HeroSection() {
         </div>
 
         <div className="flex w-full flex-col gap-3 lg:max-w-[260px] lg:justify-self-end lg:pb-2">
-          <Button className="text-ui h-12 rounded-xl bg-primary text-base font-semibold uppercase tracking-[0.1em] text-primary-foreground shadow-[0_10px_24px_rgba(0,0,0,0.3)] hover:bg-primary/90 sm:h-13 sm:text-lg">
+          <Link href="/cadastro" className="text-ui inline-flex items-center justify-center h-12 rounded-xl bg-primary text-base font-semibold uppercase tracking-[0.1em] text-primary-foreground shadow-[0_10px_24px_rgba(0,0,0,0.3)] hover:bg-primary/90 sm:h-13 sm:text-lg">
             Comecar agora
-          </Button>
-          <Button
-            variant="outline"
-            className="text-ui h-12 rounded-xl border-white/45 bg-[#f4f4f4] text-base font-semibold uppercase tracking-[0.1em] text-black shadow-[0_10px_24px_rgba(0,0,0,0.24)] hover:bg-[#ececec] sm:h-13 sm:text-lg"
+          </Link>
+          <Link href="/cadastro"
+            className="text-ui inline-flex items-center justify-center h-12 rounded-xl border-white/45 bg-[#f4f4f4] text-base font-semibold uppercase tracking-[0.1em] text-black shadow-[0_10px_24px_rgba(0,0,0,0.24)] hover:bg-[#ececec] sm:h-13 sm:text-lg"
           >
             Sou profissional
-          </Button>
+          </Link>
         </div>
       </Container>
     </section>

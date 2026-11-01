@@ -213,3 +213,12 @@ html {
     transform: translateX(-50%);
   }
 }
+
+/* Authentication surfaces use explicit dark tokens in both site themes. */
+.auth-surface {
+  --background: #0a0a0a; --foreground: #f4f4f4;
+  --muted: #141821; --muted-foreground: #a8b0bc;
+  --input: #788395; --border: #232a36;
+  --primary: #96d100; --primary-foreground: #0a0a0a;
+  background: var(--background); color: var(--foreground);
+}

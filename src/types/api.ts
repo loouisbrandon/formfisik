@@ -1,10 +1,5 @@
 export type ApiMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
 
-export type AuthPayload = {
-  email: string
-  password: string
-}
-
 export type Student = {
   id: string
   fullName: string
