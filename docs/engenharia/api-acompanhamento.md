@@ -8,7 +8,7 @@ Todos os endpoints usam sessão opaca existente, e-mail confirmado, perfil profi
 | --- | --- | --- |
 | `/api/assessments` | GET `studentId`, `view=list` padrão, `state=active/archived/all`, `page` | items, total, page, pages, latest, first, previous. Página 20. Referências são sempre ativas. |
 | mesma | GET `studentId`, `view=series`, `metric`, `period=30/90/6m/12m/all`, `page` | items `{id,date,value}`, total, page, pages, metric, period, asOf. Página 500, ordem cronológica crescente. |
-| mesma | GET `studentId`, `view=compare`, `mode=first/previous/manual`, `from`, `to` | `{comparison:null}` se dados automáticos insuficientes; ou from/to completos, days e values com before/after/absolute/percent por grandeza. |
+| mesma | GET `studentId`, `view=compare`, `mode=first/previous/manual`, `from`, `to` | `{comparison:null}` se dados automáticos insuficientes; ou from/to com data apenas, days e values com before/after/absolute/percent por grandeza. |
 | mesma | POST todos os campos, `studentId`, `creationKey` UUID | 201 `{assessment}`; replay retorna o mesmo registro, sem duplicar. |
 | `/api/assessments/[id]` | GET | 200 `{assessment}` somente do proprietário. |
 | mesma | PUT campos + `version` | 200 `{assessment}` com versão incrementada. Vínculo, autoria e proprietário não são editáveis. |
@@ -39,3 +39,14 @@ Usa Pool, migrator e helper transaction já existentes. Sem ORM, nova biblioteca
 ## Evolução 013
 
 A 013 preserva os contratos e números das avaliações e extrai a definição comum de períodos para o calendário. Fotografias são entidades separadas com autorização própria, nunca anexos exclusivamente de uma avaliação. [Modelo e contratos fotográficos/calendário](api-fotografias.md).
+
+## Projeções da 015
+
+Listagem retorna `items:{id,date,state,version,weight}`, `latest:{id,date,state,version,weight,waist,hips,authorName}` e referências `first/previous:{id,date,state,version}`. Sem notas, demais medidas ou contatos em linhas de histórico. Abrir/editar consulta o GET individual autenticado novamente; comparação progressiva consulta somente quando aberta e retorna datas/intervalo/variações, sem duplicar registros completos. Calendário diário usa resumo `{id,date,state,version,weight}`; detalhe é carregado explicitamente. Contexto de aluno usa `GET /api/students/[id]?view=identity` → `{student:{id,fullName,status}}`.
+
+
+### Carteira de acompanhamento
+
+`GET /api/assessments/portfolio`: mesma sessão, autorização comercial, isolamento por proprietário e headers privados. Limite de 120 leituras/minuto por profissional. Query estrita: `q` até 120 caracteres (substring literal, sem curingas), `state=all|recent|overdue|missing`, `sort=name|latest`, `page=1..100000`. Somente vínculos ativos. `recent`: avaliação ativa nos últimos 30 dias civis; `overdue`: ausência nessa janela, incluindo nunca avaliados; `missing`: sem avaliação ativa. Termos são administrativos.
+
+Resposta: `items[{id,fullName,date,recent}]`, `total,page,pages`, `attention` até cinco itens com o mesmo DTO, `summary{assessed,overdue,recent}`. Não inclui contato, observações ou medidas. Página de 20; ordenação nome crescente ou última data decrescente (ausentes ao final), UUID desempata. Página vazia mantém total e páginas; atenção prioriza ausentes e depois avaliações mais antigas. Indicadores e atenção são da carteira inteira, independentes dos filtros. Reutiliza `assessmentCounts`; não há nova persistência/migration. Leituras concorrentes podem refletir momentos distintos; recarregar recompõe o estado atual.

@@ -1,11 +1,14 @@
 'use client'
 import { FormEvent, useRef, useState } from 'react'
 import Link from 'next/link'
-import { Eye, EyeOff, LoaderCircle } from 'lucide-react'
+import { ArrowRight, Eye, EyeOff, LoaderCircle, LockKeyhole, Mail, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { endpoints } from '@/services/api/endpoints'
 import { loginSchema } from './schema'
+import {notifySessionChanged} from './session-change'
+
+import styles from './login-visual.module.css'
 
 type Errors = { email?: string[]; password?: string[] }
 export function LoginForm() {
@@ -32,6 +35,7 @@ export function LoginForm() {
       const response = await fetch(endpoints.login, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(parsed.data) })
       const result = await response.json()
       if (response.ok) {
+        notifySessionChanged()
         // Server owns the destination; do not accept arbitrary returnTo URLs.
         setValues({ email: '', password: '' })
         window.location.replace(result.destination === '/dashboard' ? '/dashboard' : '/conta')
@@ -43,34 +47,34 @@ export function LoginForm() {
     setBusy(false)
     requestAnimationFrame(() => feedback.current?.focus())
   }
-  return <form method="post" action={endpoints.login} onSubmit={submit} noValidate aria-busy={busy} className="space-y-5">
+  return <form method="post" action={endpoints.login} onSubmit={submit} noValidate aria-busy={busy} className={styles.form}>
     <div className="space-y-2">
-      <label htmlFor="email" className="text-ui text-base font-semibold">E-mail</label>
-      <Input id="email" type="email" name="email" autoComplete="username" required maxLength={254} disabled={busy} className="h-12 text-base"
+      <label htmlFor="email" className={styles.fieldLabel}>E-mail</label>
+      <div className={styles.field}><Mail aria-hidden="true" className={styles.fieldIcon} /><Input id="email" type="email" name="email" autoComplete="username" required maxLength={254} disabled={busy} className={styles.input} placeholder="E-mail"
         value={values.email} onChange={event => { setValues(v => ({ ...v, email: event.target.value })); setErrors(e => ({ ...e, email: undefined })) }}
-        aria-invalid={!!errors.email} aria-describedby="email-error" />
+        aria-invalid={!!errors.email} aria-describedby="email-error" /></div>
       <p id="email-error" className="text-sm text-red-300">{errors.email?.[0]}</p>
     </div>
     <div className="space-y-2">
-      <label htmlFor="password" className="text-ui text-base font-semibold">Senha</label>
-      <div className="relative">
-        <Input id="password" name="password" type={visible ? 'text' : 'password'} autoComplete="current-password" required maxLength={128} disabled={busy}
-          className="h-12 pr-14 text-base" value={values.password}
+      <label htmlFor="password" className={styles.fieldLabel}>Senha</label>
+      <div className={styles.field}>
+        <LockKeyhole aria-hidden="true" className={styles.fieldIcon} /><Input id="password" name="password" type={visible ? 'text' : 'password'} autoComplete="current-password" required maxLength={128} disabled={busy}
+          className={styles.input} placeholder="Senha" value={values.password}
           onChange={event => { setValues(v => ({ ...v, password: event.target.value })); setErrors(e => ({ ...e, password: undefined })) }}
           aria-invalid={!!errors.password} aria-describedby="password-error" />
         <Button type="button" variant="ghost" disabled={busy} aria-label={visible ? 'Ocultar senha' : 'Mostrar senha'} aria-pressed={visible}
-          onClick={() => setVisible(v => !v)} className="absolute right-1 top-1 h-10 w-11 text-muted-foreground">
+          onClick={() => setVisible(v => !v)} className={styles.visibility}>
           {visible ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
         </Button>
       </div>
       <p id="password-error" className="text-sm text-red-300">{errors.password?.[0]}</p>
     </div>
+    <div className={styles.formOptions}><span><ShieldCheck size={16} aria-hidden="true" /> Sessão protegida</span><Link href="/esqueci-senha">Esqueci minha senha</Link></div>
     <div ref={feedback} tabIndex={-1} role="alert" className="text-sm leading-6 text-red-300 outline-none">{message}</div>
-    <Button type="submit" disabled={busy} className="font-ui h-12 w-full text-base font-semibold uppercase tracking-wider hover:bg-primary/90">
+    <Button type="submit" disabled={busy} className={styles.submit}>
       {busy && <LoaderCircle aria-hidden="true" className="size-4 animate-spin motion-reduce:animate-none" />}
-      {busy ? 'Entrando…' : 'Entrar na minha conta'}
+      {busy ? 'Entrando…' : 'Entrar na minha conta'}<ArrowRight aria-hidden="true" />
     </Button>
-    <p className="text-sm leading-6 text-muted-foreground">Ainda não confirmou seu e-mail? Abra o link recebido ou <Link href="/cadastro" className="text-primary underline underline-offset-4">envie o cadastro novamente</Link>.</p>
-    <Link href="/esqueci-senha" className="inline-block min-h-11 py-3 text-sm text-primary underline underline-offset-4">Esqueci minha senha</Link>
+    <p className={styles.verification}>Ainda não confirmou seu e-mail? Abra o link recebido ou <Link href="/cadastro" className={styles.inlineLink}>envie o cadastro novamente</Link>.</p>
   </form>
 }

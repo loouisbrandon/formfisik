@@ -39,3 +39,7 @@ Não foi provisionado scheduler externo. Antes de uso real, o operador deverá a
 - Rotação de credencial: configurar no servidor, validar leitura/escrita/remoção em ambiente autorizado, revogar anterior. Não despejar env em logs.
 
 Logs do script contêm somente contagens e mensagem genérica de falha. Armazenamento controlado em memória é exclusivo dos testes e não é fallback operacional. Nenhuma fotografia é salva em public, disco efêmero ou bytea PostgreSQL.
+
+## Complemento016
+
+A eliminação de vínculo aprovada captura chaves em fila independente antes do hard delete relacional. O worker016 reutiliza o mesmo `PrivatePhotoStore` e mantém DELETEs repetidos após quiescência, sem substituir o worker013. Antes de dados reais, agendar/monitorar ambos conforme [runbook016](estabilizacao-016.md), revisar tombstones/ledger/restore e homologar R2 real. Testes controlados não comprovam a configuração real do bucket.

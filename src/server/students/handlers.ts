@@ -1,11 +1,13 @@
 import 'server-only'
-import { z } from 'zod'
+import { z } from '@/lib/validation'
 import { readSession, sessionToken } from '../sessions'
 import { professionalAccess } from '../professional-dashboard'
 import type { BillingGateway } from '../subscriptions/stripe'
 import { failure,jsonBody,limit,privateHeaders,reply,sameOrigin } from '../http'
 import { createStudentSchema,editStudentSchema,statusStudentSchema,studentQuerySchema } from '../../modules/students/schema'
 import { createStudent,getStudent,listStudents,updateStudent,StudentConflict,StudentNotFound,ExportLimit } from './repository'
+import {assessmentCounts} from '../assessments/repository'
+import {studentCounts} from './repository'
 import { studentPdf } from './pdf'
 export function createStudentHandler(operation:'list'|'create'|'get'|'edit'|'status'|'pdf'|'export',gateway?:BillingGateway){
  return async(request:Request,id?:string)=>{
@@ -21,7 +23,7 @@ export function createStudentHandler(operation:'list'|'create'|'get'|'edit'|'sta
     const query=studentQuerySchema.safeParse(Object.fromEntries(new URL(request.url).searchParams))
     if(!query.success)return reply({message:'Filtros inválidos.'},400)
     const list=await listStudents(user.id,query.data,operation==='export')
-    if(operation==='list')return reply(list,200)
+    if(operation==='list'){const [counts,assessments]=await Promise.all([studentCounts(user.id),assessmentCounts(user.id)]);return reply({...list,summary:{active:counts.active,archived:counts.archived,withoutRecentAssessment:assessments.overdue}},200)}
     const pdf=await studentPdf(user.fullName,list.items,query.data)
     return new Response(new Uint8Array(pdf),{headers:{...privateHeaders,'Content-Type':'application/pdf','Content-Disposition':'attachment; filename="formfisik-alunos.pdf"','X-Content-Type-Options':'nosniff'}})
    }
@@ -30,7 +32,12 @@ export function createStudentHandler(operation:'list'|'create'|'get'|'edit'|'sta
     return reply({student:await createStudent(user.id,input.data)},201)
    }
    if(!id)throw new StudentNotFound()
-   if(operation==='get')return reply({student:await getStudent(user.id,id)},200)
+   if(operation==='get'){
+    const view=z.object({view:z.literal('identity').optional()}).strict().safeParse(Object.fromEntries(new URL(request.url).searchParams))
+    if(!view.success)return reply({message:'Parâmetros inválidos.'},400)
+    const student=await getStudent(user.id,id)
+    return reply({student:view.data.view?{id:student.id,fullName:student.fullName,status:student.status}:student},200)
+   }
    if(operation==='pdf'){
     const pdf=await studentPdf(user.fullName,[await getStudent(user.id,id)])
     return new Response(new Uint8Array(pdf),{headers:{...privateHeaders,'Content-Type':'application/pdf','Content-Disposition':'attachment; filename="formfisik-aluno.pdf"','X-Content-Type-Options':'nosniff'}})

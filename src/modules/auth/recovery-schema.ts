@@ -1,8 +1,8 @@
-import { z } from 'zod'
+import { z } from '@/lib/validation'
 export const recoverySchema = z.object({
   email: z.email('Informe um e-mail válido.').max(254).transform(value => value.toLowerCase()),
-})
-export const resetTokenSchema = z.object({ token: z.string().regex(/^[\w-]{43}$/) })
+}).strict()
+export const resetTokenSchema = z.object({ token: z.string().regex(/^[\w-]{43}$/) }).strict()
 export const resetPasswordSchema = resetTokenSchema.extend({
   password: z.string().min(12, 'Use pelo menos 12 caracteres.').max(128, 'Use até 128 caracteres.'),
   confirmPassword: z.string(),

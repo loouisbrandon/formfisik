@@ -1,34 +1,26 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { ArrowRight } from 'lucide-react'
+import { AuthVisualShell } from '@/modules/auth/auth-visual-shell'
 import { LoginForm } from '@/modules/auth/login-form'
 import { destinationFor } from '@/server/access'
 import { currentUser } from '@/server/current-user'
+import styles from '@/modules/auth/login-visual.module.css'
 export const metadata = { title: 'Entrar | FormFisik', robots: { index: false, follow: false } }
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ reason?: string }> }) {
   const user = await currentUser()
   if (user) redirect(destinationFor(user))
   const { reason } = await searchParams
-  return <main className="auth-surface flex min-h-dvh flex-1 items-center px-4 py-10 sm:px-6">
-    <div className="mx-auto grid w-full max-w-5xl gap-10 lg:grid-cols-2 lg:items-center lg:gap-20">
-      <section className="space-y-5">
-        <Link href="/" aria-label="FormFisik — início"><Image src="/images/nomelogo.png" alt="FORMFISIK" width={220} height={40} className="mb-8 h-auto w-44" /></Link>
-        <p className="text-ui text-sm font-semibold uppercase tracking-[0.2em] text-primary">Sua evolução continua</p>
-        <h1 className="text-heading text-5xl uppercase leading-tight sm:text-6xl">Disciplina para evoluir.<br /><span className="text-primary">Tecnologia para ir além.</span></h1>
-        <p className="max-w-md leading-7 text-muted-foreground">Entre com sua conta profissional e acesse sua área FormFisik com segurança.</p>
-        <p className="rounded-xl border border-border bg-muted/40 p-5 text-sm leading-6 text-muted-foreground">Sua conta e assinatura ficam disponíveis para consulta. O acesso à área profissional depende de uma assinatura ou teste ativo confirmado. Os módulos de gestão estão em desenvolvimento.</p>
-      </section>
-      <section aria-labelledby="login-title" className="premium-surface rounded-2xl border border-border p-6 sm:p-8">
-        <h2 id="login-title" className="text-heading text-3xl uppercase">Bem-vindo de volta</h2>
-        <p className="mb-6 mt-2 text-sm leading-6 text-muted-foreground">Use o e-mail confirmado no cadastro.</p>
-        {reason === 'reset' && <p role="status" className="mb-5 text-sm leading-6 text-muted-foreground">Senha redefinida. Entre com suas novas credenciais.</p>}
-        {reason === 'session' && <p role="status" className="mb-5 rounded-lg border border-border p-3 text-sm leading-6 text-foreground">Entre novamente para acessar sua conta. A sessão anterior pode ter expirado ou sido encerrada.</p>}
-        <LoginForm />
-        <div className="mt-6 border-t border-border pt-6 text-center text-sm">
-          <p className="text-muted-foreground">Ainda não tem conta?</p>
-          <Link href="/cadastro" className="mt-2 inline-block text-primary underline underline-offset-4">Criar conta profissional</Link>
-        </div>
-      </section>
-    </div>
-  </main>
+  return <AuthVisualShell title="Bem-vindo de volta" description="Use o e-mail e senha da sua conta para acessar.">
+          {reason === 'reset' && <p role="status" className={styles.notice}>Senha redefinida. Entre com suas novas credenciais.</p>}
+          {reason === 'session' && <p role="status" className={styles.notice}>Entre novamente. A sessão anterior pode ter expirado ou sido encerrada.</p>}
+          <LoginForm />
+          <div className={styles.divider}><span />Ou continue com<span /></div>
+          <div className={styles.social} aria-describedby="social-availability">
+            <button type="button" disabled><b className={styles.google} aria-hidden="true">G</b> Google</button>
+            <button type="button" disabled><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M17.2 12.8c0-2 1.6-3 1.7-3.1-1-1.5-2.5-1.7-3.1-1.7-1.3-.1-2.5.8-3.2.8-.6 0-1.6-.8-2.6-.8-1.4 0-2.8.9-3.5 2.1-1.5 2.6-.4 6.5 1 8.6.7 1 1.4 2.1 2.5 2 1 0 1.4-.7 2.7-.7 1.2 0 1.6.7 2.7.7s1.8-1 2.4-2c.8-1.1 1.1-2.2 1.1-2.3-.1 0-2.1-.8-2.1-3.6ZM15.1 6.6c.5-.7.9-1.6.8-2.6-.8 0-1.8.6-2.4 1.2-.5.6-1 1.6-.9 2.5.9.1 1.8-.5 2.5-1.1Z" /></svg> Apple</button>
+          </div>
+          <p id="social-availability" className={styles.socialNote}>Login social ainda não disponível. Use e-mail e senha.</p>
+          <div className={styles.signup}><p>Ainda não tem conta?</p><Link href="/cadastro">Criar conta profissional <ArrowRight size={17} aria-hidden="true" /></Link></div>
+  </AuthVisualShell>
 }

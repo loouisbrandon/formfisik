@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { endpoints } from '@/services/api/endpoints'
+import {notifySessionChanged} from './session-change'
 export function LogoutButton() {
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
@@ -11,6 +12,7 @@ export function LogoutButton() {
     try {
       const response = await fetch(endpoints.logout, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
       if (!response.ok) throw new Error('LOGOUT_FAILED')
+      notifySessionChanged()
       window.location.replace('/login')
     } catch { setBusy(false); setMessage('Não foi possível encerrar a sessão. Tente novamente.') }
   }

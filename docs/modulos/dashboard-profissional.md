@@ -62,3 +62,17 @@ Na 010, o dashboard acrescenta contagens SQL reais por proprietário de fichas i
 ## Ampliação 012
 
 Acompanhamento ativo na navegação e três indicadores reais: alunos ativos com avaliação ativa, avaliações ativas em alunos ativos nos últimos 30 dias civis (Brasília, hoje e 29 anteriores), alunos ativos sem avaliação nessa janela incluindo nunca avaliados. Histórico consolidado de atividades permanece vazio, sem fabricar eventos. Regras em [Acompanhamento](acompanhamento.md).
+
+## Refinamento visual da visão geral —04/11/2026
+
+Sidebar e dashboard seguem a referência aprovada no modo noturno. Paleta clara documentada e reservada, sem seletor de tema. Perfil e logout permanecem no menu compartilhado; sidebar completa preserva todos os módulos. Topbar direciona à busca existente da carteira, sem anunciar pesquisa global.
+
+DTO anterior preservado; `overview?` acrescenta `asOf`, `receivedCents`, `months[{month,count}]`, `appointments[{id,title,student,time,state}]`, `appointmentTotal`, `timezone`, `attention[{id,name,lastAssessment}]`, `recentStudents[{id,name,createdAt}]`. Endpoint existente autoriza sessão e assinatura antes das consultas; `view=access` mantém guarda leve. Owner vem da sessão, nunca do cliente. Não são expostos contatos, credenciais, notas ou medições clínicas.
+
+Reutiliza contagens existentes, `queryAgenda(view=list)` (20itens SQL,3projetados) e `queryFinance(view=overview)` (`provider_received` do mês em Brasília, separado de declarações manuais e Billing SaaS). `dashboard-overview.ts` adiciona somente agregados de6meses e listas SQL limitadas a3, com joins e subconsultas isolados por profissional. Projeção mínima evita carregar o relatório executivo025 inteiro ou criar histórico fictício. Nenhuma migration, tabela ou retenção nova.
+
+Atenção: alunos ativos sem avaliação ativa de hoje-29 até hoje em Brasília; não implica diagnóstico ou baixa adesão. Série mensal: vínculos ainda existentes pela data de criação, inclusive arquivados; não reconstrói eliminações nem históricos de ativos. Agenda respeita fuso configurado. Atividades restringem-se a novos cadastros; históricos de outros módulos continuam nas fichas. Consultas são resumos atuais, sem garantia de snapshot transacional entre domínios. Valores vazios/zero são reais e não simulações.
+
+Verificações: TypeScript/ESLint dos arquivos alterados; testes PostgreSQL isolado de limites, propriedade, conta vazia, ausência de dados clínicos e concorrência; Chrome/Axe em1672×941,1440×900,768×900,320×740 e1440×500. Evidências locais em `test-results/local/dashboard-dark-verification.json` e `dashboard-dark-*.png`. Não executado build de produção nesta alteração visual; sem deploy ou serviços externos.
+
+Resultado final local:12/12 testes de regressão/projeção aprovados, TypeScript aprovado e ESLint dos arquivos alterados aprovado. Cinco verificações Chrome/Axe sem violações detectadas e sem rolagem externa; menu mobile abre/fecha via teclado. Em1672×941, conteúdo principal cabe sem rolagem; alturas menores preservam rolagem interna. Light mode permanece preparado, não implementado.

@@ -264,3 +264,276 @@ Formulário separa autorização e registro do envio real; source e observaçõe
 Comparação em duas colunas inclusive a 320px, `min-w-0`, `object-contain`, data/posição identificadas, sem esticar imagens ou filtros corporais. Ampliação individual por dialog nativo, foco inicial em fechar, Escape e retorno ao acionador. Sem slider ornamental. Mensagem de falha de imagem usa padding reduzido nas colunas estreitas para manter palavras e ação legíveis a 320px. Imagem privada com retry, entregue somente pela API autenticada, sem otimizador público. Remoção por dialog com confirmação explícita/motivo real, opção inicial de manter e distinção entre bloqueio de acesso e exclusão física pendente.
 
 Revisões e capturas da 013 devem informar resultados efetivos; Axe não equivale a certificação nem teste manual com leitor de tela. Nenhuma foto de pessoa real é necessária nas evidências: usar figuras sintéticas identificadas.
+
+## Entrega 014 — shell e relatórios físicos
+
+Desktop: `ProfessionalShell` ocupa `100dvh`, Grid com coluna de 15rem e conteúdo `minmax(0,1fr)`. A coluna direita é Flex, com cabeçalho `shrink-0` fora da área de scroll. O cabeçalho permanece estável pelo contêiner; não há sticky/fixed duplicado nas páginas. `main#app-content` tem `min-height:0`, `overflow-y:auto` e overscroll contido. O documento não rola em paralelo. A sidebar tem altura integral: marca e logout não encolhem, navegação intermediária rola quando necessário.
+
+Abaixo de 1024px, o menu usa dialog modal nativo, com Escape, foco contido e retorno ao botão Abrir navegação. Qualquer dialog aberto bloqueia a rolagem do main sem apagar sua posição. VisualViewport ajusta altura em telas pequenas e mantém o campo focado visível quando o teclado altera a área útil. Validar também em dispositivos físicos: a automação desktop não reproduz todos os teclados virtuais.
+
+Filtros, páginas, indicadores e seleções vivem na memória limitada do shell (40 entradas), sem localStorage/sessionStorage. Voltar de detalhe à lista ou usar histórico restaura o scroll pertinente, aguardando o conteúdo por até três segundos. Outra área abre no topo. Alteração explícita de filtro/página reposiciona a lista no topo; não altera o scroll externo durante seleção em dialog. Não armazenar bytes, credenciais ou snapshots documentais nessa memória. O aviso de alterações não salvas é reutilizado; painéis mantidos conservam rascunhos. Abas, modais, listas paginadas e formulários progressivos continuam obrigatórios.
+
+Exportação física: formulário organizado em Período/apresentação, Conteúdo, Fotografias/autorização e Apresentação profissional. Checkbox independente por conteúdo; observações/fotos começam desmarcadas. Objetivo indisponível é informado, sem inferência. Seleção de medidas atende tabelas, gráficos e comparação. Datas e versões da comparação são explícitas. Loading bloqueia submissão dupla; erro recebe foco; sucesso foca prévia real. Opção alterada invalida prévia. Sem R2, fotos ficam indisponíveis e relatórios de medidas continuam funcionando.
+
+PDFs A4 reutilizam DejaVu e apresentação sanitizada da 011. Compacto usa branco, linhas finas, textos escuros e pontos pretos, adequados à escala de cinza. Premium usa títulos maiores, seções escuras com detalhe verde institucional `#96d100` e pontos verdes; conteúdo e precisão idênticos. Sem gradientes/sombras. Margens laterais 42pt, cabeçalho recorrente, rodapé com contador, tabelas com cabeçalho repetido. Gráficos vetoriais usam datas civis e pontos reais sem interpolação. Fotos mantêm proporção, com fit, data/posição e legendas; no máximo duas por linha. Os modelos são apresentações do mesmo documento, sem plano comercial adicional.
+
+Fotografias selecionadas podem ser revisadas e removidas em seção recolhível, inclusive quando estão fora do filtro/página atual; o contador e a autorização referem-se ao conjunto exato selecionado.
+
+Contenção de conteúdo absoluto: shell, main e contêiner do visualizador PDF estabelecem referência de posicionamento (`relative`). Texto `sr-only` absoluto deve permanecer no contêiner local; não pode ampliar a área rolável do documento externo. Capturas do shell usam viewport, sem expandir artificialmente a página para incluir o scroll interno. Testar tentativa explícita de rolar a janela também depois de renderizar o PDF.
+
+## Segurança e carregamento progressivo — 015
+
+Preservar identidade visual, labels e navegação. Listagens usam resumos; instruções completas, propostas e avaliações são obtidas ao abrir o detalhe/edição, com loading/erro recuperável e nova autorização. Comparação de medidas recolhida não consulta antecipadamente. Verificação passiva não recalcula indicadores nem apresenta dados financeiros. Erro de verificação continua removendo conteúdo favorável; frontend nunca concede acesso. CSS inline de posicionamento permanece compatível com CSP restrita a scripts com nonce; não introduzir scripts externos para contornar a política.
+
+Ao detectar logout ou mudança de conta em outra aba, o shell descarta conteúdo e memória privada e apresenta somente “Verificando sua conta…” em região de status até a navegação validada pelo servidor. Não manter nome, alunos ou fotografias da conta anterior durante essa transição.
+
+## Cadastro inteligente e anamneses — 017
+
+Preservar tokens, cores, Montserrat/Bebas/Rajdhani, ProfessionalShell e rolagem independente. Anamneses é navegação ativa; alunos mantém cadastro manual e passa a ter acesso a convites/resumo/histórico. Listas de20 por página, resumos sem respostas; detalhe e versões sob demanda. Links individuais somente na memória da criação, com copiar e orientação de compartilhamento manual. Nunca apresentar convite como conta criada ou verificação de identidade.
+
+Construtor usa uma seção selecionada e perguntas em details; títulos/descrições/alternativas com labels estáveis, controles nativos, alvos48px e16px de fonte. Botões Subir/Descer/Duplicar/Excluir identificam posição; limites/desabilitação nas extremidades. Condições usam seleção anterior e opção explícita; estrutura inválida impede salvar/publicar. Prévia e versão publicada identificadas; rascunho/arquivo/número são textos, sem depender de cor. Saída modificada exige confirmação.
+
+Público mobile-first max-w-2xl, padding16px, rolagem natural sem recorte. Apresentação/cadastro → seções individuais → revisão → envio → confirmação. Progress nativo com nome acessível e etapa textual. Anterior/Continuar/Enviar por botões, sem campos inativos focáveis. Informação de finalidade/profissional/privacidade e risco de perder progresso precedem dados. Rascunho só em memória, semWebStorage. Cabeçalhos recebem foco nas transições; erro éalert focável, sucesso éstatus e foco no título. Campos múltiplos usam checkboxes/grupo, opções únicas/SimNão usamselect nativo; datas/números têm limites e labels.
+
+Resumo de respostas usa dl e seções recolhíveis, texto quebra semHTML executável, alternativas legíveis e ausências explícitas. Histórico paginado20, comparação manual por abertura dos registros; respostas originais não são editáveis. Resolução pendente exige instrução de verificação independente e confirmação, sem prometer que checkbox comprova identidade.
+
+Validação017:320/375/768/1440, Axe, navegação de teclado, foco, texto200%, altura reduzida, erros de rede e links indisponíveis. Resultados efetivos e limites no [relatório017](../engenharia/entrega-017.md); não equivale a certificaçãoWCAG ou teste humano de leitor de tela.
+
+017: durante gravação/envio, fieldset desabilita todos os controles; loading textual e prevenção de duplo envio permanecem ativos. Revisão abre a primeira seção e mantém demais seções recolhíveis com conteúdo/ausências acessíveis sob demanda.
+
+## CRM018 — quadro e operação progressiva
+
+Reutiliza cores, fontes, `action/control` de formulários, feedback e ProfessionalShell existentes. Não há biblioteca de drag, fonte ou dependência nova. Rota `/crm` e subárea do aluno compartilham o mesmo componente. Áreas Atendimentos/Tarefas/Etapas e regras/Histórico usam botões com `aria-pressed`; filtros, indicadores, condições, ordenação e ações secundárias são progressivos.
+
+Colunas têm título, contagem, estado textual e borda sem significado exclusivo da cor. Paleta restrita lime/blue/violet/amber/rose/slate. Card exibe status, datas e pendências administrativas; sem respostas clínicas/medidas/fotos. Título e descrição livres quebram palavras sem aumentar documento externo. Cards têm nome acessível, ações nomeadas por aluno e links canônicos sob demanda. Arraste HTML transporta somente ID do vínculo e abre a mesma confirmação do menu por teclado.
+
+Kanban é região horizontal focável contida no main; não produz scroll global. Coluna19rem, cardspaginados10; celular inicia etapa única com seletor de foco, sem espremer seis colunas. Lista20 é alternativa explícita. Páginas vazias preservam filtros/total e oferecem retorno. Mudança de modo não baixa cards ocultos. Leituras substituídas são abortadas.
+
+Dialog nativo de movimentação: foco inicial “Manter etapa”, Escape, retorno ao acionador, título e nome do aluno, prévia de cada condição com texto atendida/não satisfeita, ciência explícita das recomendações e confirmação desabilitada se impedida. Revalidar após erro/conflito; sem movimentação por simples drop. A configuração oferece entradas separadas para regras e contexto, alertando ao descartar alterações. Versão carregada permanece vinculada ao editor sujo.
+
+Editor de tarefas reutiliza seletor paginado de aluno e só carrega descrição no detalhe; informa finalidade operacional/responsável. Prazo opcional informa horário do dispositivo; status e prioridade textuais, conclusão/reabertura/arquivo explícitos. Histórico20/página tem resultados de condições em detalhe recolhível. Sem promessas de automação de atendimento.
+
+Validação e evidências018: larguras1440/768/375/320, altura500, teclado, texto200%, Axe WCAG2A/AA/2.1/2.2 e build real com CSP. Resultados efetivos e limitações no [relatório018](../engenharia/entrega-018.md); não equivalem a homologação por leitor de tela/aparelho físico.
+
+## Serviços e consultorias019
+
+Navegação única Consultorias; catálogo/planos/contratações/entregas/histórico em botões aria-pressed, dentro do ProfessionalShell. Perfil e CRM oferecem links para a mesma subárea do aluno. Mantidos tokens, tipografia, action/control, labels16px/alvos48px, grid auto-fit limitado à largura e quebra de textos. Não criar novo Kanban ou aparência de pagamento.
+
+Listas e seletores20 no servidor; detalhe e revisão histórica somente por ação explícita. Editor de plano organiza condições/disponibilidade em details e cada obrigação em seção recolhível, com quantidade, prazo, ordem e obrigatoriedade. Obrigações não se expandem em milhares de campos por unidade. Preço usa entrada decimal textual em BRL e conversão inteira; vigência inclusiva e valor total são informados antes de confirmar.
+
+Criação/renovação requer checkbox de revisão administrativa e sempre começa em rascunho. Estados persistidos/derivados são textuais; não indicar pagamento ou assinatura jurídica. Ações de ativar/suspender/concluir/cancelar/reabrir usam confirmação nativa e justificativa quando cabível. Reabertura explica invalidação lógica e preservação do histórico. Evidência escolhida tem data/versão,1unidade e consulta mínima; fontes alteradas são sinalizadas sem apagar execução histórica.
+
+Durante envio fieldset desabilitado, botão/loading textual e trava de duplicação. A navegação entre áreas do módulo fica desabilitada durante gravação; confirmação de execução/reabertura é anunciada e recebe foco estável. Falha preserva campos e chave da tentativa; edição de conteúdo muda intenção. Voltar/sair modificado exige confirmação. Detalhe/lista anterior é descartado ao trocar de contratação, evitando abrir acordo antigo durante recarga. Atualizar área aberta, feedback alert/status focável, retry e páginas vazias explícitos. Rascunhos permanecem só em memória.
+
+Validação019:320/375/768/1440, altura500, texto200%, teclado/menu, Axe e navegação real em build HTTPS/CSP. Capturas/resultados no [relatório019](../engenharia/entrega-019.md). Não equivale a certificação WCAG ou homologação manual com leitor de tela/aparelho físico.
+
+## Financeiro profissional020
+
+Área /financeiro utiliza ProfessionalShell, tipografia/paleta/action/control e feedback focável existentes. Navegação local por Resumo, Cobranças, Preparar, Conta, Repasses, Histórico, Eventos e Operações pendentes; nunca documento global com scroll próprio. Indicadores em grade responsiva com texto explícito de origem: manual, conferido pelo profissional, confirmado pelo provedor, líquido conhecido e repasse observado. Desconhecido aparece como tal, sem zero fictício.
+
+Formulários por contexto e detalhes progressivos, preços canônicos somente leitura, confirmação de valor/periodicidade, rótulos explícitos em seletores, texto sem alegação jurídica, campos limitados e orientação para não registrar dados bancários/sensíveis. Mesma intenção/chave é preservada em falha; loading desabilita ações e navegação local; feedback de sucesso/erro recebe foco; aviso de saída protege alterações/gravação. Listas e correções 20/página no servidor; filtros/seleção em memória privada. Zoom 200%, teclado/Escape e 320/375/768/1440 px fazem parte da validação.
+
+Em Financeiro020, navegação local em telas abaixo de 768 px usa seletor nativo rotulado, com os mesmos estados/seções dos botões desktop. Isso mantém o conteúdo financeiro acessível sem uma sequência extensa de botões antes do formulário; seleção e confirmação de descarte são preservadas.
+
+## Agenda profissional021
+
+Reutiliza cores/tipografia/action/control/Feedback/Pagination e ProfessionalShell. Cabeçalho fora do scroll, conteúdo em #app-content, sem overflow global adicional. Semana padrão desktop; dia no mobile; mês resumido com seleção diária. Disponibilidade indicada por texto de faixas, bloqueios e compromissos por natureza/estado textual além da cor. Listas e histórico SQL20, prévia limitada100 paginada20. Formulários progressivos com detalhes: semana, recorrência, dados privados e comparecimento; campos rotulados, confirmação explícita, foco visível, estados anunciados e proteção de alterações. Sem arrastar obrigatório. Botões com min-height e quebra de texto; grades reduzem colunas em telas estreitas. Revisão em320/375/768/1440, altura reduzida e texto200%; evidências no relatório021. Calendários externos sem controle que sugira integração ativa.
+
+## Demonstrações023 — biblioteca e player
+
+PreservarProfessionalShell, tokens, tipografia e rolagem independente. Vídeos tem cards com fonte/escopo/estado textuais,20/página, título e duração confirmada. Sem miniaturas externas/player/preload em listas. Exercício/editor carrega associações só ao expandir; seleção explícita e botões principal/remover sem depender dearraste. Biblioteca e formulário progressivos, limites/direitos e estados deupload claros.
+
+Prévia emdialog nativo com título, botãofechar focado,Escape e retorno ao acionador; player destruído ao fechar. Reprodução só apósCarregar vídeo, aviso de conexão externa, controles oficiais/legendas e fallback textual/abrirYouTube. Sem autoplay. Frame mantém área mínima200px/altura e proporção responsiva; player não amplia scrollglobal. Inputs16px/labels, alvos48px,loading/status/alert focável, formulário preservado emfalha. Sem números ou acervo fictícios; Streamausente é indisponibilidade real.
+
+## Check-ins e feedbacks022
+
+Reutilizar tokens/preto-verde, Bebas/Montserrat/Rajdhani, ProfessionalShell, alvos48px e controles16px. Navegação Solicitações/Modelos/Periodicidade/Indicadores/Histórico, seletor nativo no mobile. Perfil mostra resumo mínimo e caminho para conteúdo privado. Cards CRM só contagens, sem relatos, escalas ou desconfortos.
+
+Construtor/renderizador017 compartilhados; rápido/completo/personalizado usam o mesmo motor. Atribuição organizada em contexto do aluno/modelo, período, prescrição opcional e prévia limitada; até24 ciclos, prévia paginada20. Formulários públicos por etapas com finalidade/privacidade antes da coleta, campos opcionais claros, revisão, ciência, estados loading/erro/sucesso e proteção de saída. Não mostrar histórico pelo link. Feedback de treino sempre rotulado como declarado; esforço/dificuldade com âncoras, não classificação clínica.
+
+Revisão e devolutiva separadas de resposta; correções abrem novo preenchimento e preservam original. Texto de compartilhamento manual não sugere entrega técnica. Históricos/listas SQL20; séries100 por página, uma pergunta/versão por vez, tabela equivalente e pontos sem interpolar lacunas. Ausências e denominador zero aparecem explicitamente. Botões sem arraste obrigatório; foco/alert/status, largura320/375/768/1440, altura500 e texto200% são critérios de teste, com resultados efetivos no relatório022.
+
+No022, ações de gravação bloqueiam a navegação interna até concluir; a confirmação só aparece após atualizar o detalhe. Rascunhos de devolutiva exigem confirmação antes de outra ação. Séries oferecem anterior/próximos100 e alternativas com rótulos da versão do formulário, nunca UUIDs como resposta visual.
+
+## Central de comunicação024
+
+Mesmo ProfessionalShell/#app-content, tokens preto/verde, tipografia e action/control/Feedback/Pagination; nenhuma rolagem global própria. Contatos/Modelos/Notificações/Pendências/Indicadores, seletor nativo no mobile e navegação contextual do aluno. Contatos em cards mínimos, histórico SQL20, detalhes e painel contextual sob demanda. Quebrar nomes/textos longos; legends sr-only têm fieldset relativo.
+
+Modelos curtos com título/texto/variáveis permitidas, arquivo e versão; registro com tipo/canal/instante, seleção progressiva de modelo/contexto e prévia server-side antes da confirmação. Campos preservados em falha e perda de rascunho confirmada; gravação bloqueia navegação interna. Modelos/contextos fechados não carregam listas; seleção obsoleta é cancelada. Erro/sucesso focáveis, labels persistentes, estados vazios/indisponíveis e retry explícito.
+
+Preparado, contato declarado e leitura profissional são estados textuais distintos; sem balões de chat ou checks que sugiram entrega/leitura do aluno. Copiar texto não envia. Sem botão de envio real ou canal ficticiamente ativo. Indicadores têm período e critério de30dias visíveis. Verificar teclado/foco/1440/768/375/320, texto200% e altura reduzida, com evidências no relatório024; Axe não equivale a certificação humana.
+
+## Inteligência de negócio025
+
+`/indicadores` reutiliza ProfessionalShell, action/control/Feedback, tokens e fontes. Visão executiva oferece resumo de três métricas por área e abertura explícita de cada domínio por seletor nativo rotulado. Não adicionar dezenas de gráficos simultâneos. Grade auto-fit com mínimo17rem limitado100%, descrição/escopo/período visíveis; definição em details por indicador. Zero denominador é Não calculável, posição atual não aparenta comparação histórica. Centavos separados por origem, nunca faturamento genérico.
+
+De/Até com labels, 16px e ação48px; carregamento e retry textuais, erro focável e resultados antigos ocultos em falha. Gráfico simples de carteira com título/nome acessível e equivalente diário em seção progressiva, incluindo evolução financeira por fonte; sem cor de julgamento. Links contextuais e tabela sem rolagem externa. Filtros/área em memória privada, leituras canceláveis. Validar1440/768/375/320, altura500, teclado, texto200%, Axe e CSP do build real; resultados no relatório025.
+
+## Importação026
+
+`/importar` mantém ProfessionalShell/#app-content, paleta/tipografia, action/control, Feedback/Pagination e memória privada. Tipo/arquivo → mapeamento CSV ou JSON estruturado → prévia transformada → confirmação → progresso por lote → resultado/histórico. Sem drag obrigatório ou cadastro fictício por upload. Limites e finalidade administrativa visíveis antes do envio. Cabeçalhos opcionais sem destino são descartados, não escondidos depois de persistir.
+
+Mapeamento em grid auto-fit mínimo16rem limitado100%, labels explícitos, amostra local progressiva até3 registros. Prévia20 por página no servidor, dados transformados em details e candidaturas mínimas autorizadas. Texto Válido/Inválido/Duplicado potencial/Possível conflito/Importado/Ignorado/Rejeitado/Referência eliminada acompanha qualquer cor. Duplicidades começam ignoradas; criar distinto é opção explícita por registro, com checkbox de revisão antes da importação.
+
+Progresso por contagens reais, interromper após lote, retomar e cancelar com consequências claras. Finalização informa quantidades de importados/ignorados/rejeitados, sem afirmar que todo arquivo foi importado. Falhas preservam estado retomável, erro focável e retry; cancelamento preserva criados. Gravação bloqueia navegação interna; saída/arquivo/decisões pendentes usam aviso compartilhado. Históricos20, ordem estável, páginas vazias e leituras abortáveis. Relatório mínimo baixável não inclui nomes/contatos. Verificar1440/768/375/320, altura500, texto200%, teclado/Escape e Axe/build real; resultados no relatório026.
+
+## Login — direção visual laranja (referência aprovada pelo fundador)
+
+`/login` adota composição editorial em duas colunas, slogan esportivo à esquerda e card de autenticação à direita. Exceção visual restrita ao login: `--login-accent: #ff6b19`, texto `#f4f4f5`, secundário `#b9bbc1`, fundo `#080b0e`. Tokens locais em `src/modules/auth/login-visual.module.css`; demais módulos preservam a paleta vigente. Marca existente recebe tratamento cromático CSS, sem substituir o arquivo original. Fontes Montserrat/Rajdhani existentes; título itálico, letras maiúsculas e card com borda de luz e gradiente discreto.
+
+A camada `.backdrop` está preparada para futura imagem fornecida pelo fundador; nesta etapa há apenas composição abstrata CSS, sem fotografia gerada ou reprodução da montanha/estátua. Elementos decorativos não recebem foco nem nomes acessíveis. Não publicar estatísticas de usuários, satisfação ou conteúdo sem evidência. Recursos citados correspondem aos módulos existentes.
+
+Login reutiliza Input/Button, validação e endpoint existentes, labels persistentes, ícones decorativos, mostrar/ocultar senha, erros associados e foco, loading e sessão opaca. Não implementar “manter conectado” visual sem contrato de sessão: mostrar Sessão protegida. Google/Apple aparecem desabilitados e com indisponibilidade explícita, sem OAuth simulado. Abaixo de800px, coluna única e apresentação compacta, com card integral e rolagem vertical natural; nunca recortar formulário em altura reduzida. Foco laranja visível, controles de entrada16px e alvos de44–52px. Não modificar ProfessionalShell.
+
+Validação local em04/11/2026: TypeScript e ESLint dos arquivos alterados aprovados; Chrome real em1440/768/320px sem overflow horizontal e Axe WCAG2A/AA/2.1AA sem violações detectadas. Texto ampliado200% em viewport1440×500 sem overflow horizontal. Validação vazia foca e-mail, mostrar senha funciona e login real redireciona ao dashboard. Capturas locais em `test-results/local/login-{1440,768,320}.png` (artefatos ignorados pelo Git). Não foi executado novo build de produção nesta alteração visual; o ambiente segue em desenvolvimento Webpack. OAuth, persistência estendida de sessão e imagem de fundo não fazem parte desta alteração.
+
+### Fundo fotográfico e legibilidade — refinamento04/11/2026
+
+Imagem fornecida pelo fundador aplicada sem modificação em `public/images/login-mountains.png`, pela camada decorativa local, sem requisições de imagens externas. Desktop usa cover central; mobile preserva o ponto focal em40% com cobertura escura progressiva. A camada de contraste sobre a fotografia protege a leitura do slogan, sem aplicar opacidade ao conteúdo. Os círculos/faixas CSS anteriores foram retirados da apresentação para não duplicar a composição da imagem.
+
+Conjunto principal centralizado horizontal e verticalmente por flex/grid, com padding vertical simétrico no desktop. Alturas pequenas permitem rolagem natural e não cortam o card; rodapé decorativo separado quando há altura suficiente. Mobile permanece em coluna única. Login e guardas de sessão/assinatura não alterados.
+
+Montserrat500 para corpo/inputs,600 para labels/links menores e700 para títulos/ações; Rajdhani restrita aos detalhes editoriais. Redução de textos em8–10px na interface, incremento de peso e contraste, mantendo entradas16px. Título Montserrat700 itálico preserva o caráter esportivo com traços mais robustos. Orientação consultada: W3C, Understanding1.4.3 (https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html), sobre perda de contraste percebido com fontes muito finas e antialiasing. Os pesos são decisão visual local, não uma exigência normativa de um peso específico.
+
+Evidências deste refinamento: `test-results/local/login-background-verification.json` e capturas `login-background-{largura}-{altura}.png`. Chrome/Axe em1440×900,1920×1080,768×900,320×740 e1440×500: imagem carregada, sem overflow horizontal, zero violações Axe nas tags WCAG2A/AA/2.1AA. Nas duas resoluções desktop com altura suficiente, centro do grid coincide com o centro da viewport nos dois eixos (desvio medido0px); mobile/altura reduzida usam rolagem segura. Texto200% sem overflow horizontal em1440px. TypeScript e ESLint dos módulos de login aprovados. Não executado novo build de produção; ambiente local continua Webpack.
+
+### Enquadramento do fundo em telas baixas
+
+No desktop, `.backdrop` é fixa e mede100svh: o cover considera a viewport, não a altura rolável do formulário. Isso evita zoom involuntário quando o conteúdo excede a janela. A imagem1672×941 aparece em escala1:1 na viewport correspondente;1920×1080 requer ampliação de~14,8%;1440×900 exige recorte horizontal pela diferença de proporção. Cover já é a menor escala que preenche a área sem faixas. Exportar mais pixels melhora a nitidez, não amplia o campo de visão; reduzir o tamanho aparente do busto mantendo preenchimento exige uma arte com mais cenário, sem simples upscale. Mobile mantém enquadramento próprio.
+
+## Autenticação visual compartilhada e medidor de senha
+
+Login, cadastro, confirmação de e-mail, solicitação de recuperação e redefinição reutilizam `AuthVisualShell`: mesma fotografia, identidade laranja, marca, tipografia, centralização e card. `RecoveryShell` compõe o shell comum; formulários/validações/endpoints são preservados. Cadastro explica confirmação obrigatória, privacidade e separação entre conta e assinatura, com condições comerciais em details. Não adiciona OAuth ou trial fictício. Layout extenso permite rolagem, sem cortar campos, ações ou estados.
+
+Cadastro e redefinição incluem `PasswordStrength`: quatro segmentos laranja inclinados, trilha escura, preenchimento luminoso e rótulos Inicial/Em evolução/Forte/Muito forte. Estado vazio não recebe nível; conforme o texto cresce, o nível é recalculado localmente. Comprimento é o critério principal; sequências iniciais previsíveis e repetição reduzem a estimativa. O indicador não impõe mistura de caracteres nem altera o contrato de12–128 caracteres do servidor; não estima entropia criptográfica nem consulta bases externas. Senha não é enviada para serviços de avaliação nem persistida pelo medidor.
+
+Sem animação pulsante/partículas; transições respeitam prefers-reduced-motion. Semântica `role=meter`, nome acessível, mínimo0/máximo4/valor atual e descrição textual; cores não são o único sinal. Não usar aria-live a cada tecla para evitar anúncios contínuos. Indicador aparece somente ao definir uma senha, nunca no login. Componentes: `password-strength.tsx`, `password-strength-score.ts`, `password-strength.module.css`. Testes unitários cobrem progressão, padrões previsíveis, repetição e frases sem exigência de complexidade.
+
+Verificação local desta alteração: TypeScript e ESLint dos arquivos alterados aprovados;3/3 testes unitários do score aprovados. Chrome/Axe nas cinco rotas em1440/768/320px: sem overflow horizontal ou violações detectadas. Medidor0–4 verificado no DOM em todas essas larguras, com Axe sem violações. Jornada real com conta sintética separada: cadastro202, confirmação, solicitação SMTP local, formulário de redefinição com medidor, alteração e login com nova senha200. Estados de confirmação/sucesso também avaliados com Axe. No teste de jornada em Next dev, recargas HMR que descartam tokens em memória foram suspensas no transporte da automação; endpoints, autenticação e validações permaneceram reais. Evidências/scripts locais ignorados em `test-results/local/auth-{visual,flow,meter}-check*` e capturas `auth-*.png`. Nenhuma senha da conta principal foi alterada. Não executado novo build de produção; não houve deploy ou serviços externos.
+
+## Dashboard e sidebar — modo noturno da referência de gestão
+
+A área profissional usa canvas `#0e1115`, card `#151a20`, texto `#f0f2f5`, secundário `#a9b1bd`, borda `#2a313a` e ação verde `#a9e600`. Paleta clara reservada em `--workspace-light-*`: canvas `#f5f6f7`, card `#ffffff`, texto `#151719`, borda `#e2e4e7`, ação `#a9e600`. Light mode ainda não ativado; laranja permanece na autenticação pública.
+
+Sidebar15rem com grupos Gestão/Operação/Sistema, ícones por domínio, seleção verde e perfil real por iniciais. Navegação rola independentemente; marca e logout permanecem acessíveis. Todos os módulos anteriores foram preservados; Configurações continua em breve. Mobile mantém dialog nativo, Escape e retorno de foco. Topbar contém breadcrumb e links reais para carteira, comunicação e conta; sem busca global, atalhos ou notificações fictícias.
+
+Visão geral com quatro KPIs, gráfico/agenda e atenção/atividades em duas colunas; redução progressiva para uma coluna. Montserrat500–700, cards escuros e bordas discretas. Gráfico SVG local com tabela equivalente e escala inteira. ProfessionalShell/#app-content preservados, sem overflow global. Dados reais: alunos ativos, treinos ativos, ausência de avaliação recente, recebimentos confirmados pelo provedor. Gráfico de novos cadastros (não histórico inferido de ativos), agenda do dia limitada a3itens, atenção limitada a3alunos sem avaliação em30dias, atividades com3últimos cadastros. Sem adesão clínica, crescimento percentual ou receita inventados.
+
+### Escala e legibilidade em monitores grandes — 05/11/2026
+
+Dashboard utiliza largura disponível até2200px, sem impor o limite1600px das demais páginas. A partir de1800px: sidebar18rem, navegação17px/600, título40px/700, títulos de cards24px/700, indicadores44px/700 e descrições15–18px/500. Nas larguras menores, navegação15px/600 e títulos de cards21px/700; manutenção das quebras responsivas. SVG do gráfico volta à proporção natural da largura, eliminando a compressão causada pela altura fixa180px. Rolagem continua exclusiva de #app-content e da navegação lateral. Paleta noturna e tokens futuros claros preservados.
+
+Validação local: TypeScript e ESLint do shell aprovados. Chrome/Axe verificados em2560/1920/1672/1440/768/320px e altura reduzida500px; capturas e resultados em test-results/local/dashboard-dark-verification.json. Não executado novo build de produção nesta alteração CSS.
+
+### Indicadores e densidade do shell — 05/11/2026
+
+Navegação compactada para38px por item (40px em monitores grandes), grupos com menor espaçamento e perfil fixo. Preservar overflow automático na navegação somente quando necessário; não ocultar módulos em janelas baixas. Dashboard reduz espaços e limita gráfico a290px no desktop; viewport2560×1280 validada sem rolagem principal.
+
+Indicadores adota o mesmo canvas noturno, cards com bordas discretas, títulos Montserrat700, abas arredondadas com seleção verde e filtros de período reais. Visão geral: quatro KPIs canônicos, evolução da carteira, distribuição cadastral, etapas CRM e pendências. Detalhes de cálculo e tabelas ficam em seções progressivas. Não criar sparklines, percentuais de crescimento, funil clínico ou exportação fictícios para reproduzir a imagem. Demais abas mantêm todas as métricas do módulo. Paleta clara continua reservada.
+
+### Carteira de alunos — 05/11/2026
+
+`/alunos` adota cabeçalho Montserrat700, ações de convite/cadastro/exportação, três resumos e painel único com busca, situação, ordenação, alternância lista/cards e paginação. Mesma paleta noturna das telas Dashboard e Indicadores; referência clara não ativa light mode. Avatar por iniciais, status textual acompanhado de ponto, alvos44px e foco verde visível. Lista transforma-se em linhas empilhadas em larguras reduzidas; sem rolagem global. Cards representam somente a página carregada, sem leitura adicional. Dados de contato continuam restritos ao perfil; datas exibidas são cadastro/atualização cadastral, nunca atividade do aluno presumida. Busca permanece por nome. Não adicionar seleção em massa ou filtros sem ação real.
+
+### Treinos — composição administrativa noturna, 05/11/2026
+
+Listagem com três resumos reais, abas Todos/Fichas de alunos/Meus modelos, filtros existentes, lista ou cards e paginação de20 no servidor. Linhas exibem treino/aluno, divisões, exercícios, atualização, estado e acesso ao editor/PDF. Sem divisão ABC ou objetivo inventado no DTO resumido. Estado arquivado abre consulta. Modelos explicam cópia independente e histórico.
+
+Criação oferece escolha explícita entre ficha individual e modelo reutilizável. Editor em duas colunas: dados e divisão selecionada à esquerda; resumo real de aluno/tipo/divisões/exercícios/séries e conferência à direita. Barra de salvamento com prévia local em dialog nativo; fechar/Escape devolvem o foco. Prévia identifica alterações não salvas e não ativa prescrição. Dados gerais permanecem abertos; exercícios, séries, demonstrações e técnicas usam controles existentes em áreas progressivas. Preservar validação, confirmação de descarte e aviso de nova versão ativa. Em larguras reduzidas, coluna única e barra sem posição fixa. Paleta #151a20/#10151b, verde #a9e600 e Montserrat600–700, mantendo ProfessionalShell e rolagem interna.
+
+### Perfil do aluno — 05/11/2026
+
+Perfil noturno com identidade, iniciais, situação e contatos reais no cabeçalho; ações de editar, PDF e arquivar/reativar. Navegação por Visão geral/Treinos/Histórico/Documentos mantém painéis locais; Avaliações/Anamnese/Check-ins/Agenda direcionam aos módulos existentes. Visão geral em duas colunas, treinos compactos, resumo de anamnese, histórico cadastral, check-ins, dados pessoais, observações administrativas e atalhos profissionais. Nenhuma idade, KPI ou atividade inferida para reproduzir a imagem. Abaixo1350px, coluna única. Identificador integral quebra linha; datas e campos ausentes explícitos. Resumos não expõem respostas clínicas. Foco verde, alvos acessíveis e rolagem em #app-content preservados.
+
+### Biblioteca e topbar funcional — 05/11/2026
+
+Exercícios adota tipografia Montserrat700, filtros existentes, abas por origem e cards/lista. Cards usam composição gráfica por grupo muscular enquanto não há fotografia canônica autorizada no DTO; não associar imagens genéricas a instruções de execução. Mantidos detalhes, formulário particular, solicitações e moderação.
+
+Topbar: busca em dialog, painel lateral de notificações reais e menu da conta com Configurações/Minha conta/Logout. Dialogs nativos oferecem Escape, foco contido e retorno ao acionador. Sol/lua alternam temas do shell; sidebar permanece escura. Modo claro usa canvas#f5f6f7, cards#fff, texto#151719, secundário#4f5965, verde para ações e texto de destaque#3f5e12. Tokens de superfícies, bordas, texto positivo e avisos adaptam Dashboard/Alunos/Perfil/Treinos/Indicadores/Biblioteca. Autenticação pública mantém identidade escura laranja. Preferência de tema local não contém identidade ou dados privados.
+
+
+### Acompanhamento — carteira e evolução individual (novembro/2026)
+
+`assessments/assessment.module.css` utiliza os tokens do workspace para fundos, bordas, contraste e verde-lima nos temas claro/noturno. Cabeçalho com título Montserrat 700, texto 500, ações de 42px; cartões de indicadores em três colunas; carteira/atenção em proporção 2,2:1. Abaixo de 1250px os painéis empilham; abaixo de 768px as linhas tornam-se cartões com rótulos de data; em 320px todas as ações permanecem acessíveis.
+
+Detalhe: identidade e atalhos, navegação por botões com `aria-pressed`, resumo com gráficos à esquerda e última avaliação/agenda/histórico à direita. Controles compactos, seleção verde com texto escuro e gráficos de pontos preservando a semântica existente. Nenhum retrato ou dado ilustrativo inventado. Estado vazio e medidas ausentes explícitos. O dialog de seleção reutiliza StudentsPicker, Escape e devolução de foco. Somente #app-content rola; layout usa a largura compartilhada de até 2200px.
+
+### Agenda profissional — grade temporal (novembro/2026)
+
+`agenda/agenda.module.css` e `AgendaWorkbench`: título Montserrat 700, ações verde-lima, mini calendário lateral de 240–260px, toolbar de período/Hoje/visões e grade de sete dias (dia no mobile). Cabeçalho de dia sticky dentro da grade; 72px por hora, slots de 30min, eventos com altura proporcional. Grade rola internamente sem ampliar documento externo, altura adaptada à viewport. Navegação por setas nos horários evita centenas de paradas de Tab.
+
+Disponibilidade usa fundo verde translúcido; reservas azuis; bloqueios cinza; presença pendente âmbar. Textos e rótulos identificam estado além da cor; cancelados usam texto riscado e rótulo explícito. Temas claro/noturno possuem contraste próprio nos cartões. Linha atual em vermelho, sem alterar estado. Títulos pessoais/local/notas só no detalhe privado; iniciais/dados da referência não são inventados. Configuração, edição, recorrência, comparecimento e histórico reutilizam componentes existentes.
+
+## Modal de agendamento sobre o calendário — 05/11/2026
+
+`AppointmentDialog` usa dialog nativo, backdrop discreto, largura máxima de 724 px e altura limitada à viewport, com rolagem própria. Cabeçalho e rodapé permanecem acessíveis. O calendário continua montado, mas fica inerte sob o modal; nenhuma estrutura de scroll global é acrescentada. Superfícies, texto, bordas e verde de seleção usam os tokens do workspace nos temas claro/noturno.
+
+Composição baseada na referência aprovada: ícone/data no cabeçalho, ações Atendimento/Bloqueio/Disponibilidade, seletores compactos de aluno e tipo lado a lado, data/início/término, Presencial/Online, local opcional e “Mais opções” para recorrência, notas, contrato e ajustes de fuso. Externo/domiciliar e compromisso pessoal permanecem disponíveis nas opções avançadas. No mobile os campos passam a uma coluna. Buscas de aluno/tipo são paginadas e carregadas ao expandir o seletor.
+
+Escape, X e Cancelar respeitam alterações não salvas e impedem saída durante envio; o foco retorna ao acionador. Término do atendimento é calculado pela duração do tipo e pelo fuso, não permite editar uma duração incompatível silenciosamente. “Salvar agendamento” solicita a prévia canônica; confirmação explícita e conflitos permanecem no próprio modal. Sem disponibilidade confirmada não há selo verde de horário livre.
+
+
+Conflitos na agenda: prévia bloqueada apresenta motivo, orientação e ação de ajuste quando aplicável. Não mostrar checkbox de confirmação desabilitado como única saída; renderizar a confirmação somente com prévia permitida. Usar painel neutro com texto explícito e tokens do tema, preservando contraste nos estados de erro. Agenda sem faixas semanais orienta configurar disponibilidade, sem simular horários de atendimento.
+
+## Interações da agenda: detalhes e arraste — 05/11/2026
+
+Clique no cartão abre detalhes no mesmo `AppointmentDialog`, com seções progressivas para dados privados, edição, presença, cancelamento e histórico. O calendário permanece montado e inerte sob o modal, sem trocar a página. Fechar retorna foco ao acionador; após mudança confirmada, foco e mensagem retornam ao contexto da agenda atualizada.
+
+Arraste usa Pointer Events, limiar de 8 px para distinguir clique, cursor grab/grabbing, cartão flutuante junto ao cursor e marcador tracejado no horário de destino com encaixe de 15 min. A prévia visual indica posição candidata, nunca disponibilidade garantida. Fonte fica atenuada; ponteiro/ghost não interceptam alvos. Rolagem e hover sobre setas de período permitem alcançar outros horários/semanas. Escape, cancelamento e soltura fora da grade não gravam nada. A alternativa “Mover para outra data e horário” usa data/hora explícitas e o mesmo fluxo, acessível pelo teclado.
+
+Controles da agenda e seus modais oferecem hover de fundo/borda/sombra; foco visível mantém anel verde. Botões desabilitados não recebem aparência de hover ativo. Ícones e cartões reutilizam a paleta; movimento de transições respeita prefers-reduced-motion. Ghost e feedback usam posição fixa e limite de largura, sem ampliar scroll externo. Claro/noturno, 1440/768/375/320 px e modal com conteúdo extenso fazem parte da verificação.
+
+### Anamneses — central e construtor (novembro/2026)
+
+Central com tipografia Montserrat 700, indicadores reais, busca e filtro, solicitações em tabela paginada e coluna lateral de convite. Tokens do workspace preservam claro/noturno. `intake/intake.module.css` concentra o padrão; cartões, botões de 40px e estados selecionados verde-lima. Indicadores usam “Convites criados”, nunca alegam envio externo.
+
+Construtor compartilhado: três painéis delimitados, com seções numeradas à esquerda, cartões de perguntas visíveis no centro e configurações à direita. Cada cartão apresenta título, tipo, controle de obrigatoriedade, edição/duplicação/exclusão e amostra visual do campo. O lápis expande a configuração completa; a prévia interativa mantém condições. Em telas intermediárias as configurações passam abaixo; no mobile os painéis empilham. Cabeçalho apresenta título real, estado de rascunho, prévia, salvar e publicação explícita quando fornecida pelo módulo. Nenhuma opção visual permite alterar submissão imutável.
+
+Central: cabeçalho com ações, quatro indicadores com ícones, abas, tabela com aluno/formulário/data/situação/ação e filtros dentro do cartão. A coluna direita contém convite e orientação em três passos. Tabela tem rolagem horizontal local em telas estreitas, sem ampliar o documento externo. Os exemplos da imagem não substituem dados registrados. Controles de arquivo e recuperação de links não são decorativos: só aparecem quando suportados pelo domínio.
+
+#### Reordenação de perguntas pela alça
+
+No construtor compartilhado, a alça lateral é um botão com alvo de 36×44px, cursor de pegar, hover e foco visível. Arraste com mouse ou toque somente pela alça; o conteúdo continua disponível para seleção, edição e rolagem. Após deslocamento mínimo de 6px, cartão flutuante acompanha o ponteiro, origem fica translúcida e linha verde indica inserção antes/depois do destino. Sem autoplay/animações prolongadas; respeitar movimento reduzido. Escape, cancelamento do ponteiro, perda de foco ou soltura fora da lista não alteram a ordem. Próximo das bordas, rolagem permanece em `#app-content`. Setas para cima/baixo na alça reordenam com foco preservado; mensagem discreta para leitor de tela informa a posição. Perguntas condicionais permanecem após suas dependências. Não alterar seções ou versões publicadas por meio desse gesto.
+
+
+### Biblioteca de vídeos — novembro/2026
+
+Cabeçalho compacto com ações YouTube/upload, três indicadores com ícones, abas sublinhadas em lima, filtros superiores e grade4/3/2/1 colunas. Cards16:9 apresentam origem, duração quando conhecida, exercício, situação traduzida e detalhes. Sem thumbnail autorizado, usar placeholder explícito “Prévia sob demanda”, sem inventar pessoas ou duração. Alternância em lista preserva filtros e página.
+
+Painel lateral modal nativo, largura máxima510px, rolagem interna, fundo conforme tema, foco contido e devolvido ao acionador. Escape/fechar respeita alterações não salvas; ação de fechar fica desabilitada durante operação, com interrupção explícita da transferência. Formulário de upload tem zona de seleção/arraste, destino, título, direitos e privacidade. Declarações começam desmarcadas; progresso não significa processamento concluído. O shell e a sidebar permanecem compartilhados; nenhum scroll global extra.
+
+## Serviços e consultorias — novembro/2026
+
+Central comercial utiliza o `ProfessionalShell`, a largura ampla compartilhada e tokens claro/escuro. Cabeçalho de gestão comercial, quatro indicadores antes das cinco abas, composição principal/apoio aproximadamente 2:1, cards com borda discreta/raio 12–13px, tabelas compactas e verde-lima nos destaques. Tipografia Montserrat: título32px/750, seções19px/750, dados12–14px; sem depender da fonte condensada de headings antigos. Indicadores têm semântica textual e ícone; cor não é o único sinal de estado.
+
+Em até1150px os painéis de apoio passam abaixo da coluna principal e indicadores usam duas colunas. Em até640px a tabela vira blocos por contratação, ações com toque42px e filtros empilhados. Não acrescentar rolagem no documento externo. `progress` nativo com nome acessível representa obrigações concluídas, acompanhado de fração explícita. Abas com botões e aria-pressed; teclado nativo e foco visível. Serviços rápidos abrem dialog lateral com título associado, Escape/descarte e restauração de foco. Formulários complexos permanecem em seções progressivas.
+
+Estados vazios usam explicação e acesso ao catálogo; falhas são anunciadas e permitem atualização. Nenhuma imagem de avatar fictícia ou dado ilustrativo é inserido na carteira.
+
+### Consultorias — refinamento das abas internas
+
+Serviços/planos, contratações, entregas, histórico e respectivos editores utilizam o escopo `.workspace` local de Consultorias. A Visão geral mantém sua composição e estilos aprovados, sem alterações no componente `overview.tsx`.
+
+- Catálogo: seletor segmentado Serviços/Planos comerciais, cabeçalho contextual, filtros compactos e cards com ícone, estado, versão, atendimento ou preço/duração. Ação principal “Gerenciar”; duplicação, histórico e arquivo em menu contextual nativo, acessível por teclado e fechável por Escape. Não usar preço zero como substituto de informação ausente.
+- Contratações: tabela em superfície delimitada, cabeçalho e contagem, filtros, paginação e ação principal em verde-lima. Detalhe usa dados do acordo em blocos, termos e ações progressivas.
+- Entregas: tabela com aluno/acordo, tipo, prazo, progresso nativo, estado/obrigatoriedade e acesso ao detalhe. Em até760px vira uma lista de blocos, mantendo todas as informações. Atraso tem texto explícito além da cor.
+- Histórico: linha do tempo com ícone por família de operação, evento, versão, data/hora e justificativa, quando existente. Sem novos dados pessoais ou consultas extras.
+- Formulários: campos em duas colunas no desktop e uma no mobile; configurações/entregas em seções progressivas, salvamento destacado, mensagens e avisos de descarte preservados. Alterações de apresentação não mudam validações ou confirmações administrativas.
+
+Cards usam os tokens atuais, bordas discretas e raio8–12px; títulos17–25px, corpo12–14px, metadados10–12px. Não adicionar scroll global, indicadores artificiais ou consultar agregados apenas para decorar as abas. Paginação continua no servidor,20 registros por página.
+
+## Check-ins — central operacional de novembro/2026
+
+Cabeçalho “Check-ins e feedbacks”, descrição operacional, ação secundária Criar modelo e ação verde-lima Atribuir check-in. Quatro indicadores reais compactos, navegação semanal/Hoje e filtros progressivos. Desktop usa lista/resposta em aproximadamente65/35; até1200px empilha e até760px mostra contexto de resposta com retorno à lista. Mantém ProfessionalShell/#app-content, sem scroll global.
+
+Cards usam tokens existentes, borda discreta e raio12px; títulos20–31px, corpo12–14px e metadados10–12px. Badges sempre têm rótulo. Seleção usa fundo suave verde-lima; placeholders e estados vazios orientam a próxima ação. Avatares são iniciais autorizadas, sem fotografias ilustrativas.
+
+Resposta reutiliza o renderer versionado e o detalhe canônico em modo compacto. Prazos/convites são disclosures acessíveis. Rótulos e foco estáveis, confirmação antes de descartar rascunho e botão bloqueado durante gravação. Texto “Registrar devolutiva” diferencia persistência de envio; “Preparar lembrete” abre o Composer de Comunicação no mesmo painel, com retorno, prévia e confirmação; permanece fluxo manual, sem disparo. Não usar verde/ícone para sugerir mensagem entregue sem evidência. Taxa sem denominador mostra “—” com explicação, nunca0% fictício.
+
+### Check-ins: abas operacionais (novembro/2026)
+
+Solicitações usam linhas compactas com identidade, formulário, período/prazo, badge textual e ação; abaixo de1100px refluem, abaixo de600px viram lista vertical. Modelos usam cartões com metadados reais do rascunho; periodicidade usa cartões de séries com fatos e ação de pausa. Indicadores distinguem destaques, volume e relatos; histórico usa linha do tempo paginada. Bordas e superfícies usam tokens de tema existentes. Botões possuem hover de superfície/borda lima, foco visível independente do hover, active e disabled sem interação; ação principal mantém contraste escuro sobre lima. Respeitar prefers-reduced-motion. Sem números, gráficos ou informações ilustrativas nas carteiras reais.
+
+### Financeiro — novembro/2026
+
+Cabeçalho Financeiro com exportação e Nova cobrança; abas Visão geral, Cobranças, Recebimentos, Planos, Repasses, Histórico e Configurações. Sidebar/shared shell, superfícies/bordas por tema, verde-lima nas ações. Desktop: quatro indicadores e dois painéis por linha; até1350px painéis empilhados; até900px linhas financeiras refluem; até600px navegação select e cards compactos. Origem integrada/lima e externa/azul sempre acompanhadas por texto. Valores desconhecidos/parciais explícitos. Nova cobrança reutiliza ServiceDrawer com rótulo de fechamento contextual, foco/modal nativos e proteção de rascunho. Hover, foco, disabled, active e movimento reduzido seguem padrão comum.

@@ -1,0 +1,2 @@
+export async function mediaApi<T>(query:string,payload?:object,signal?:AbortSignal):Promise<T>{const r=await fetch('/api/media'+query,{method:payload?'POST':'GET',headers:payload?{'Content-Type':'application/json'}:undefined,body:payload?JSON.stringify(payload):undefined,cache:'no-store',signal});const d=await r.json();if(!r.ok)throw Error(d.message??'Não foi possível carregar a biblioteca.');return d}
+export const intent=()=>({operationKey:crypto.randomUUID(),confirmed:true as const})

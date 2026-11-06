@@ -21,3 +21,7 @@ O cadastro e seus PDFs administrativos permanecem no modelo anterior; medidas e 
 ## Ampliação 013
 
 As restrições históricas da 012 relativas a fotografias descrevem o escopo original. A 013 implementa registros fotográficos separados, com autorização específica, entrega privada e remoção controlada conforme [política de fotografias](fotografias.md). Fotografias continuam fora de PDFs, IA e compartilhamento público. Observações administrativas do cadastro não foram reutilizadas para conteúdo corporal.
+
+## Documentos de evolução — 014
+
+Exportação opcional e delimitada por período e checkboxes. Observações/fotos desmarcadas por padrão; contatos privados e notas administrativas do aluno não são exportados. Manifest privado de curta duração registra apenas conteúdo selecionado/versões, sem chaves de objetos. Os relatórios não inferem saúde, objetivo ausente ou evolução ideal. [Regras completas](../modulos/relatorios-fisicos.md).

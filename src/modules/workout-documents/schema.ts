@@ -1,4 +1,4 @@
-import {z} from 'zod'
+import {z} from '@/lib/validation'
 const text=(n:number)=>z.string().trim().normalize('NFC').max(n).refine(v=>!/[\u0000-\u001f\u007f\u202a-\u202e\u2066-\u2069]/.test(v),'Remova caracteres de controle.')
 export const presentationFields=z.object({professionalName:text(160),brand:text(160),registration:text(100),contact:text(200)}).strict()
 export const savePresentation=presentationFields.extend({revision:z.int().nonnegative(),logo:z.string().max(349528).regex(/^[A-Za-z0-9+/]*={0,2}$/).nullable().optional()}).strict()

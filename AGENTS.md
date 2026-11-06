@@ -47,3 +47,39 @@ Nenhuma funcionalidade deve produzir páginas excessivamente extensas quando o c
 - Limitar consultas de gráficos por período e volume, oferecer carregamento explícito e alternar indicadores quando a exibição simultânea tornar a página extensa.
 - Priorizar dados efetivamente registrados nas comparações, mantendo acesso explícito a campos ausentes e sem esconder informação relevante silenciosamente.
 - Em módulos anteriores, aplicar refinamentos seguros e necessários; registrar diagnóstico, proposta e prioridade no roadmap antes de mudanças profundas. Não refazer telas funcionais indiscriminadamente.
+
+# Shell profissional obrigatório
+
+O shell profissional da FormFisik deve preservar a sidebar na altura integral da viewport e oferecer rolagem independente do conteúdo principal. Novas páginas devem utilizar o shell compartilhado, sem criar estruturas próprias de rolagem global. Listagens extensas devem ser paginadas; formulários longos, organizados em seções ou etapas; e a navegação deve preservar filtros, seleções e alterações não salvas quando aplicável.
+
+Utilizar `ProfessionalShell`: raiz com altura controlada, cabeçalho fora do scroll e `#app-content` como área de rolagem. Não acrescentar `overflow` global ou compensações de margem nas páginas. Marca e logout ficam acessíveis; somente a navegação lateral extensa rola. Verificar 1440/768/320 px, altura reduzida, teclado e texto a 200%.
+
+Conteúdo absoluto e texto acessível oculto devem ter referência de posicionamento local e não podem ampliar a rolagem do documento externo. Verificar esse limite também com PDFs renderizados e dialogs abertos.
+
+# Segurança e privacidade permanentes
+
+1. Segredos nunca são expostos no frontend, props hidratadas, bundles ou artefatos públicos. Validar com canários sintéticos no build efetivo.
+2. Todo endpoint privado exige autorização no servidor, além da autenticação.
+3. Toda consulta privada deve aplicar isolamento de propriedade; UUID não é autorização.
+4. Respostas devem conter o mínimo necessário, com DTO explícito e detalhes sob demanda.
+5. Não realizar requisições desnecessárias; medir antes/depois e cancelar leituras obsoletas sem enfraquecer autorização.
+6. Não registrar dados pessoais sensíveis, credenciais, cookies ou tokens em logs.
+7. Toda funcionalidade com dados pessoais precisa de avaliação de finalidade, retenção e acesso.
+8. Uploads e downloads privados exigem controle de acesso, limites, validação de conteúdo e tratamento de revogação.
+9. Alterações de autenticação exigem testes de regressão, inclusive concorrência, expiração e revogação.
+10. Nenhuma funcionalidade é considerada pronta com vulnerabilidade crítica ou alta conhecida; registrar bloqueio de produção explicitamente.
+11. Novas dependências exigem análise de necessidade, manutenção, licença e segurança; não aplicar upgrades massivos sem regressão.
+12. Segurança e privacidade são requisitos de aceite, não etapas opcionais. Consultar [controles e operação](docs/seguranca/controles-e-operacao.md) e o [inventário de tratamento](docs/privacidade/inventario-e-retencao.md).
+
+# Documentação oficial e foco Personal 1.0
+
+Consultar o [índice oficial](docs/README.md), o [inventário real](docs/produto/inventario-funcional.md), a [definição e critérios de homologação da Personal 1.0](docs/produto/personal-1.0.md), a [estratégia por especialidade](docs/estrategia/ecossistema-e-especialidades.md), a [arquitetura atual e evolução](docs/arquitetura/visao-atual-e-evolucao.md) e o [roadmap vigente](docs/planejamento/roadmap.md) antes de planejar novas entregas.
+
+- Consolidar e homologar Personal 1.0 antes de implementar outra modalidade, salvo autorização estratégica expressa. Documentar possibilidades futuras não autoriza implementá-las.
+- Avaliar reutilização sem duplicar regras críticas ou criar abstrações especulativas; preservar especializações de domínio e limites de finalidade/acesso.
+- Distinguir pessoa, conta, perfil, organização, modalidade, serviço, vínculo e permissão como diretriz futura; não presumir entidades existentes nem refatoração autorizada. Múltiplos papéis não deverão exigir contas diferentes exclusivamente por modalidade.
+- Separar Billing SaaS de Billing profissional. Stripe Connect é preferência futura condicionada à validação no Brasil; não presumir integração disponível.
+- Registrar IMPLEMENTADO, PARCIAL, PREPARADO, NÃO IMPLEMENTADO, EM AUDITORIA, BLOQUEADO ou HOMOLOGADO com evidências e ambiente. Código local e testes controlados não comprovam produção ou homologação.
+- Preservar entregas em andamento e decisões válidas. Segurança/LGPD exigem controles e evidências recorrentes; nenhuma declaração genérica substitui homologação. O NO-GO da 015 permanece até resolução documentada.
+
+Estas referências complementam todas as instruções anteriores e não autorizam implementação, integração, operação financeira ou deploy por si mesmas.

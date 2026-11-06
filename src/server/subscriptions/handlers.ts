@@ -1,7 +1,7 @@
 import 'server-only'
 import Stripe from 'stripe'
 import { db } from '../db'
-import { failure, jsonBody, limit, reply, sameOrigin } from '../http'
+import { boundedBody, BodyTooLarge, failure, jsonBody, limit, reply, sameOrigin } from '../http'
 import { readSession, sessionToken } from '../sessions'
 import { startCheckout, processBillingEvent } from './service'
 import { BillingConflict, BillingUnavailable, stripeSettings, type BillingGateway } from './stripe'
@@ -35,29 +35,20 @@ export async function billingStatus(request: Request) {
     return reply(await subscriptionStatus(user.id, refresh), 200)
   } catch (error) { return failure(error, 'subscription_status_unavailable') }
 }
-export function createStripeWebhookHandler(gateway?: BillingGateway) {
+export function createStripeWebhookHandler(gateway?: BillingGateway, readTimeoutMs=15000) {
   return async function stripeWebhook(request: Request) {
     let event: Stripe.Event
     try {
       const settings = stripeSettings()
       const signature = request.headers.get('stripe-signature')
       if (!signature) return reply({ message: 'Assinatura inválida.' }, 400)
-      const reader = request.body?.getReader()
-      if (!reader) return reply({ message: 'Corpo inválido.' }, 400)
-      let size = 0
-      const chunks: Uint8Array[] = []
-      while (true) {
-        const { value, done } = await reader.read()
-        if (done) break
-        size += value.length
-        if (size > 262144) { await reader.cancel(); return reply({ message: 'Corpo excede o limite.' }, 413) }
-        chunks.push(value)
-      }
+      const raw=await boundedBody(request,262144,readTimeoutMs)
       // Official SDK validates signature/timestamp on EXACT raw bytes, before JSON processing.
-      event = new Stripe(settings.key).webhooks.constructEvent(Buffer.concat(chunks), signature, settings.webhookSecret)
+      event = new Stripe(settings.key).webhooks.constructEvent(raw, signature, settings.webhookSecret)
       if (event.livemode) return reply({ message: 'Somente eventos de teste são aceitos.' }, 400)
     } catch (error) {
       if (error instanceof BillingUnavailable) return reply({ message: 'Webhook de teste não configurado.' }, 503)
+      if (error instanceof BodyTooLarge) return reply({ message: 'Corpo excede o limite.' }, 413)
       return reply({ message: 'Assinatura ou corpo inválido.' }, 400)
     }
     try {

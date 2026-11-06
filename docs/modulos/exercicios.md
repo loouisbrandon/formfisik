@@ -72,3 +72,23 @@ Ver [catálogo/importação](../catalogo/exercicios.md), [provisionamento](../op
 ## Integração 010
 
 O editor de [treinos](treinos.md) reutiliza ExerciseSelector e grava referências por ID/revisão em `workout_exercise_references`, com FK para `exercise_versions`. A confirmação do seletor continua sendo uma consulta, não permissão permanente: o servidor da prescrição revalida proprietário, disponibilidade e revisão. O catálogo não é convertido em texto livre nem atualizado silenciosamente nas fichas.
+
+## Minimização 015
+
+Listagem retorna id, name, scope, state, version, category, primaryMuscles e equipment. Detalhe/seleção confirmada continuam autorizados e completos. Solicitações em lista retornam id, state, version, decisionReason, createdAt, own e proposal.name; requesterName somente na moderação. Abrir/reenviar consulta detalhe. Candidato oficial administrativo pode ser obtido por `GET /api/exercises/moderation/catalog?id=UUID`, sob o mesmo grant; não retorna particulares.
+
+## Demonstrações —023
+
+O cadastro de exercício permanece canônico. Detalhe e editor de treinos oferecem [demonstrações](demonstracoes.md):YouTube, upload e oficiais, com preferências privadas, múltiplos vídeos e ordem. As afirmações anteriores “sem vídeos” registram o escopo original009. LicençasJSON não concedem licença de mídia.
+
+## Importação026
+
+CSV026 cria somente exercícios particulares pelo writer009, com enums/versões/eventos; não publica no catálogo oficial nem concede moderação. [Política/formatos](importacao.md), [API](../engenharia/api-importacao.md) e [relatório](../engenharia/entrega-026.md). Estado GO local controlado; produção NO-GO. As limitações anteriores descrevem o escopo histórico da entrega original.
+
+## Biblioteca visual e integração com topbar — 05/11/2026
+
+Cards/lista, abas de origem e filtros SQL reutilizados. Nenhuma fotografia acrescentada: DTO resumido não tem imagem canônica. Busca global oferece até5 resultados de cada primeira página de alunos, treinos e exercícios; consulta apenas ao submeter, mínimo2/máximo120caracteres, cancela consulta anterior/fechamento. Não é pesquisa integral de conteúdo: alunos por nome, treinos por título e exercícios por nome/alias. APIs existentes mantêm autorização e isolamento. Resultados de exercício encaminham à biblioteca filtrada via q, sem expor instruções no resultado. Nenhum endpoint ou banco novo.
+
+Sininho reutiliza Notifications da central024, com leitura explícita e paginação existente, sem notificações fictícias ou polling. Menu da conta reutiliza LogoutButton e revogação de sessão existente. Configurações reúne aparência/conta/assinatura/recuperação. Preferência formfisik:theme em localStorage armazena somente dark/light; nunca credenciais ou dados pessoais. Inicialização padrão noturna e restauração após hidratação podem gerar breve troca de tema no carregamento. Light mode converte tokens das telas recentemente refinadas; módulos anteriores continuam com estilos próprios e necessitam revisão visual individual.
+
+Validação local:43/43 testes de exercícios e comunicação aprovados em banco auxiliar isolado. TypeScript e ESLint dos arquivos TS alterados aprovados. Chrome/Axe biblioteca em1920/1440/768/320 nos dois temas sem overflow horizontal ou violações WCAG2A/AA/2.1AA detectadas; busca real, menu, notificações, Escape e persistência de tema verificados. Dashboard/Alunos/Treinos também auditados em modo claro. Evidências em test-results/local/topbar-verification.json e exercises-{tema}-{largura}.png. Sem novo build de produção ou deploy nesta alteração.

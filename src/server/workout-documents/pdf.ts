@@ -1,6 +1,5 @@
 import 'server-only'
-import PDFDocument from 'pdfkit'
-import path from 'node:path'
+import {createPdfDocument} from '../documents/composition'
 import type {Workout,PrescribedSet,PrescribedExercise,Division} from '../../modules/workouts/schema'
 import {techniqueLabels} from '../../modules/workouts/schema'
 import type {ExportOptions,Presentation} from '../../modules/workout-documents/schema'
@@ -14,11 +13,10 @@ export function loadLabel(s:PrescribedSet){if(s.unit==='bodyweight')return s.loa
 export async function workoutPdf(p:Workout,o:ExportOptions,identity:Presentation&{logo:Buffer|null},historical:boolean,issued=new Date()){
  const premium=o.layout==='premium',left=42,width=511,right=left+width,top=82,bottom=778
  const bodySize=premium?10:9.5
- const doc=new PDFDocument({size:'A4',margins:{top,bottom:64,left,right:42},font:path.join(process.cwd(),'assets/fonts/DejaVuSans.ttf'),bufferPages:true,autoFirstPage:false,info:{Title:'Ficha de treinamento',Author:'FormFisik',CreationDate:issued}})
- doc.registerFont('regular',path.join(process.cwd(),'assets/fonts/DejaVuSans.ttf'))
- doc.registerFont('bold',path.join(process.cwd(),'assets/fonts/DejaVuSans-Bold.ttf'))
+ const doc=createPdfDocument('Ficha de treinamento',issued)
  const chunks:Buffer[]=[]
  const finished=new Promise<Buffer>((resolve,reject)=>{doc.on('data',(b:Buffer)=>chunks.push(b));doc.on('end',()=>resolve(Buffer.concat(chunks)));doc.on('error',reject)})
+ void finished.catch(()=>{})
  let y=top,pages=0,continuation=''
  const context=[p.state==='draft'?'RASCUNHO - NÃO É PRESCRIÇÃO FINAL':p.state==='archived'?'ARQUIVADO':'FICHA ATIVA',historical?'VERSÃO HISTÓRICA':''].filter(Boolean).join(' | ')
  const clean=(v:string)=>v.replace(/[\u0000-\u0008\u000b-\u001f\u007f\u202a-\u202e\u2066-\u2069]/g,'')
@@ -151,7 +149,7 @@ export async function workoutPdf(p:Workout,o:ExportOptions,identity:Presentation
   if(o.guidance)paragraph('Orientações gerais',p.fields.notes)
   rule(premium?18:12)
  }
- newPage();presentation()
+ try{newPage();presentation()
  const selected=p.fields.divisions.filter(d=>o.divisionIds===null||o.divisionIds.includes(d.id))
  if(!selected.length)text('Nenhuma divisão cadastrada nesta versão.',10)
  for(const d of selected){
@@ -182,4 +180,5 @@ export async function workoutPdf(p:Workout,o:ExportOptions,identity:Presentation
  doc.end();const bytes=await finished
  if(bytes.length>8388608)throw new WorkoutError(422,'Documento muito grande. Selecione menos divisões.')
  return bytes
+ }catch(error){doc.destroy();throw error}
 }

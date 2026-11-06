@@ -6,7 +6,7 @@ import { loginSchema, invalidCredentials } from '../modules/auth/schema'
 import { db } from './db'
 import { clientAddress, failure, jsonBody, limit, reply, sameOrigin } from './http'
 import { accessFor, destinationFor } from './access'
-import { CredentialsChanged, clearSessionCookie, createSession, readSession, revokeSession, sessionCookie, sessionToken } from './sessions'
+import { CredentialsChanged, clearSessionCookie, createSession, readSession, revokeSession, sessionCookie, sessionToken,sessionContext } from './sessions'
 
 // Lazy per-process dummy hash uses the SAME Argon2 work as real credentials.
 // Existing/non-existing/unconfirmed accounts all perform password verification.
@@ -26,11 +26,11 @@ export async function login(request: Request) {
     if (!parsed.success) return reply({ message: 'Confira os campos informados.', errors: parsed.error.flatten().fieldErrors }, 400)
     const { email, password } = parsed.data
     await limit(`login:email:${email}`, 5, 900)
-    const result = await db().query(`SELECT u.id,u.role,u.email_verified_at,c.password_hash FROM users u
+    const result = await db().query(`SELECT u.id,u.role,u.email_verified_at,u.disabled_at,c.password_hash FROM users u
       JOIN credentials c ON c.user_id=u.id WHERE u.email=$1`, [email])
     const user = result.rows[0]
     const valid = await verify(user?.password_hash || await dummyHash(), password)
-    if (!user || !valid || !user.email_verified_at) {
+    if (!user || !valid || !user.email_verified_at || user.disabled_at) {
       console.info('auth_login_rejected')
       return reply({ message: invalidCredentials }, 401)
     }
@@ -56,7 +56,7 @@ export async function getSession(request: Request) {
   try {
     const user = await readSession(sessionToken(request.headers.get('cookie')))
     if (!user) return unauthenticated()
-    return reply({ user, access: await accessFor(user) }, 200)
+    return reply({ authenticated: true,context:sessionContext(user.id) }, 200)
   } catch (error) { return failure(error, 'auth_dependency_unavailable') }
 }
 export async function getAccount(request: Request) {

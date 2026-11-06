@@ -19,3 +19,9 @@ Solicitação com motivo registrado bloqueia acesso imediatamente e entra em fil
 Tombstones são reconferidos diariamente e não têm purga automática enquanto a política de reconciliação/retenção operacional não for aprovada. Isto é limitação explícita: eliminação do conteúdo não equivale à eliminação de todo identificador administrativo. Solicitação integral envolvendo todo o vínculo, backups e obrigações aplicáveis requer processo operacional próprio, sem exclusão ad hoc do ledger.
 
 Backups, eventual versionamento e retenção do provedor devem ser configurados e auditados pelo operador. Não foram criados nem homologados aqui. Restauração deve reaplicar exclusões antes de liberar acesso. Ver [runbook](../operacao/fotografias-r2.md). Sem configuração real de R2, uploads ficam indisponíveis; testes usam apenas figuras geométricas sintéticas e banco descartável, não fotos pessoais.
+
+## Exportação compartilhável — 014
+
+A autorização de armazenamento não se estende automaticamente ao PDF. Exige referência, data, sujeito/responsável e confirmação específica vinculada a imagens/versões e contexto. O profissional confere legitimidade; o software não verifica juridicamente documentos. Menores conhecidos exigem responsável na exportação e autorização de origem compatível. Sem isso, nenhuma foto é incluída. Só dados/imagens explicitamente selecionados entram no PDF privado temporário. A declaração/referência não deve conter documentos completos.
+
+Substituição, remoção ou revogação de autorização de origem apaga os artefatos temporários vinculados, com bytes/manifest/dependências. Downloads exigem autorização vigente e expiram em 15 minutos. PDFs já baixados não podem ser recolhidos. Compartilhamento é manual, sob responsabilidade do profissional. Sem credenciais R2, fotos não são simuladas. Ver [operação](../operacao/relatorios-fisicos.md).

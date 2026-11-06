@@ -1,5 +1,15 @@
 # FormFisik
 
+## Entrega016 — Estabilização local
+
+Migrations/readiness, eliminação operacional delimitada, ledger autenticado para restauração, grants mínimos e diagnóstico, com testes sintéticos. [Relatório016](docs/engenharia/entrega-016.md) distingue validações locais de Stripe/R2/SMTP externos pendentes. **NO-GO para produção e dados reais permanece.**
+
+Ecossistema independente de esporte, saúde, performance e bem-estar. A primeira especialidade é a **FormFisik Personal 1.0**, ainda em consolidação. Consulte a [documentação oficial](docs/README.md), o [inventário auditado](docs/produto/inventario-funcional.md), a [arquitetura atual](docs/arquitetura/visao-atual-e-evolucao.md) e os [marcos 015–030](docs/planejamento/roadmap.md). Implementação local não equivale a produção homologada.
+
+## Entrega 015 — Segurança e privacidade
+
+Auditoria e correções de autenticação, suspensão de contas, CSP, isolamento, minimização de respostas e consistência entre abas. Inventário de tratamento, procedimentos operacionais e evidências estão no [relatório 015](docs/engenharia/entrega-015.md). **NO-GO para produção e dados reais** enquanto as pendências essenciais de eliminação, operação e homologação permanecerem abertas.
+
 Empresa independente fundada por Brandon Louis, com atuação inicial digital por meio de uma plataforma fitness.
 
 A documentação institucional e técnica deve seguir a [diretriz institucional](docs/institucional/diretriz-institucional.md), que registra a independência empresarial como decisão estratégica sem presumir formalização jurídica ou societária.
@@ -60,7 +70,7 @@ Aplicar migration 005 antes de usar esta versão. Operador local pode executar `
 
 ## Área profissional
 
-Dashboard com identidade real, onboarding, shell compartilhado, menu responsivo e atividades vazias explícitas. Não há métricas fictícias ou módulos de treino antecipados. [Documentação](docs/modulos/dashboard-profissional.md), [ADR-007](docs/arquitetura/ADR-007-area-profissional.md) e [relatório](docs/engenharia/entrega-007.md). Após `npm test` no banco isolado, `npm run test:dashboard:e2e` valida componentes reais em harness temporário, sem bypass na aplicação.
+Dashboard com identidade real, onboarding, shell compartilhado, menu responsivo e atividades vazias explícitas. As contagens atuais refletem módulos persistidos de alunos, treinos e acompanhamento; a 007 não os antecipou. [Documentação](docs/modulos/dashboard-profissional.md), [ADR-007](docs/arquitetura/ADR-007-area-profissional.md) e [relatório](docs/engenharia/entrega-007.md). Após `npm test` no banco isolado, `npm run test:dashboard:e2e` valida componentes reais em harness temporário, sem bypass na aplicação.
 
 ## Gestão de alunos
 
@@ -125,3 +135,35 @@ Acompanhamento agora organiza Avaliações/Evolução/Fotografias, com calendár
 [Relatório](docs/engenharia/entrega-013.md) · [Contratos/modelo](docs/engenharia/api-fotografias.md) · [R2 e limpeza](docs/operacao/fotografias-r2.md) · [Privacidade](docs/privacidade/fotografias.md).
 
 Testes: `TEST_DATABASE_URL` deve apontar exclusivamente para PostgreSQL descartável com nome terminado em `_test`; `npm test` e `npm run test:photos:e2e` usam armazenamento controlado somente nos testes. Não reutilizar banco de desenvolvimento nos testes (TRUNCATE). Limpeza operacional preparada em `npm run photos:cleanup`; conferir ambiente/autorização antes de executá-la. Não houve migração do banco existente, criação de bucket, deploy ou commit.
+
+## Entrega 014 — evolução em PDF e shell
+
+Relatórios profissionais Compacto/Premium em `/acompanhamento/[studentId]/exportar`, acessíveis pelo acompanhamento e ficha do aluno. Peso, medidas, gráficos vetoriais, comparações e fotos opcionais com autorização específica. Prévia PDF.js/download usam os mesmos bytes privados temporários. Funciona sem R2 quando fotos não são selecionadas. Shell compartilhado com sidebar/cabeçalho estáveis, main independente e memória limitada de navegação.
+
+[Documentação funcional](docs/modulos/relatorios-fisicos.md) · [API](docs/engenharia/api-relatorios-fisicos.md) · [Operação/migration aditiva](docs/operacao/relatorios-fisicos.md) · [Relatório 014](docs/engenharia/entrega-014.md). Não houve deploy nem migration no banco existente.
+
+Entrega017: [anamneses e cadastro por convite](docs/modulos/anamneses.md), [relatório local](docs/engenharia/entrega-017.md). Sem deploy, migração no banco persistente ou liberação de dados reais.
+
+Entrega018: [CRM profissional](docs/modulos/crm.md), [API](docs/engenharia/api-crm.md) e [relatório](docs/engenharia/entrega-018.md). Kanban, condições, tarefas e histórico com fatos canônicos. Testes `npm test` e `npm run test:crm:e2e`, exclusivamente com `TEST_DATABASE_URL` descartável terminado em `_test` (TRUNCATE). Stripe controlada apenas no harness; aplicação real continua exigindo configuração válida. Migration018 preparada, nenhuma migration persistente, deploy ou commit.
+
+Entrega019: [Serviços e consultorias](docs/modulos/servicos-e-consultorias.md), [API](docs/engenharia/api-consultorias.md) e [relatório](docs/engenharia/entrega-019.md). Catálogo/planos versionados, acordos administrativos, obrigações e execução com evidência, renovação/cancelamento e CRM. Migration019 preparada somente em banco descartável; sem cobrança, Connect, assinatura eletrônica, deploy ou GO produtivo. Testes: npm test e npm run test:consultancies:e2e, exclusivamente com TEST_DATABASE_URL descartável terminado em _test (TRUNCATE).
+
+### Entrega020 — financeiro profissional local
+
+Gestão financeira por contratação019, obrigações, pagamentos externos/correções, dashboard e fronteira Connect controlada. [Módulo](docs/modulos/financeiro-profissional.md), [relatório](docs/engenharia/entrega-020.md) e [homologação](docs/operacao/financeiro-profissional.md). Não há ativação externa, cobrança real ou GO produtivo.
+
+### Agenda profissional021
+
+Disponibilidade, sessões recorrentes, presença e execução contratual explícita: [documentação](docs/modulos/agenda-profissional.md), [API/modelo](docs/engenharia/api-agenda.md), [relatório](docs/engenharia/entrega-021.md). Migration021; testes `npm test`, `npm run test:agenda:e2e` exigem PostgreSQL descartável em TEST_DATABASE_URL terminado em `_test`. Calendários externos somente documentados; nenhum deploy ou Connect externo ativado.
+
+## Biblioteca de demonstrações —023
+
+Fontes oficialFormFisik, upload privado eYouTube por URL, associadas ao catálogo e versões de treino. [Módulo](docs/modulos/demonstracoes.md), [relatório técnico](docs/engenharia/entrega-023.md) e [operação](docs/operacao/demonstracoes-stream.md). Streamexterno não homologado; sem acervo de terceiros copiado ou serviços pagos ativados.
+
+### Check-ins e feedbacks022
+
+[Módulo](docs/modulos/checkins.md), [API/modelo](docs/engenharia/api-checkins.md), [relatório](docs/engenharia/entrega-022.md). Motor017, convites individuais sem conta, respostas/correções imutáveis, feedback versionado de prescrição e revisão. Migration023 segue mídia022; sem notificações externas ou efeitos clínicos/financeiros automáticos. Validação somente em bancos descartáveis `_test`.
+
+### Central de comunicação024
+
+[Manual](docs/modulos/comunicacao.md), [API](docs/engenharia/api-comunicacao.md), [relatório](docs/engenharia/entrega-024.md). Carteira/histórico/modelos, textos preparados e contatos declarados, contexto mínimo, avisos internos e tarefasCRM reutilizadas. Sem envio real, autenticação de aluno ou canal externo; produção NO-GO. Migration024 testada somente em bancos descartáveis.

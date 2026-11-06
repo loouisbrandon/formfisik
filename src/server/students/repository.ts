@@ -1,6 +1,7 @@
 import 'server-only'
 import { randomUUID, createHash } from 'node:crypto'
 import { db } from '../db'
+import type {PoolClient} from 'pg'
 import type { Student,StudentFields,StudentQuery } from '../../modules/students/schema'
 export class StudentConflict extends Error { constructor(public reason:'duplicate'|'version'|'key'){super(reason)} }
 export class StudentNotFound extends Error {}
@@ -20,11 +21,11 @@ export async function listStudents(owner:string,q:StudentQuery,exporting=false){
  const items=row.items.map((r:Pick<Row,'id'|'full_name'|'status'|'version'|'created_at'|'updated_at'>)=>({id:r.id,fullName:r.full_name,status:r.status,version:r.version,createdAt:new Date(r.created_at).toISOString(),updatedAt:new Date(r.updated_at).toISOString()}))
  return {items,total:row.total,page:q.page,pageSize,pages:Math.max(1,Math.ceil(row.total/pageSize)),filters:q}
 }
-export async function createStudent(owner:string,input:StudentFields&{creationKey:string;allowDuplicate?:boolean}){
- const client=await db().connect(),digest=createHash('sha256').update(JSON.stringify([input.fullName,input.email,input.phone,input.birthDate,input.adminNotes])).digest('hex')
+export async function createStudentInTransaction(client:PoolClient,owner:string,input:StudentFields&{creationKey:string;allowDuplicate?:boolean}){
+ const digest=createHash('sha256').update(JSON.stringify([input.fullName,input.email,input.phone,input.birthDate,input.adminNotes])).digest('hex')
  let id=''
- try{
-  await client.query('BEGIN');await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1,813008))',[owner])
+ await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1,813008))',[owner])
+ await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1,18018))',[owner])
   const prior=await client.query('SELECT id,creation_digest FROM student_links WHERE professional_id=$1 AND creation_key=$2',[owner,input.creationKey])
   if(prior.rowCount){if(prior.rows[0].creation_digest!==digest)throw new StudentConflict('key');id=prior.rows[0].id}
   else{
@@ -34,8 +35,14 @@ export async function createStudent(owner:string,input:StudentFields&{creationKe
    await client.query('INSERT INTO student_records(id,professional_id,full_name,email,phone,birth_date,admin_notes) VALUES($1,$2,$3,$4,$5,$6,$7)',[studentId,owner,input.fullName,input.email||null,input.phone||null,input.birthDate||null,input.adminNotes])
    await client.query('INSERT INTO student_links(id,professional_id,student_id,creation_key,creation_digest) VALUES($1,$2,$3,$4,$5)',[id,owner,studentId,input.creationKey,digest]);await client.query("INSERT INTO student_administrative_events(professional_id,link_id,kind,version) VALUES($1,$2,'created',1)",[owner,id])
   }
-  await client.query('COMMIT')
- }catch(error){await client.query('ROLLBACK');throw error}finally{client.release()}
+ // CRM enrollment is conditional on initialized settings, atomic with the canonical registration.
+ await client.query(`WITH enrolled AS(INSERT INTO crm_memberships(professional_id,student_link_id,stage_id) SELECT professional_id,$2,initial_stage_id FROM crm_settings WHERE professional_id=$1 ON CONFLICT DO NOTHING RETURNING *) INSERT INTO crm_events(professional_id,actor_id,student_link_id,to_stage_id,kind,origin) SELECT professional_id,professional_id,student_link_id,stage_id,'enrolled','initialization' FROM enrolled`,[owner,id])
+ return id
+}
+export async function createStudent(owner:string,input:StudentFields&{creationKey:string;allowDuplicate?:boolean}){
+ const client=await db().connect();let id=''
+ try{await client.query('BEGIN');id=await createStudentInTransaction(client,owner,input);await client.query('COMMIT')}
+ catch(error){await client.query('ROLLBACK');throw error}finally{client.release()}
  return getStudent(owner,id)
 }
 export async function updateStudent(owner:string,id:string,version:number,change:StudentFields|{status:'active'|'archived'}){

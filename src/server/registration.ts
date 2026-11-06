@@ -1,4 +1,5 @@
 import 'server-only'
+import {z} from '@/lib/validation'
 import { createHash, randomBytes, randomUUID } from 'node:crypto'
 import { hash, argon2id } from 'argon2'
 import { setTimeout as delay } from 'node:timers/promises'
@@ -43,8 +44,9 @@ export async function verifyEmail(request: Request) {
   try {
     if (!sameOrigin(request)) return reply({ message: 'Origem não permitida.' }, 403)
     await limit(`verify:ip:${clientAddress(request)}`, 30, 900)
-    const input = await body(request) as { token?: unknown }
-    if (!input || typeof input.token !== 'string' || !/^[\w-]{43}$/.test(input.token)) return reply({ message: 'Link inválido, expirado ou já utilizado. Solicite um novo cadastro.' }, 400)
+    const parsed = z.object({token:z.string().regex(/^[\w-]{43}$/)}).strict().safeParse(await body(request))
+    if (!parsed.success) return reply({ message: 'Link inválido, expirado ou já utilizado. Solicite um novo cadastro.' }, 400)
+    const input = parsed.data
     const client = await db().connect()
     try {
       await client.query('BEGIN')
@@ -52,7 +54,7 @@ export async function verifyEmail(request: Request) {
       const pending = await client.query('SELECT email FROM pending_registrations WHERE token_hash=$1', [key])
       if (!pending.rowCount) { await client.query('ROLLBACK'); return reply({ message: 'Link inválido, expirado ou já utilizado. Solicite um novo cadastro.' }, 400) }
       await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))', [pending.rows[0].email])
-      const attempt = await client.query('DELETE FROM pending_registrations WHERE token_hash=$1 AND expires_at>now() RETURNING *', [key])
+      const attempt = await client.query('DELETE FROM pending_registrations WHERE token_hash=$1 AND expires_at>clock_timestamp() RETURNING *', [key])
       if (!attempt.rowCount) { await client.query('ROLLBACK'); return reply({ message: 'Link inválido, expirado ou já utilizado. Solicite um novo cadastro.' }, 400) }
       const row = attempt.rows[0]
       const user = await client.query(`INSERT INTO users(id,email,full_name,email_verified_at) VALUES($1,$2,$3,now()) ON CONFLICT(email) DO NOTHING RETURNING id`, [randomUUID(), row.email, row.full_name])

@@ -4,7 +4,7 @@ import { billingConfigured, portalConfigurationId, stripeGateway, validPortalCon
 import { reconcileUser } from './service'
 import type { SubscriptionState, SubscriptionView } from '../../modules/subscriptions/status'
 
-export async function subscriptionStatus(userId: string, refresh = false, gateway?: BillingGateway): Promise<SubscriptionView> {
+export async function subscriptionStatus(userId: string, refresh = false, gateway?: BillingGateway, details = true): Promise<SubscriptionView> {
   const configured = billingConfigured()
   const query = () => db().query(`SELECT a.trial_used_at,a.sync_state,a.last_sync_attempt_at,s.*,i.status AS invoice_status,i.payment_issue,
     EXISTS(SELECT 1 FROM billing_checkouts c WHERE c.account_id=a.id AND c.state IN ('creating','open')) AS checkout_pending,
@@ -39,11 +39,11 @@ export async function subscriptionStatus(userId: string, refresh = false, gatewa
   const eligibleCancel = configured && recent && !scheduled && ['trialing','active','past_due','unpaid'].includes(row?.provider_status) && future(trial ? row?.trial_end : row?.period_end)
   let hasPortal = false
   const portalId = portalConfigurationId()
-  if (configured && recent && row?.provider_status && portalId) {
+  if (details && configured && recent && row?.provider_status && portalId) {
     try { hasPortal = validPortalConfiguration(await (gateway ?? stripeGateway()).portalConfiguration(portalId),portalId) }
     catch { console.error('billing_portal_configuration_unavailable') }
   }
-  const invoices = row?.account_id ? (await db().query('SELECT status,amount_due,amount_paid,created_at,attempt_count FROM billing_invoices WHERE account_id=$1 ORDER BY created_at DESC LIMIT 5', [row.account_id])).rows : []
+  const invoices = details && row?.account_id ? (await db().query('SELECT status,amount_due,amount_paid,created_at,attempt_count FROM billing_invoices WHERE account_id=$1 ORDER BY created_at DESC LIMIT 5', [row.account_id])).rows : []
   const boundary = trial ? row?.trial_end : row?.period_end
   const until = paidAccess ? new Date(Math.min(boundary.getTime(),cancelAt?.getTime() ?? Infinity,row.paid_through && !trial ? row.paid_through.getTime() : Infinity)) : null
   return {

@@ -1,4 +1,4 @@
-import {z} from 'zod'
+import {z} from '@/lib/validation'
 import {categories,muscles,equipment,levels} from './taxonomy'
 const text=(max:number)=>z.string().trim().normalize('NFC').max(max).refine(v=>!/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(v),'Remova caracteres de controle.')
 const name=text(160).min(2,'Informe o nome do exercício.').refine(v=>!/[\r\n]/.test(v),'Use uma linha para o nome.').transform(v=>v.replace(/\s+/g,' '))
@@ -18,7 +18,9 @@ export const reviewSchema=z.discriminatedUnion('action',[
 export type ExerciseFields=z.infer<typeof exerciseFields>
 export type ExerciseQuery=z.infer<typeof exerciseQuery>
 export type Exercise=ExerciseFields&{id:string;scope:'official'|'private';state:'published'|'active'|'archived'|'review';version:number;qualityFlags:string[];source:{dataset:string|null;sourceId:string|null;revision:string|null;license:string|null};createdAt:string;updatedAt:string}
-export type ExerciseList={items:Exercise[];total:number;page:number;pages:number;pageSize:number}
+export type ExerciseSummary=Pick<Exercise,'id'|'name'|'scope'|'state'|'version'|'category'|'primaryMuscles'|'equipment'>
+export type ExerciseList={items:ExerciseSummary[];total:number;page:number;pages:number;pageSize:number}
 export type ExerciseRequest={id:string;proposal:ExerciseFields;state:'pending'|'approved'|'linked_existing'|'rejected';version:number;privateExerciseId:string|null;resubmissionOf:string|null;decisionReason:string|null;decidedAt:string|null;publishedExerciseId:string|null;createdAt:string;own:boolean;requesterName?:string}
+export type ExerciseRequestSummary=Pick<ExerciseRequest,'id'|'state'|'version'|'decisionReason'|'createdAt'|'own'|'requesterName'>&{proposal:Pick<ExerciseFields,'name'>}
 
 export function inputFields(input:ExerciseFields):ExerciseFields{return {name:input.name,category:input.category,primaryMuscles:input.primaryMuscles,secondaryMuscles:input.secondaryMuscles,equipment:input.equipment,level:input.level,instructions:input.instructions,aliases:input.aliases}}

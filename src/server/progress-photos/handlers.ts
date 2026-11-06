@@ -1,5 +1,5 @@
 import 'server-only'
-import {z} from 'zod'
+import {z} from '@/lib/validation'
 import {readSession,sessionToken} from '../sessions'
 import {professionalAccess} from '../professional-dashboard'
 import type {BillingGateway} from '../subscriptions/stripe'

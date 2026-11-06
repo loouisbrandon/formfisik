@@ -1,0 +1,11 @@
+# Operação local e gates — Comunicação 024
+
+Estado: implementação verificada localmente em02/11/2026, GO controlado, sem deploy, commit, mensagens reais, serviços pagos ou migrations persistentes. PostgreSQL e ambiente Next existentes, sem novas dependências/variáveis de produção. Testes usam container descartável formfisik-024-test, loopback5554 e bancos `_test`; nunca apontar para dados reais.
+
+Preparação: revisar migration024 e grants do runtime separados do operador. Atualização preserva001–023, snapshots e dados anteriores. Aplicação persistente exige autorização própria. `/api/health` verifica sequência/checksums; trace de produção deve incluir a migration nova. Não editar migration já aplicada em ambiente persistente. Em desenvolvimento descartável, alteração de schema em construção exigiu recriar somente o banco efêmero, sem relaxar verificação de checksum.
+
+Avisos são projeção na consulta explícita da central, sem job/scheduler ou polling global novo. Chaves estáveis e recibos profissionais impedem repetição; evento resolvido deixa a lista, sem apagar fonte. Agenda próxima24h, presença pendente7dias e contratos próximos7dias São Paulo são critérios operacionais visíveis. Verificar relógio, banco, sessão/entitlement, limites e disponibilidade das fontes diante de falha; nunca inventar estado ou envio. Atualizar a central recupera leitura; escritas exatas repetem chave/intenção, divergência exige nova prévia.
+
+Não habilitar SMTP profissional por existir SMTP de autenticação. Antes de qualquer canal: credenciais próprias autorizadas, identidade/remetente/destinatário, preferências/finalidade/política de envio, consentimentos aplicáveis, limites/deduplicação/assinaturas/reconciliação e homologação. E-mail/WhatsApp/push/Connect continuam futuros. Nenhuma mensagem real pode ser enviada nesta entrega.
+
+Retenção/eliminação seguem016 e [privacidade024](../privacidade/comunicacao.md). Backup/restore ensaia registros, contexto, modelos, leitura e operação; ledger reaplica eliminação antes de tráfego e mantém outros titulares. Papel runtime só lê/insere históricos e recibos, sem alteração/eliminação; operador autorizado executa direitos. Ver [relatório](../engenharia/entrega-024.md) para evidências locais, tempos sem SLA e limitações. NO-GO015–023/Personal1.0 preservado até homologação própria.

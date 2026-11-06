@@ -41,3 +41,7 @@ Limites: 12 imagens confirmadas/pendentes por registro, substituição permite u
 Rate limit compartilhado no PostgreSQL por usuário/operação: upload 15/min, leitura de bytes 240/min, demais mutações 40/min e metadados 120/min. Aplicar também limite de corpo/concorrência no ingresso quando publicado. 400 entrada/arquivo inválido, 401 sessão ausente, 403 identidade/comercial/origem, 404 propriedade, 409 versão/idempotência/estado/autorização de menor, 422 quantidade excedida, 429 abuso, 503 armazenamento/infra indisponível.
 
 Chaves de criação/upload/remoção são UUIDs. Repetição com mesmo payload reutiliza resultado; chave com conteúdo diferente conflita. Versão não é reutilizada para sobrescrever alterações concorrentes. Upload pendente/falho não retorna sucesso em replay; recarregar antes de tentar um novo envio. Substituição só oculta a antiga após confirmar a nova. Nenhuma API recebe chave de objeto ou escolhe bucket/endpoint.
+
+## Minimização 015
+
+Listagem de registros retorna somente id, date, state, version, imageCount e pendingCount; notas/autoria/autorização permanecem no detalhe protegido. Calendário diário retorna resumos das avaliações; detalhe completo é consultado ao abrir. Ampliação de foto e comparação só carregam conteúdo quando ativas. Não muda a reautorização de bytes ou a fila de remoção.

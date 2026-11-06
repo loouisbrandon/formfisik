@@ -26,7 +26,7 @@ export async function requestRecovery(request: Request) {
     try {
       await client.query('BEGIN')
       const user = await client.query(`SELECT u.id FROM users u JOIN credentials c ON c.user_id=u.id
-        WHERE u.email=$1 AND u.email_verified_at IS NOT NULL FOR UPDATE OF u`, [email])
+        WHERE u.email=$1 AND u.email_verified_at IS NOT NULL AND u.disabled_at IS NULL FOR UPDATE OF u`, [email])
       if (user.rowCount) await client.query('INSERT INTO password_resets(token_hash,user_id) VALUES($1,$2)', [resetDigest(token), user.rows[0].id])
       // Same SMTP path for every valid address: provider failure must not reveal account existence.
       await sendPasswordRecovery(email, user.rowCount ? token : null)
@@ -45,7 +45,7 @@ export async function validateReset(request: Request) {
     const parsed = resetTokenSchema.safeParse(await jsonBody(request))
     if (!parsed.success) return invalid()
     const result = await db().query(`SELECT 1 FROM password_resets r JOIN users u ON u.id=r.user_id
-      JOIN credentials c ON c.user_id=u.id WHERE r.token_hash=$1 AND r.expires_at>clock_timestamp() AND u.email_verified_at IS NOT NULL`, [resetDigest(parsed.data.token)])
+      JOIN credentials c ON c.user_id=u.id WHERE r.token_hash=$1 AND r.expires_at>clock_timestamp() AND u.email_verified_at IS NOT NULL AND u.disabled_at IS NULL`, [resetDigest(parsed.data.token)])
     return result.rowCount ? reply({ valid: true }, 200) : invalid()
   } catch (error) { return failure(error, 'password_recovery_unavailable') }
 }
@@ -69,7 +69,7 @@ export async function resetPassword(request: Request) {
     try {
       await client.query('BEGIN')
       // Same user lock as session issuance: a login verified before reset cannot issue after it.
-      const user = await client.query('SELECT email FROM users WHERE id=$1 AND email_verified_at IS NOT NULL FOR UPDATE', [candidate.rows[0].user_id])
+      const user = await client.query('SELECT email FROM users WHERE id=$1 AND email_verified_at IS NOT NULL AND disabled_at IS NULL FOR UPDATE', [candidate.rows[0].user_id])
       const consumed = await client.query('DELETE FROM password_resets WHERE token_hash=$1 AND expires_at>clock_timestamp() RETURNING user_id', [key])
       if (!user.rowCount || !consumed.rowCount) { await client.query('ROLLBACK'); return invalid() }
       const changed = await client.query('UPDATE credentials SET password_hash=$1,updated_at=clock_timestamp() WHERE user_id=$2 RETURNING user_id', [passwordHash, consumed.rows[0].user_id])

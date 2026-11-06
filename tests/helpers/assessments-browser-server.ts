@@ -41,6 +41,7 @@ async function main(){
    if(url.pathname==='/api/auth/session'){const user=await readSession(sessionToken(request.headers.get('cookie')));response=reply(user?{user}:{message:'Sessão inválida.'},user?200:401)}
    else if(url.pathname==='/api/auth/logout')response=await logout(request)
    else if(url.pathname==='/api/professional/dashboard')response=await createDashboardHandler(provider)(request)
+   else if(url.pathname==='/api/assessments/portfolio')response=await createAssessmentHandler('portfolio',provider)(request)
    else if(url.pathname==='/api/assessments')response=await createAssessmentHandler(incoming.method==='POST'?'create':'list',provider)(request)
    else if(url.pathname.startsWith('/api/assessments/')){const parts=url.pathname.split('/');response=await createAssessmentHandler(parts[4]==='status'?'status':parts[4]==='history'?'history':incoming.method==='PUT'?'edit':'get',provider)(request,parts[3])}
    else if(url.pathname==='/api/workouts')response=await createWorkoutHandler('list',provider)(request)

@@ -15,14 +15,15 @@ export function DashboardAccessMonitor({ children }: { children: ReactNode }) {
       if (pending || document.visibilityState === 'hidden') return
       pending = true
       try {
-        const response = await fetch('/api/professional/dashboard', { cache: 'no-store', signal: controller.signal })
+        const response = await fetch('/api/professional/dashboard?view=access', { cache: 'no-store', signal: controller.signal })
         if (response.status === 401) { setUnavailable(true); window.location.replace('/login?reason=session') }
         else if (response.status === 403) { setUnavailable(true); const result = await response.json(); window.location.replace(result.destination === '/conta' ? '/conta' : result.destination === '/assinatura' ? '/assinatura' : '/assinatura/gerenciar') }
         else setUnavailable(!response.ok)
+        if (!response.bodyUsed) await response.body?.cancel()
       } catch { if (!controller.signal.aborted) setUnavailable(true) }
       finally { pending = false }
     }
-    void check()
+    // Initial access was verified by this page's Server Component.
     const timer = window.setInterval(check, 60000)
     window.addEventListener('focus', check)
     window.addEventListener('pageshow', check)

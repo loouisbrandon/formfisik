@@ -1,5 +1,5 @@
 import 'server-only'
-import {z} from 'zod'
+import {z} from '@/lib/validation'
 import {readSession,sessionToken} from '../sessions'
 import {professionalAccess} from '../professional-dashboard'
 import type {BillingGateway} from '../subscriptions/stripe'
@@ -17,6 +17,7 @@ export function createExerciseHandler(operation:ExerciseOperation,gateway?:Billi
  if(id&&!z.uuid().safeParse(id).success)throw new repo.ExerciseError(404,'Registro não encontrado.')
  const body=async<T>(schema:z.ZodType<T>):Promise<T>=>{const p=schema.safeParse(await jsonBody(request));if(!p.success)throw new repo.ExerciseError(400,'Confira os campos e seleções do formulário.');return p.data}
  if(operation==='capability')return reply({moderator:await repo.canModerate(user.id)},200)
+ if(operation==='candidates'&&new URL(request.url).searchParams.has('id')){const p=z.object({id:z.uuid()}).strict().safeParse(Object.fromEntries(new URL(request.url).searchParams));if(!p.success)throw new repo.ExerciseError(400,'Referência inválida.');const exercise=await repo.getExercise(user.id,p.data.id);if(exercise.scope!=='official'||exercise.state!=='published')throw new repo.ExerciseError(404,'Registro não encontrado.');return reply({exercise},200)}
  if(operation==='list'||operation==='candidates'){const p=schemas.exerciseQuery.safeParse(Object.fromEntries(new URL(request.url).searchParams));if(!p.success)throw new repo.ExerciseError(400,'Filtros inválidos.');return reply(await repo.listExercises(user.id,operation==='candidates'?{...p.data,scope:'official',state:'active'}:p.data),200)}
  if(operation==='create')return reply({exercise:await repo.createExercise(user.id,await body(schemas.exerciseCreate))},201)
  if(operation==='selection')return reply({items:await repo.selectExercises(user.id,(await body(schemas.selectionSchema)).ids)},200)

@@ -80,3 +80,11 @@ Reenvio pelo Stripe CLI/Dashboard usa o mesmo endpoint assinado. Após falha de 
 ## Produção/Railway ainda pendentes
 
 Guardas local/test-only permanecem no código. Não basta inserir chaves Railway para habilitar cobrança de produção. Futura entrega operacional deverá autorizar e configurar domínio HTTPS, secrets, webhook de produção, Portal/produto/preço correspondentes, backup/migrations, monitoramento de códigos estáticos/retentativas e eventual agenda de reconciliação. Homologar staging, privacidade/retentiva, políticas pós-cobrança e comportamento de indisponibilidade antes de remover guardas em mudança revisada. Nenhuma configuração Railway ou Stripe externa foi aplicada nesta entrega.
+
+## Complemento016
+
+Reauditados e revalidados localmente os fluxos SaaS, sem credenciais externas disponíveis. Webhook preserva corpo bruto do SDK com limite256KiB e agora prazo total15s, compartilhando leitor limitado existente. Eliminação de conta com `billing_accounts` é bloqueada por retenção financeira pendente; suspensão/expurgo não cancela cobrança. [Auditoria016](../engenharia/016/integracoes.md) distingue cenários controlados aprovados de Checkout/Portal/Test Clocks reais não executados. Connect continua fora do escopo.
+
+## Financeiro profissional020
+
+O webhook /api/stripe/connect/webhook é distinto do SaaS e usa STRIPE_CONNECT_WEBHOOK_SECRET próprio. A verificação criptográfica está implementada, mas transporte financeiro/Accounts v2 externo permanece bloqueado; apenas inserir segredo não habilita checkout ou onboarding. Não alterar credenciais nesta entrega. [Runbook e roteiro futuro](financeiro-profissional.md).

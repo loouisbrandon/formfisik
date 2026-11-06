@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button'
 import { endpoints } from '@/services/api/endpoints'
 import { registrationSchema } from './schema'
 
+import { PasswordStrength } from '@/modules/auth/password-strength'
+
 type Field = 'fullName' | 'email' | 'password' | 'confirmPassword'
 const fields: { name: Field; label: string; type: string; autoComplete: string; hint?: string }[] = [
   { name: 'fullName', label: 'Nome completo', type: 'text', autoComplete: 'name' },
@@ -79,6 +81,7 @@ export function RegistrationForm() {
             }}
             className="h-12 text-base" aria-invalid={!!errors[field.name]} aria-describedby={`${field.name}-hint ${field.name}-error`} />
           <p id={`${field.name}-hint`} className="text-xs leading-5 text-muted-foreground">{field.hint}</p>
+          {field.name === 'password' && <PasswordStrength password={values.password} />}
           <p id={`${field.name}-error`} className="text-sm text-red-300">{errors[field.name]?.[0]}</p>
         </div>
       ))}

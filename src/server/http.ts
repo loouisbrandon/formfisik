@@ -1,30 +1,43 @@
 import 'server-only'
-import { createHmac } from 'node:crypto'
+import { createHmac,randomUUID } from 'node:crypto'
 import { isIP } from 'node:net'
 import { db } from './db'
 import { config } from './config'
 
-export const privateHeaders = { 'Cache-Control': 'private, no-store', 'Referrer-Policy': 'no-referrer', 'Vary': 'Cookie' }
-export const reply = (body: object, status: number, extra = {}) => Response.json(body, { status, headers: { ...privateHeaders, ...extra } })
+export const privateHeaders = { 'Cache-Control': 'private, no-store', 'Referrer-Policy': 'no-referrer', 'Vary': 'Cookie', 'X-Content-Type-Options': 'nosniff' }
+export const reply = (body: object, status: number, extra = {}) => {
+  const denied=[400,401,403,429].includes(status)
+  const requestId=denied?randomUUID():undefined
+  if(denied)console.info(JSON.stringify({event:'security_request_rejected',requestId,status}))
+  return Response.json(body,{status,headers:{...privateHeaders,...(requestId?{'X-Request-ID':requestId}:{}),...extra}})
+}
 export class RateLimit extends Error {}
 export class BadRequest extends Error {}
+export class BodyTooLarge extends BadRequest {}
 
-export async function jsonBody(request: Request, maxBytes = 8192): Promise<unknown> {
-  if (request.headers.get('content-type')?.split(';')[0].trim() !== 'application/json') throw new BadRequest()
+export async function boundedBody(request: Request, maxBytes: number, readTimeoutMs = 15000): Promise<Buffer> {
   const reader = request.body?.getReader()
   if (!reader) throw new BadRequest()
   let size = 0
   const chunks: Uint8Array[] = []
+  let timer:ReturnType<typeof setTimeout>|undefined
+  const deadline=new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(new BadRequest()),readTimeoutMs)})
   try {
     while (true) {
-      const { done, value } = await reader.read()
+      if(request.signal.aborted)throw new BadRequest()
+      const { done, value } = await Promise.race([reader.read(),deadline])
       if (done) break
       size += value.length
-      if (size > maxBytes) { await reader.cancel(); throw new BadRequest() }
+      if (size > maxBytes) throw new BodyTooLarge()
       chunks.push(value)
     }
-    return JSON.parse(Buffer.concat(chunks).toString('utf8'))
-  } catch { throw new BadRequest() }
+    return Buffer.concat(chunks)
+  } catch(error) { void reader.cancel().catch(()=>{});throw error instanceof BodyTooLarge?error:new BadRequest() }
+  finally { clearTimeout(timer) }
+}
+export async function jsonBody(request: Request, maxBytes = 8192, readTimeoutMs = 15000): Promise<unknown> {
+  if (request.headers.get('content-type')?.split(';')[0].trim() !== 'application/json') throw new BadRequest()
+  try{return JSON.parse((await boundedBody(request,maxBytes,readTimeoutMs)).toString('utf8'))}catch{throw new BadRequest()}
 }
 export function sameOrigin(request: Request) {
   return request.headers.get('origin') === config().appUrl && request.headers.get('sec-fetch-site') !== 'cross-site'

@@ -1,5 +1,6 @@
+import {MediaError} from '../media/repository'
 import 'server-only'
-import {z} from 'zod'
+import {z} from '@/lib/validation'
 import {readSession,sessionToken} from '../sessions'
 import {professionalAccess} from '../professional-dashboard'
 import type {BillingGateway} from '../subscriptions/stripe'
@@ -24,4 +25,4 @@ export function createWorkoutHandler(operation:WorkoutOperation,gateway?:Billing
  if(operation==='status'){const b=await body(schemas.statusWorkout);return reply({plan:await repo.changePlanState(user.id,id,b.version,b.state)},200)}
  if(operation==='duplicate'){const b=await body(schemas.copyWorkout);return reply({plan:await repo.duplicatePlan(user.id,id,b.version,b.creationKey,b.name)},201)}
  const b=await body(schemas.applyWorkout);return reply(await repo.applyTemplate(user.id,id,b.version,b.creationKey,b.studentIds),201)
- }catch(e){if(e instanceof repo.WorkoutError)return reply({message:e.message},e.status);return failure(e,'workout_operation_unavailable')}}}
+ }catch(e){if(e instanceof MediaError||e instanceof repo.WorkoutError)return reply({message:e.message},e.status);return failure(e,'workout_operation_unavailable')}}}

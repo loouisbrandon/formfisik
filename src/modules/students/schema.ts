@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from '@/lib/validation'
 const text = (max: number) => z.string().trim().normalize('NFC').max(max).refine(v=>!/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(v),'Remova caracteres de controle.')
 export const studentFields = z.object({
  fullName: text(120).min(2,'Informe o nome completo.').refine(v=>!/[\r\n]/.test(v),'Informe o nome em uma linha.').transform(v=>v.replace(/[ \t]+/g,' ')),
@@ -16,4 +16,4 @@ export type StudentQuery=z.infer<typeof studentQuerySchema>
 export type AdministrativeEvent={kind:'created'|'updated'|'archived'|'reactivated';version:number;occurredAt:string}
 export type Student = StudentFields & {history:AdministrativeEvent[];id:string;status:'active'|'archived';version:number;createdAt:string;updatedAt:string;archivedAt:string|null;reactivatedAt:string|null}
 export type StudentSummary=Pick<Student,'id'|'fullName'|'status'|'version'|'createdAt'|'updatedAt'>
-export type StudentList={items:StudentSummary[];total:number;page:number;pageSize:number;pages:number;filters:StudentQuery}
+export type StudentList={summary?:{active:number;archived:number;withoutRecentAssessment:number};items:StudentSummary[];total:number;page:number;pageSize:number;pages:number;filters:StudentQuery}

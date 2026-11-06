@@ -1,4 +1,4 @@
-import {z} from 'zod'
+import {z} from '@/lib/validation'
 export const measures = {neck:'Pescoço',shoulders:'Ombros',chest:'Tórax',waist:'Cintura',abdomen:'Abdômen',hips:'Quadril',rightArm:'Braço direito',leftArm:'Braço esquerdo',rightForearm:'Antebraço direito',leftForearm:'Antebraço esquerdo',rightThigh:'Coxa direita',leftThigh:'Coxa esquerda',rightCalf:'Panturrilha direita',leftCalf:'Panturrilha esquerda'} as const
 export type Metric='weight'|keyof typeof measures
 export const metrics=['weight',...Object.keys(measures)] as [Metric,...Metric[]]
@@ -19,7 +19,10 @@ export const periodIntervals={'30':'29 days','90':'89 days','6m':'6 months','12m
 export const assessmentQuery=z.object({studentId:z.uuid(),view:z.enum(['list','series','compare']).default('list'),state:z.enum(['active','archived','all']).default('active'),page:z.coerce.number().int().min(1).max(100000).default(1),metric:z.enum(metrics).default('weight'),period:periodSchema.default('all'),mode:z.enum(['first','previous','manual']).default('first'),from:z.uuid().optional(),to:z.uuid().optional()}).strict()
 export type AssessmentQuery=z.infer<typeof assessmentQuery>
 export type Assessment=AssessmentFields&{id:string;studentId:string;state:'active'|'archived';version:number;createdAt:string;updatedAt:string;authorId:string;authorName:string}
-export type AssessmentList={items:Assessment[];page:number;pages:number;total:number;latest:Assessment|null;first:Assessment|null;previous:Assessment|null}
+export type AssessmentSummary=Pick<Assessment,'id'|'date'|'state'|'version'|'weight'|'waist'|'hips'|'authorName'>
+export type AssessmentRow=Pick<Assessment,'id'|'date'|'state'|'version'|'weight'>
+export type AssessmentReference=Pick<Assessment,'id'|'date'|'state'|'version'>
+export type AssessmentList={items:AssessmentRow[];page:number;pages:number;total:number;latest:AssessmentSummary|null;first:AssessmentReference|null;previous:AssessmentReference|null}
 export const blankAssessment=():AssessmentFields=>({date:today(),notes:'',...Object.fromEntries(metrics.map(k=>[k,null]))} as AssessmentFields)
 export const formatDate=(value:string)=>value.slice(0,10).split('-').reverse().join('/')
 export const formatInstant=(value:string)=>new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',dateStyle:'short',timeStyle:'short'}).format(new Date(value))+' (Brasília)'
@@ -27,4 +30,8 @@ export const display=(v:string|null)=>v===null?'Não informado':v.replace('.',',
 export function difference(a:string|null,b:string|null){if(a===null||b===null)return {absolute:null,percent:null};const cents=(s:string)=>BigInt(s.replace('.',''));const x=cents(a),delta=cents(b)-x;const fixed=(n:bigint)=>`${n<BigInt(0)?'-':''}${(n<BigInt(0)?-n:n)/BigInt(100)}.${((n<BigInt(0)?-n:n)%BigInt(100)).toString().padStart(2,'0')}`;const quotient=x===BigInt(0)?null:(delta*BigInt(10000)+(delta<BigInt(0)?-x/BigInt(2):x/BigInt(2)))/x;return {absolute:fixed(delta),percent:quotient===null?null:fixed(quotient)}}
 export function comparison(a:Assessment,b:Assessment){return {from:a,to:b,days:Math.abs(Math.round((Date.parse(b.date)-Date.parse(a.date))/86400000)),values:metrics.map(metric=>({metric,before:a[metric],after:b[metric],...difference(a[metric],b[metric])}))}}
 export type Comparison=ReturnType<typeof comparison>
+export type ComparisonView=Pick<Comparison,'days'|'values'>&{from:Pick<Assessment,'date'>;to:Pick<Assessment,'date'>}
 export type Series={items:{id:string;date:string;value:string}[];page:number;pages:number;total:number;metric:Metric;period:AssessmentQuery['period'];asOf:string}
+
+export const portfolioQuery=z.object({q:z.string().trim().max(120).default(''),state:z.enum(['all','recent','overdue','missing']).default('all'),sort:z.enum(['name','latest']).default('name'),page:z.coerce.number().int().min(1).max(100000).default(1)}).strict()
+export type AssessmentPortfolio={items:{id:string;fullName:string;date:string|null;recent:boolean}[];attention:{id:string;fullName:string;date:string|null;recent:boolean}[];total:number;page:number;pages:number;summary:{assessed:number;overdue:number;recent:number}}

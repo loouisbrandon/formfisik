@@ -1,4 +1,4 @@
-import {z} from 'zod'
+import {z} from '@/lib/validation'
 import {dateSchema,today,periodSchema} from '../assessments/schema'
 const text=(max:number)=>z.string().trim().normalize('NFC').max(max).refine(v=>!/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(v),'Remova caracteres de controle.')
 export const positions={front:'Frente',back:'Costas',right:'Perfil direito',left:'Perfil esquerdo',other:'Outra posição'} as const
@@ -18,7 +18,8 @@ export type PhotoAuthorization=z.infer<typeof authorizationSchema>
 export type PhotoImage={id:string;position:keyof typeof positions;description:string;width:number;height:number;bytes:number;createdAt:string}
 export type PhotoRecord=RecordFields&{id:string;studentId:string;state:'active'|'archived'|'deleting'|'deleted';version:number;authorId:string;authorName:string;createdAt:string;updatedAt:string;imageCount:number;pendingCount:number}
 export type RecordDetail=PhotoRecord&{images:PhotoImage[];authorization:{source:string;obtainedOn:string;subject:'adult'|'guardian'|null;guardian:string;revoked:boolean};history:{items:{version:number;kind:string;actorName:string;occurredAt:string}[];page:number;pages:number;total:number}}
-export type PhotoList={items:PhotoRecord[];total:number;page:number;pages:number;pageSize:number}
+export type PhotoSummary=Pick<PhotoRecord,'id'|'date'|'state'|'version'|'imageCount'|'pendingCount'>
+export type PhotoList={items:PhotoSummary[];total:number;page:number;pages:number;pageSize:number}
 export type CalendarData={year:number;month?:number;items:{date:string;assessments:number;photos:number}[]}
 export const currentMonth=()=>Number(today().slice(5,7))
 export const currentYear=()=>Number(today().slice(0,4))

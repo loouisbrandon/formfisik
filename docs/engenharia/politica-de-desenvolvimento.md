@@ -44,3 +44,11 @@ Manter documentação técnica e funcional atualizada. Registrar decisões arqui
 Apresentar funcionalidade desenvolvida, arquivos e módulos envolvidos, regras implementadas, testes executados e resultados, documentação criada ou atualizada e pendências ou limitações conhecidas.
 
 A prioridade é entregar software real, funcional e sustentável. Esta política não amplia o escopo autorizado de cada execução.
+
+## Aceite de segurança — 015
+
+Aplicar as regras permanentes de AGENTS.md: segredos só servidor, autorização/propriedade por operação, DTO mínimo, requisições medidas e necessárias, logs sem dados sensíveis, avaliação de finalidade/retenção/acesso e dependências revisadas. Mudança de autenticação exige regressão; nenhuma crítica/alta conhecida sem correção permite declarar prontidão. Build efetivo deve passar teste de canários e frontend real. Registrar controles operacionais não verificados e GO/NO-GO, sem certificação automática.
+
+## Planejamento por especialidade e homologação
+
+Aplicar a [estratégia por especialidade](../estrategia/ecossistema-e-especialidades.md): Personal 1.0 é o foco até homologação ou exceção estratégica expressa. Antes de criar capacidade, consultar o [inventário](../produto/inventario-funcional.md) e justificar reutilização/especialização sem duplicar regras. O [roadmap](../planejamento/roadmap.md) define marcos, não autorização operacional. O [aceite Personal 1.0](../produto/personal-1.0.md) exige fluxos integrados web/mobile, evidências e decisão GO/NO-GO; código implementado e testes unitários não equivalem a produto homologado.

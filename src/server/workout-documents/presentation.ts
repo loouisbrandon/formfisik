@@ -1,11 +1,12 @@
 import 'server-only'
 import sharp from 'sharp'
+import type {PoolClient} from 'pg'
 import {db} from '../db'
 import {transaction} from '../exercises/repository'
 import {WorkoutError} from '../workouts/repository'
 import {emptyPresentation,savePresentation,type Presentation} from '../../modules/workout-documents/schema'
-import type {z} from 'zod'
-export async function presentation(owner:string):Promise<Presentation&{logo:Buffer|null}>{const r=await db().query('SELECT * FROM professional_presentations WHERE owner_id=$1',[owner]);if(!r.rowCount)return {...emptyPresentation,logo:null};const p=r.rows[0];return {professionalName:p.professional_name,brand:p.brand,registration:p.registration,contact:p.contact,revision:p.revision,hasLogo:!!p.logo,logo:p.logo}}
+import type {z} from '@/lib/validation'
+export async function presentation(owner:string,client:Pick<PoolClient,'query'>=db()):Promise<Presentation&{logo:Buffer|null}>{const r=await client.query('SELECT * FROM professional_presentations WHERE owner_id=$1',[owner]);if(!r.rowCount)return {...emptyPresentation,logo:null};const p=r.rows[0];return {professionalName:p.professional_name,brand:p.brand,registration:p.registration,contact:p.contact,revision:p.revision,hasLogo:!!p.logo,logo:p.logo}}
 export async function normalizeLogo(base64:string){
  try{const bytes=Buffer.from(base64,'base64');if(!bytes.length||bytes.length>262144||bytes.toString('base64')!==base64)throw Error();
  const png=bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])),jpeg=bytes[0]===255&&bytes[1]===216&&bytes[2]===255;if(!png&&!jpeg)throw Error();

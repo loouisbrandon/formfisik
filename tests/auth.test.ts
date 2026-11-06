@@ -7,7 +7,7 @@ import { db } from '../src/server/db'
 import { checkoutAvailability } from '../src/server/subscriptions/availability'
 import { proPlan, proPrice } from '../src/modules/subscriptions/plan'
 import { login, logout, getSession, getAccount, paidAccess } from '../src/server/auth'
-import { cookieName, sessionCookie, clearSessionCookie, sessionDigest, readSession } from '../src/server/sessions'
+import { cookieName, sessionCookie, clearSessionCookie, sessionDigest, readSession,sessionContext } from '../src/server/sessions'
 
 const connection = process.env.TEST_DATABASE_URL
 if (!connection || !new URL(connection).pathname.endsWith('_test')) throw new Error('Use banco isolado terminado em _test')
@@ -71,9 +71,7 @@ test('valid login issues random opaque HttpOnly cookie and persists digest only;
   const status = await getSession(request('/api/auth/session', undefined, cookie))
   assert.equal(status.status, 200)
   const payload = await status.json()
-  assert.equal(payload.user.id, userId)
-  assert.equal(payload.access.paidAccess, false)
-  assert.equal(payload.access.commercial, 'unavailable')
+  assert.deepEqual(payload, {authenticated:true,context:sessionContext(userId)})
   assert.ok(!JSON.stringify(payload).includes(token))
   assert.ok(!JSON.stringify(payload).includes(passwordHash))
 })
@@ -218,7 +216,7 @@ test('security events never include credentials, email, session identifier or SQ
     await logout(request('/api/auth/logout', {}, cookie))
     assert.ok(messages.includes('auth_login_succeeded'))
     for (const secret of [email, password, passwordHash, tokenOf(cookie)]) assert.ok(!messages.join(' ').includes(secret))
-    assert.ok(messages.every(message => /^auth_[a-z_]+$/.test(message)))
+    assert.ok(messages.every(message => /^auth_[a-z_]+$/.test(message) || (()=>{const e=JSON.parse(message);return e.event==='security_request_rejected' && Object.keys(e).sort().join(',')==='event,requestId,status' && /^[0-9a-f-]{36}$/.test(e.requestId)})()))
   } finally { console.info = info; console.error = error }
 })
 

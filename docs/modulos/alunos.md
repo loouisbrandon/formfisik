@@ -69,3 +69,47 @@ O perfil passa a mostrar [treinos reais](treinos.md) do vínculo: estado/versão
 ## Integração 012
 
 A ficha oferece acesso direto ao [acompanhamento físico](acompanhamento.md) do vínculo privado existente. Saúde não migra para notas administrativas. Aluno arquivado mantém consulta de avaliações, mas precisa ser reativado para alterações. Não se cria conta ou associação global.
+
+## Integração017 — convites e anamneses
+
+[Anamneses](anamneses.md) implementa convites individuais e preenchimento web sem conta, preservando cadastro manual e identidade privada008. Extrai gravador transacional canônico para reutilização, sem outro cadastro. Perfil mostra resumo mínimo e acesso ao histórico por vínculo. Coincidências na própria carteira exigem revisão explícita; e-mail não vincula conta global nem altera identidade automaticamente. Escopo histórico008 acima não descreve disponibilidade017; [relatório017](../engenharia/entrega-017.md).
+
+## Serviços e consultorias019
+
+O perfil oferece “Serviços contratados e entregas” em /alunos/{id}/consultorias. Usa o vínculo privado existente, sem outra identidade ou conta. Lista contratações, datas/status/entregas e histórico autorizado; novo acordo exige aluno ativo, plano/revisão disponíveis e confirmação administrativa. Aluno arquivado conserva consulta e permite cancelamento administrativo, sem cancelar serviços automaticamente. [Regras e limitações](servicos-e-consultorias.md), [API](../engenharia/api-consultorias.md) e [relatório019](../engenharia/entrega-019.md). Não há cobrança de aluno, assinatura eletrônica ou Connect. Worker016 trata eliminação aprovada dos registros comerciais administrativos antes das fontes canônicas.
+
+## Financeiro profissional020
+
+Contratações elegíveis da carteira008/019 podem receber configuração financeira em /financeiro, com preço preservado e sem duplicar o aluno. Financeiro não cria identidade/login do aluno. Pagamento e inadimplência não alteram automaticamente treinos ou vínculo; dependência financeira bloqueia expurgo016 até triagem de retenção.
+
+## Agenda021
+
+Perfil disponibiliza Agenda e atendimentos, contextualizada em `/alunos/[id]/agenda`; autorização do aluno e consultas por proprietário no servidor. Não copia prontuário, notas clínicas ou financeiro. [Agenda](agenda-profissional.md).
+
+## Check-ins022
+
+Perfil oferece resumo de solicitações, atrasos, revisões e datas de última resposta/devolutiva. Subárea `/alunos/[id]/checkins` reúne histórico, respostas, devolutivas, comparação e indicadores; dados completos sob demanda e owner no servidor. [Módulo](checkins.md).
+
+## Comunicação024
+
+Perfil oferece Central de comunicação e histórico contextual do vínculo canônico, sem novo cadastro ou conta do aluno. [Módulo](comunicacao.md) separa preparado, contato declarado, avisos internos e futuros canais; sem envio automático.
+
+## Importação026
+
+CSV administrativo026 reutiliza o cadastro/vínculo privado008 e a inscrição CRM condicional, com prévia, confirmação e sem associação por contato. [Política/formatos](importacao.md), [API](../engenharia/api-importacao.md) e [relatório](../engenharia/entrega-026.md). Estado GO local controlado; produção NO-GO. As limitações anteriores descrevem o escopo histórico da entrega original.
+
+## Refinamento visual da carteira — 05/11/2026
+
+Listagem noturna conforme referência aprovada, com resumos de ativos/arquivados/sem avaliação recente. API GET `/api/students` acrescenta `summary: {active, archived, withoutRecentAssessment}` após as mesmas guardas de sessão/assinatura, reutilizando studentCounts e assessmentCounts com proprietário explícito. Resumos da carteira inteira são independentes da busca; sem avaliação recente significa aluno ativo sem avaliação ativa nos últimos30dias, incluindo quem nunca foi avaliado. Contagem e página permanecem consistentes na consulta existente; resumos são leituras separadas e podem refletir alterações concorrentes. Nenhum contato/nota clínica adicionado ao DTO.
+
+Colunas reais: nome, situação, cadastro e atualização cadastral, ação Ver perfil. Alternância lista/cards não faz requisição. Limpar filtros restaura ativos/nome A–Z/página1. Paginação20 no servidor e exportação pelos filtros aplicados preservadas. Convite continua direcionando ao módulo de anamneses. Sem seleção em massa, busca por e-mail, fotos fictícias, atividade presumida ou novas entidades.
+
+Arquivos: students/portfolio.tsx, portfolio.module.css, student-area.tsx, schema.ts; server/students/handlers.ts; professional/shell.tsx; tests/students.test.ts. Sem dependência ou migration nova. Testes locais:12/12 integração de alunos no banco auxiliar isolado (incluindo isolamento do resumo e privacidade); TypeScript e ESLint aprovados; Chrome/Axe320/768/1440/1672/1920/2560 e altura500 sem overflow horizontal/violações detectadas. Em1440–2560 com altura normal e carteira atual, sem scroll principal. Artefatos em test-results/local/students-dark-verification.json. Build de produção não executado nesta alteração; servidor de desenvolvimento Webpack disponível em localhost:3000.
+
+## Perfil em painéis — 05/11/2026
+
+StudentProfile reutiliza Student já autorizado, StudentIntakeSummary, StudentCheckinSummary e WorkoutList. Nenhum endpoint ou persistência nova. Visão geral organiza registros existentes; Treinos abre listagem completa, Histórico mostra até20 versões cadastrais e Documentos reúne exportações existentes. Avaliações/anamnese/check-ins/agenda são links para os módulos, preservando autorização independente. Serviços, CRM e comunicação continuam acessíveis. Arquivamento mantém confirmação original; reativação e exportação mantêm handlers. Observações continuam administrativas, sem finalidade clínica nova.
+
+WorkoutList recebe opção compact apenas de apresentação: visão geral oculta filtros/abas e aviso geral; listagem da seção Treinos permanece completa. Paginação de registros continua no servidor, sem carregar carteira inteira. Estados vazios, loading, erro e retry dos componentes existentes preservados. Sem consultas agregadas extras para imitar KPIs da referência. Não há feed que misture versões de respostas com eventos cadastrais: histórico indica sua finalidade explicitamente.
+
+Arquivos: students/student-profile.tsx, student-profile.module.css, student-area.tsx; workouts/area.tsx e workouts.module.css; professional/shell.tsx. TypeScript e ESLint aprovados. Chrome/Axe WCAG2A/AA/2.1AA em320/768/1440/1672/1920/2560px e altura500, sem overflow externo; seções locais verificadas por interação. Evidências em test-results/local/student-profile-verification.json. Sem alterações de backend ou migrations. Build de produção não executado neste refinamento.

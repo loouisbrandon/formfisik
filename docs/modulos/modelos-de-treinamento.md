@@ -21,3 +21,7 @@ A resposta de aplicação é resumida por aluno/plano/versão/estado e origem; n
 Conta profissional confirmada, sessão opaca e assinatura canônica são exigidas em página e API. IDs de modelo, alunos ou exercícios não são autoridade. Não há acesso cruzado por UUID, e-mail, query ou permissão enviada pelo frontend. CSRF e schemas estritos protegem criação/edição/estado/cópia/aplicação; aplicação limitada a cinco tentativas por minuto por profissional.
 
 Autorização de modelo não concede autenticação ao aluno nem altera pagamentos. Não há aplicativo, execução, inteligência artificial, WhatsApp, mídia externa ou PDF final. Stripe hospedada continua pendente de configuração/homologação e não é simulada pela aplicação. Testes com gateway controlado são exclusivos do harness, com PostgreSQL e sessões reais.
+
+## Importação026
+
+JSON nativo026 importa documentos template sem aluno/datas, revalida exercícios/demonstrações e cria somente rascunhos versionados pelo mesmo writer010. Não ativa nem aplica a alunos. [Política/formatos](importacao.md), [API](../engenharia/api-importacao.md) e [relatório](../engenharia/entrega-026.md). Estado GO local controlado; produção NO-GO. As limitações anteriores descrevem o escopo histórico da entrega original.

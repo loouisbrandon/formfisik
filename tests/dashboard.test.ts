@@ -1,3 +1,4 @@
+import {artifactPath} from './helpers/artifacts'
 import { before, beforeEach, after, test } from 'node:test'
 import assert from 'node:assert/strict'
 import { randomUUID, randomBytes } from 'node:crypto'
@@ -30,7 +31,7 @@ async function enroll() {
   return sub
 }
 test('navigation has only existing links, one active subscription group and unavailable future modules',()=>{
-  assert.deepEqual(professionalNavigation.map(x=>x.href),['/dashboard','/alunos','/exercicios','/treinos','/acompanhamento','/assinatura/gerenciar','/conta'])
+  assert.deepEqual(professionalNavigation.map(x=>x.href),['/dashboard','/indicadores','/importar','/alunos','/agenda','/consultorias','/financeiro','/crm','/comunicacao','/checkins','/anamneses','/videos','/exercicios','/treinos','/acompanhamento','/assinatura/gerenciar','/conta'])
   assert.equal(futureModules.length,1)
   assert.equal(pageTitle('/assinatura/retorno'),'Minha assinatura')
   assert.equal(activeNavigation('/conta','/dashboard'),false)
@@ -49,7 +50,8 @@ test('unauthenticated, forged, expired, revoked and unconfirmed sessions cannot 
   assert.equal((await handler(request())).status,401)
 })
 test('no subscription redirects to offer; unsupported role to account',async()=>{
-  let response=await createDashboardHandler(provider)(request('?paidAccess=true&success=1'))
+  assert.equal((await createDashboardHandler(provider)(request('?paidAccess=true&success=1'))).status,400)
+  let response=await createDashboardHandler(provider)(request())
   assert.equal(response.status,403);assert.equal((await response.json()).destination,'/assinatura')
   await db().query("UPDATE users SET role='student' WHERE id=$1",[id])
   response=await createDashboardHandler(provider)(request())
@@ -62,7 +64,7 @@ test('confirmed trial returns real identity and explicit empty data, without cre
   const result=await response.json()
   assert.equal(result.data.fullName,'Profissional real do teste');assert.equal(result.data.studentTotal,0);assert.deepEqual(result.data.indicators.map((item:{value:string})=>item.value),['0','0','0','0','0','0','0']);assert.deepEqual(result.data.activities,[])
   assert.doesNotMatch(JSON.stringify(result),/token|email|cus_|sub_|password|stripe/i)
-  await mkdir('test-results',{recursive:true});await writeFile('test-results/dashboard-data.json',JSON.stringify(result.data))
+  await mkdir(artifactPath(''),{recursive:true});await writeFile(artifactPath('dashboard-data.json'),JSON.stringify(result.data))
 })
 test('paid subscription, canonical expiry, provider failure, and cancellation deny stale access appropriately',async()=>{
   const sub=await enroll();provider.paid(sub)
@@ -79,7 +81,7 @@ test('one user cannot select another identity or entitlement using query paramet
   await db().query("INSERT INTO users(id,email,full_name,role,email_verified_at) VALUES($1,$2,'Outra pessoa','professional',now())",[other,other+'@example.test'])
   const otherCookie='formfisik-session='+(await createSession(other)).token
   const denied=await createDashboardHandler(provider)(request('?userId='+id+'&paidAccess=true',otherCookie))
-  assert.equal(denied.status,403)
+  assert.equal(denied.status,400)
   await db().query("UPDATE sessions SET last_seen_at=now()-interval '5 minutes' WHERE user_id=$1",[id])
   const before=(await db().query('SELECT last_seen_at FROM sessions WHERE user_id=$1',[id])).rows[0].last_seen_at.getTime()
   await createDashboardHandler(provider)(request('?userId='+other))
@@ -102,6 +104,7 @@ test('absent Stripe configuration cannot be replaced by paid URL flags or persis
   try{
     process.env.STRIPE_SECRET_KEY=''
     const response=await createDashboardHandler(provider)(request('?paidAccess=1&trialing=1'))
-    assert.equal(response.status,503);assert.equal((await response.json()).status,'unavailable')
+    assert.equal(response.status,400)
+    const canonical=await createDashboardHandler(provider)(request());assert.equal(canonical.status,503);assert.equal((await canonical.json()).status,'unavailable')
   }finally{process.env.STRIPE_SECRET_KEY=previous}
 })

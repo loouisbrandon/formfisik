@@ -22,3 +22,15 @@ A independência empresarial da FormFisik é uma decisão estratégica que orien
 8. Não presumir que a independência operacional significa que a constituição jurídica ou a estrutura societária já estejam formalizadas.
 
 Toda nova documentação deve seguir essa diretriz.
+
+## Missão, visão, valores e posicionamento
+
+**Missão:** conectar pessoas, profissionais e organizações para apoiar a prática esportiva, a saúde, a performance e o bem-estar, com ferramentas confiáveis e respeito às atribuições profissionais e à privacidade.
+
+**Visão:** construir um ecossistema integrado e multiesporte, consolidando uma especialidade operacional de cada vez. A primeira é a gestão profissional de personal trainers e musculação, denominada **FormFisik Personal 1.0**.
+
+**Valores:** autonomia empresarial; segurança e privacidade; rigor técnico; respeito às pessoas e aos limites profissionais; acessibilidade; transparência comercial; evolução sustentável e reutilização responsável.
+
+**Posicionamento:** empresa de tecnologia para o ecossistema de esporte, saúde, performance e bem-estar. O produto inicial resolve a operação do personal trainer; essa entrada não limita a identidade da empresa à musculação. As formulações acima consolidam a orientação do fundador nesta solicitação documental; não representam validação comercial ou jurídica externa.
+
+A estratégia empresarial e suas possibilidades futuras estão em [ecossistema e especialidades](../estrategia/ecossistema-e-especialidades.md); o escopo do produto em [Personal 1.0](../produto/personal-1.0.md). Consulte o [índice oficial](../README.md).

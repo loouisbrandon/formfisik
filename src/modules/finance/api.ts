@@ -1,0 +1,17 @@
+'use client'
+export {action,control} from '../intake/fields'
+export async function financeApi<T>(query:string,body?:object,signal?:AbortSignal):Promise<T>{let r:Response;try{r=await fetch('/api/finance'+query,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:undefined,body:body?JSON.stringify(body):undefined,cache:'no-store',signal})}catch(e){if(signal?.aborted)throw e;throw Error('Falha de conexão. Tente novamente mantendo os dados.')}const d=await r.json();if(r.status===401)window.location.replace('/login?reason=session');if(r.status===403&&['/conta','/assinatura','/assinatura/gerenciar'].includes(d.destination))window.location.replace(d.destination);if(!r.ok)throw Error(d.message??'Financeiro indisponível. Tente novamente.');return d}
+export type Charge={id:string;agreement_id:string;contract_id:string;contract_version:number;linked_student_id:string;service_name:string;full_name:string;cycle:number;amount_cents:number;paid_cents:number;refunded_cents:number;disputed_cents:number;fee_cents:number|null;net_cents:number|null;due_on:string;paid_on:string|null;available_on:string|null;state:string;effective_state:string;mode:string;agreement_state:string;cycles:number;interval_months:number;manual:string;checked:string;discrepancy:string|null;version:number;receipts?:Page<Receipt>}
+export type Receipt={id:string;amount_cents:number;paid_on:string;method:string;reference:string;note:string;checked:boolean;replaces_id:string|null;voided_at:string|null;void_reason:string|null}
+export type Contract={id:string;version:number;full_name:string;name:string;price_cents:number;start:string;finish:string}
+export type Page<T>={items:T[];total:number;page:number}
+export type AccountData={account:{status:string;charges_enabled:boolean;payouts_enabled:boolean;requirements:string[];capabilities:Record<string,string>;synced_at:string|null}|null;externalEnabled:boolean;reason:string}
+export type Summary={provider_received:string;manual_recorded:string;manual_checked:string;refunded:string;disputed:string;fees_known:string;net_known:string;unknown_fees:number;pending:string;overdue:string;contracted:string;discrepancies:number;scope:string}
+export type History={id:string;kind:string;created_at:string;detail:{reason?:string;amount?:number;paid?:number;refunded?:number;state?:string;receiptId?:string};charge_id:string|null}
+export type Payout={provider_id:string;amount_cents:number;state:string;arrival_on:string}
+export type Webhook={event_id:string;type:string;state:string;attempts:number;received_at:string}
+export function totalMoney(v:string){const n=BigInt(v),a=n<BigInt(0)?-n:n;return (n<BigInt(0)?'-':'')+'R$ '+new Intl.NumberFormat('pt-BR').format(a/BigInt(100))+','+String(a%BigInt(100)).padStart(2,'0')}
+
+export type PendingOperation={operation_key:string;kind:string;target_id:string|null;authorized:boolean;created_at:string}
+export type Movement={id:string;charge_id:string;full_name:string;service_name:string;amount:string;paid_on:string;method:string;origin:'external'|'provider';checked:boolean;refunded:string}
+export type Dashboard={provider_received:string;external_received:string;external_checked:string;refunded:string;unchecked:number;pending:string;overdue:string;overdue_count:number;net_known:string;fees_known:string;unknown_fees:number;failed_count:number;review_count:number;flow:{date:string;received:string;expected:string}[];recent:Charge[]}

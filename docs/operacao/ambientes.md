@@ -82,3 +82,11 @@ Aplicar migration aditiva 011 pelo migrator existente. PostgreSQL armazena apres
 ## Fotografias privadas — 013
 
 R2 é preparado exclusivamente no servidor. Variáveis vazias em `.env.example`, sem serviços criados ou homologação externa. [Configuração, limpeza e recuperação](fotografias-r2.md). Migration 013 aplicada apenas no PostgreSQL descartável durante testes; banco existente permanece sem autorização de migração implícita.
+
+## Revalidação 015
+
+CSP por nonce exige HTML dinâmico; Zod usa interpretador jitless. Definir APP_URL HTTPS ao gerar e executar build de produção para conferir HSTS e Origin; validar headers no domínio final. Migration 015 de suspensão foi testada somente em banco descartável. Não aplicar no banco existente por inferência desta documentação. Ver checklist de segurança e retenção.
+
+## Estabilização 016
+
+Health agora exige todas as migrations/checksums desta versão, inclusive016. Banco existente não foi consultado nem recebeu migration; não iniciar versão nova contra schema parcial como se fosse pronto. Procedimentos de validação, grants, backups/restore, diagnóstico, filas e eliminação no [runbook016](estabilizacao-016.md). Testes destrutivos continuam restritos a PostgreSQL descartável com dados sintéticos; configuração presente não homologa Stripe/R2/SMTP. Agendas e alertas de nuvem continuam não provisionados.

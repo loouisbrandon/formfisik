@@ -8,7 +8,7 @@ import { BillingConflict, BillingUnavailable, stripeGateway, stripeSettings, por
 export async function cancelSubscription(userId: string, gateway: BillingGateway = stripeGateway(), expectedEnd?: string) {
   stripeSettings()
   return locked(userId, async client => {
-    const account: Account | undefined = (await client.query("SELECT a.* FROM billing_accounts a JOIN users u ON u.id=a.user_id WHERE u.id=$1 AND u.role='professional' AND u.email_verified_at IS NOT NULL", [userId])).rows[0]
+    const account: Account | undefined = (await client.query("SELECT a.* FROM billing_accounts a JOIN users u ON u.id=a.user_id WHERE u.id=$1 AND u.role='professional' AND u.email_verified_at IS NOT NULL AND u.disabled_at IS NULL", [userId])).rows[0]
     if (!account) throw new BillingConflict()
     try {
       await syncAccount(client, account, gateway)
@@ -43,7 +43,7 @@ export async function openPortal(userId: string, action: PortalAction, gateway: 
   const configuration = portalConfigurationId()
   if (!configuration) throw new BillingUnavailable()
   return locked(userId, async client => {
-    const account: Account | undefined = (await client.query("SELECT a.* FROM billing_accounts a JOIN users u ON u.id=a.user_id WHERE u.id=$1 AND u.role='professional' AND u.email_verified_at IS NOT NULL", [userId])).rows[0]
+    const account: Account | undefined = (await client.query("SELECT a.* FROM billing_accounts a JOIN users u ON u.id=a.user_id WHERE u.id=$1 AND u.role='professional' AND u.email_verified_at IS NOT NULL AND u.disabled_at IS NULL", [userId])).rows[0]
     if (!account?.stripe_customer_id) throw new BillingConflict()
     try { await syncAccount(client, account, gateway) }
     catch (error) { await syncFailed(client,account.id); throw error }

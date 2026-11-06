@@ -1,4 +1,5 @@
 'use client'
+import { PasswordStrength } from './password-strength'
 import { FormEvent, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Eye, EyeOff, LoaderCircle } from 'lucide-react'
@@ -87,6 +88,7 @@ export function ResetPasswordForm() {
           {visible ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
         </Button>}
       </div>
+      {name === 'password' && <PasswordStrength password={values.password} />}
       <p id={`${name}-error`} className="text-sm text-red-300">{errors[name]?.[0]}</p>
     </div>)}
     <div ref={feedback} role="alert" tabIndex={-1} className="text-sm leading-6 text-red-300 outline-none">{message}</div>

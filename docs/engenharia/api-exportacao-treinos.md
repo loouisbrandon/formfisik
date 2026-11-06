@@ -19,3 +19,11 @@ Erros: 400 inválido/CSRF403, 401 sessão ausente/expirada/não confirmada, 403 
 PDF: `application/pdf`, Content-Disposition inline/attachment com nome ASCII seguro, sem IDs/e-mails; `X-Content-Type-Options:nosniff`, `X-Robots-Tag:noindex,nofollow`, `Cross-Origin-Resource-Policy:same-origin`, CSP frame-ancestors self/base-uri none/form-action none. Não há URL portadora pública: UUID não autoriza acesso. Cada leitura revalida sessão, assinatura e proprietário/vínculo; expiração é filtrada no banco. Sem cache público ou conteúdo de documentos em logs.
 
 Reutiliza GET `/api/workouts/:id?version=n` e `/history?page=n` da 010 para seleção/consulta. Não adiciona uma API de prescrição duplicada.
+
+## Infraestrutura compartilhada — 014
+
+Fontes/fábrica PDFKit, resposta privada e persistência limitada de artefatos são compartilhadas com [relatórios físicos](api-relatorios-fisicos.md). `kind=workout` mantém vínculos/versões existentes; `kind=physical_report` usa vínculo de aluno/manifest. Nenhum contrato de exportação de treinos foi substituído. PDF.js preserva rótulos originais por padrão e aceita rótulos próprios de relatório.
+
+## Privacidade 015
+
+Filename de download agora usa `formfisik-treino-AAAA-MM-DD-vN.pdf`, sem nome do aluno. Conteúdo continua explicitamente selecionado, privado e reautorizado; prévia/download usam os mesmos bytes. Erros de geração encerram o stream PDF.

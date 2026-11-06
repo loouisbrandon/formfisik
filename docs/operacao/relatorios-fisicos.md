@@ -1,0 +1,11 @@
+# Operação dos relatórios físicos
+
+Entrega 014 local, sem deploy nem migração no banco existente. PostgreSQL e autenticação/assinaturas já existentes; nenhuma variável secreta nova. Sem R2, gerar relatórios sem fotos. R2 permanece pendente de configuração pelo proprietário conforme [013](fotografias-r2.md). Não criar bucket nem solicitar credenciais para validar esta entrega.
+
+Migration aditiva `db/migrations/014_physical_reports.sql`: amplia tabela temporária de documentos, acrescenta referências/declarações de exportação e triggers de invalidação. Validada exclusivamente em PostgreSQL descartável. Para futura instalação autorizada: backup protegido e revisão da migration; executar o migrador existente com ambiente correto em janela aprovada. Não editar checksums nem aplicar manualmente alterações parciais. A aplicação com código 014 requer schema014.
+
+`npm run db:cleanup` já remove `workout_documents` expirados; inclui ambos os tipos sem novo agendador. Cascatas removem manifest, consentimento e referências junto com bytes. Na geração, o lock por proprietário e a mesma tabela limitam o conjunto a três artefatos, incluindo treinos e relatórios. Downloads negados imediatamente após 15 minutos, mesmo antes da limpeza física. Agendar cleanup no Railway somente no futuro deploy autorizado. Monitorar apenas contagens/falhas sem nomes, bytes, tokens ou corpo de requisições. Backups podem reter dados até a política de retenção já aplicável; expiração funcional não equivale a apagamento de backups.
+
+Remoção/substituição/revogação de fotografias elimina artefatos associados na mesma transação de banco. O PDF incorpora as fotos autorizadas, portanto não precisa reler R2 em cada download, mas revalida vínculos/autorizações. O bloqueio/remoção na aplicação não recolhe cópias externas.
+
+Testes: banco `_test` obrigatório, `TEST_DATABASE_URL` isolado; nunca apontar suites para banco real pois fixtures usam TRUNCATE. `tests/physical-reports.test.ts` gera PDFs sintéticos em `output/pdf/014`; `tests/render-physical-reports.py` usa Poppler/pdfplumber e não participa do runtime. `tests/physical-reports-e2e.ts` inicia Next temporário e backend loopback, sessões reais e adaptadores controlados injetados somente nos testes. Nenhum bypass comercial/armazenamento fictício no produto.

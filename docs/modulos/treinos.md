@@ -79,3 +79,21 @@ A origem de duplicação também registra a versão específica por FK (`copied_
 ## Exportação — 011
 
 Exportar PDF nas fichas individuais atuais/históricas e seção do aluno, com configuração, Compacta/Premium, personalização e prévia real. Fonte são os snapshots existentes. [Módulo de exportação](exportacao-treinos.md). Referências à exportação futura acima descrevem o escopo original da 010.
+
+## Demonstrações prescritas023
+
+Itens aceitam demos opcionais com vídeo/revisão e ordem. Validação confere associação autorizada ao exercício, pronto/ativo para nova seleção; referências anteriores podem sobreviver a arquivo/remoção da associação. Snapshot eFK preservam versão; reprodução revalida revogação atual. Modelos/cópias usam o mesmo domínio. [Demonstrações](demonstracoes.md).
+
+## Feedback declarado022
+
+Check-in pode referenciar exatamente uma revisão histórica ativa da ficha individual e divisão daquela revisão. Alterar prescrição não reescreve o relato. Realização é declaração pelo convite, sem comprovação automática, execução série a série, atualização de carga/treino ou cumprimento019. Mídia023 não é exposta pelo convite de feedback.
+
+## Refinamento visual — 05/11/2026
+
+Listagem, criação, edição, consulta, aplicação e histórico seguem o shell noturno compartilhado. Novos estilos em workouts.module.css; area.tsx oferece abas e lista/cards, editor.tsx adiciona resumo derivado do documento local e prévia em dialog utilizando WorkoutView. Consulta/histórico recebem os mesmos cards e tipografia. Séries, técnicas, agrupamentos, biblioteca, demonstrações, confirmações e contratos de gravação preservados. Contagem do resumo em edição representa séries/etapas registradas; não estima volume ou cumprimento de treino. Conferência visual não substitui activationIssue no servidor. Prévia não persiste nem publica alterações.
+
+GET /api/workouts acrescenta summary:{active,drafts,templates}: fichas individuais ativas, todos os rascunhos e modelos não arquivados. Consulta agregada privada por owner_id, independente de busca/tipo/estado, respeitando studentId quando fornecido. Resumo e página são leituras separadas, sujeitas a diferenças durante alterações concorrentes. Nenhum dado clínico novo, migration, biblioteca ou serviço externo. Busca continua por nome do planejamento, paginação SQL20; não simular busca por aluno nem dias da semana, não existentes no contrato atual.
+
+Validação: jornada Chrome real com PostgreSQL e gateway controlado em banco auxiliar isolado, incluindo criação de modelo, biblioteca multisseleção, séries, ordenação, edição, prévia local, ativação, aplicação em lote, edição independente, histórico, arquivar/reabrir/duplicar, ficha pelo perfil, seleção prévia, proteção de alterações e erro/retry. Axe em1440/768/320px nos estados da jornada e texto200% sem overflow externo. Evidências em test-results/010/browser (artefatos locais ignorados). Não executado novo build de produção nesta alteração; nenhum deploy. Ambiente local usa Webpack e assinatura explicitamente simulada para testes.
+
+Resultado final dos testes desta alteração:15/15 testes automatizados de treinos aprovados (incluindo resumo isolado por proprietário e aluno), TypeScript e ESLint dos arquivos alterados aprovados. Jornada E2E concluída com sucesso.

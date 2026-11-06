@@ -1,5 +1,6 @@
 // Test process only: real PostgreSQL, real opaque sessions, explicit controlled provider.
 // Never imported or provisioned by the production application.
+import {intakeHandler} from '../../src/server/intake/handlers'
 import {createServer} from 'node:http'
 import {randomUUID,randomBytes} from 'node:crypto'
 import Stripe from 'stripe'
@@ -31,7 +32,8 @@ async function main(){
    const request=new Request(process.env.APP_URL+incoming.url!,{method:incoming.method,headers:incoming.headers as Record<string,string>,body:['GET','HEAD'].includes(incoming.method!)?undefined:Buffer.concat(chunks).toString()})
    const url=new URL(request.url),match=url.pathname.match(/^\/api\/students\/([\w-]+)(?:\/(status|pdf))?$/)
    let response:Response
-   if(url.pathname==='/api/auth/session'){const user=await readSession(sessionToken(request.headers.get('cookie')));response=reply(user?{user}:{message:'Sessão inválida.'},user?200:401)}
+   if(url.pathname==='/api/intake')response=await intakeHandler(provider)(request)
+   else if(url.pathname==='/api/auth/session'){const user=await readSession(sessionToken(request.headers.get('cookie')));response=reply(user?{user}:{message:'Sessão inválida.'},user?200:401)}
    else if(url.pathname==='/api/auth/logout')response=await logout(request)
    else if(url.pathname==='/api/professional/dashboard')response=await createDashboardHandler(provider)(request)
    else if(url.pathname==='/api/workouts')response=await createWorkoutHandler('list',provider)(request)

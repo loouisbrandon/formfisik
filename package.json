@@ -22,7 +22,22 @@
     "test:workout-documents:e2e": "tsx tests/workout-documents-e2e.ts",
     "test:assessments:e2e": "tsx tests/assessments-e2e.ts",
     "test:photos:e2e": "tsx tests/progress-photos-e2e.ts",
-    "photos:cleanup": "node --conditions=react-server --import tsx scripts/cleanup-photos.ts"
+    "test:reports:e2e": "tsx tests/physical-reports-e2e.ts",
+    "imports:cleanup": "node --conditions=react-server --import tsx scripts/cleanup-imports.ts",
+    "photos:cleanup": "node --conditions=react-server --import tsx scripts/cleanup-photos.ts",
+    "test:security:e2e": "tsx tests/security-production-e2e.ts",
+    "account:security": "node --conditions=react-server --import tsx scripts/account-security.ts",
+    "privacy:erasure": "node --conditions=react-server --import tsx scripts/privacy-erasure.ts",
+    "operations:check": "node --conditions=react-server --import tsx scripts/operational-status.ts",
+    "test:operations": "node --conditions=react-server --import tsx tests/operations-e2e.ts",
+    "test:intake:e2e": "tsx tests/intake-e2e.ts",
+    "test:crm:e2e": "tsx tests/crm-e2e.ts",
+    "test:consultancies:e2e": "tsx tests/consultancies-e2e.ts",
+    "finance:reconcile": "node --conditions=react-server --import tsx scripts/reconcile-finance.ts",
+    "test:finance:e2e": "tsx tests/finance-e2e.ts",
+    "test:agenda:e2e": "tsx tests/agenda-e2e.ts",
+    "media:cleanup": "node --conditions=react-server --import tsx scripts/cleanup-media.ts",
+    "test:media:e2e": "tsx tests/media-e2e.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1161.0",
@@ -41,7 +56,6 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "server-only": "^0.0.1",
-    "shadcn": "^4.7.0",
     "sharp": "^0.35.5",
     "stripe": "^23.1.0",
     "tailwind-merge": "^3.6.0",
@@ -64,7 +78,8 @@
     "eslint-config-next": "^16.4.3",
     "smtp-server": "^3.21.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "shadcn": "^4.7.0"
   },
   "engines": {
     "node": ">=22 <25"

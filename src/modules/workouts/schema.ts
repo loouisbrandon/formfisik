@@ -1,4 +1,5 @@
-import {z} from 'zod'
+import {z} from '@/lib/validation'
+import {demoReference} from '../media/schema'
 const text=(max:number)=>z.string().trim().normalize('NFC').max(max,`Use até ${max} caracteres.`).refine(v=>!/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(v),'Remova caracteres de controle.')
 const date=z.union([z.literal(''),z.iso.date()])
 export const repetition=z.discriminatedUnion('mode',[
@@ -8,7 +9,7 @@ export const repetition=z.discriminatedUnion('mode',[
  z.object({mode:z.literal('duration'),seconds:z.int().min(1).max(86400).nullable()}).strict(),
 ])
 export const prescribedSet=z.object({id:z.uuid(),repetition,load:z.number().min(0).max(100000).nullable(),unit:z.enum(['kg','lb','percent','bodyweight']),restSeconds:z.int().min(0).max(86400).nullable(),executionSeconds:z.int().min(1).max(86400).nullable(),phase:z.enum(['work','drop','rest_pause']),notes:text(500)}).strict()
-export const prescribedExercise=z.object({id:z.uuid(),exerciseId:z.uuid(),exerciseVersion:z.int().positive(),technique:z.enum(['standard','drop_set','rest_pause']),sets:z.array(prescribedSet).max(50),notes:text(1000)}).strict()
+export const prescribedExercise=z.object({id:z.uuid(),exerciseId:z.uuid(),exerciseVersion:z.int().positive(),demos:z.array(demoReference).max(10).refine(v=>new Set(v.map(x=>x.videoId)).size===v.length,'Demonstração repetida.').optional(),technique:z.enum(['standard','drop_set','rest_pause']),sets:z.array(prescribedSet).max(50),notes:text(1000)}).strict()
 export const groupSchema=z.object({id:z.uuid(),technique:z.enum(['bi_set','tri_set','superset','circuit']),members:z.array(z.uuid()).min(2).max(50),roundRestSeconds:z.int().min(0).max(86400).nullable(),notes:text(500)}).strict()
 export const divisionSchema=z.object({id:z.uuid(),name:text(120).min(1,'Nomeie a divisão.'),description:text(1000),notes:text(1000),exercises:z.array(prescribedExercise).max(100),groups:z.array(groupSchema).max(50)}).strict()
 export const workoutFields=z.object({kind:z.enum(['individual','template']),studentId:z.uuid().nullable(),name:text(160).min(2,'Informe o nome do planejamento.'),objective:text(1000),notes:text(3000),startDate:date,endDate:date,divisions:z.array(divisionSchema).max(30)}).strict().superRefine((v,c)=>{

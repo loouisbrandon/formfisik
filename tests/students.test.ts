@@ -1,3 +1,4 @@
+import {artifactPath} from './helpers/artifacts'
 import {before,beforeEach,after,test} from 'node:test'
 import assert from 'node:assert/strict'
 import {randomUUID,randomBytes} from 'node:crypto'
@@ -91,17 +92,32 @@ test('dashboard uses real owner counts and onboarding total, including archival,
 })
 test('structured individual and extensive portfolio PDFs preserve accents, absent fields, privacy and pagination',async()=>{
  const student=await create({adminNotes:'Observações de organização. '.repeat(30)})
- await mkdir('test-results/008/pdf',{recursive:true})
- const individual=await handler('pdf')(req(''),student.id);assert.equal(individual.status,200);await writeFile('test-results/008/pdf/individual.pdf',Buffer.from(await individual.arrayBuffer()))
+ await mkdir(artifactPath('008/pdf'),{recursive:true})
+ const individual=await handler('pdf')(req(''),student.id);assert.equal(individual.status,200);await writeFile(artifactPath('008/pdf/individual.pdf'),Buffer.from(await individual.arrayBuffer()))
  for(let i=0;i<65;i++)await create({fullName:'Estudante Ção relatório '+i})
- const portfolio=await handler('export')(req('?q=Estudante&status=active&sort=name_asc'));assert.equal(portfolio.status,200);await writeFile('test-results/008/pdf/carteira.pdf',Buffer.from(await portfolio.arrayBuffer()))
- const single=execFileSync('pdftotext',['test-results/008/pdf/individual.pdf','-'],{encoding:'utf8'});assert.match(single,/Ágata Gonçalves/);assert.match(single,/Não informado/);assert.doesNotMatch(single,/sk_test|token|password|cus_/)
- const list=execFileSync('pdftotext',['test-results/008/pdf/carteira.pdf','-'],{encoding:'utf8'});assert.match(list,/65/);assert.match(list,/Estudante Ção/);assert.doesNotMatch(list,/Ágata|Observações de organização/)
- const info=execFileSync('pdfinfo',['test-results/008/pdf/carteira.pdf'],{encoding:'utf8'});assert.match(info,/A4/);assert.ok(Number(info.match(/Pages:\s+(\d+)/)?.[1])>1)
+ const portfolio=await handler('export')(req('?q=Estudante&status=active&sort=name_asc'));assert.equal(portfolio.status,200);await writeFile(artifactPath('008/pdf/carteira.pdf'),Buffer.from(await portfolio.arrayBuffer()))
+ const single=execFileSync('pdftotext',[artifactPath('008/pdf/individual.pdf'),'-'],{encoding:'utf8'});assert.match(single,/Ágata Gonçalves/);assert.match(single,/Não informado/);assert.doesNotMatch(single,/sk_test|token|password|cus_/)
+ const list=execFileSync('pdftotext',[artifactPath('008/pdf/carteira.pdf'),'-'],{encoding:'utf8'});assert.match(list,/65/);assert.match(list,/Estudante Ção/);assert.doesNotMatch(list,/Ágata|Observações de organização/)
+ const info=execFileSync('pdfinfo',[artifactPath('008/pdf/carteira.pdf')],{encoding:'utf8'});assert.match(info,/A4/);assert.ok(Number(info.match(/Pages:\s+(\d+)/)?.[1])>1)
  const pageCount=Number(info.match(/Pages:\s+(\d+)/)?.[1]);assert.equal((list.match(/Página \d+ de/g)||[]).length,pageCount)
- for(const pdf of ['individual','carteira']){const bbox=execFileSync('pdftotext',['-bbox','test-results/008/pdf/'+pdf+'.pdf','-'],{encoding:'utf8'});for(const match of bbox.matchAll(/<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)"/g)){assert.ok(Number(match[1])>=45&&Number(match[2])>=30&&Number(match[3])<=550&&Number(match[4])<=820,'PDF words stay within print bounds')}}
+ for(const pdf of ['individual','carteira']){const bbox=execFileSync('pdftotext',['-bbox',artifactPath('008/pdf/')+pdf+'.pdf','-'],{encoding:'utf8'});for(const match of bbox.matchAll(/<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)"/g)){assert.ok(Number(match[1])>=45&&Number(match[2])>=30&&Number(match[3])<=550&&Number(match[4])<=820,'PDF words stay within print bounds')}}
 })
 test('large portfolio exports reject above 500 records rather than silently truncate',async()=>{
  await db().query(`WITH records AS (INSERT INTO student_records(id,professional_id,full_name) SELECT gen_random_uuid(),$1,'Volume '||n FROM generate_series(1,501)n RETURNING id,professional_id) INSERT INTO student_links(id,professional_id,student_id,creation_key,creation_digest) SELECT gen_random_uuid(),professional_id,id,gen_random_uuid(),'test' FROM records`,[owner])
  assert.equal((await handler('export')(req(''))).status,422)
+})
+
+test('portfolio summary counts the whole private portfolio independently of search filters',async()=>{
+ const active=await create({fullName:'Aluno ativo'})
+ const archived=await create({fullName:'Aluno arquivado'})
+ await updateStudent(owner,archived.id,1,{status:'archived'})
+ const other=randomUUID()
+ await db().query("INSERT INTO users(id,email,full_name,role,email_verified_at) VALUES($1,$2,'Outro','professional',now())",[other,other+'@example.test'])
+ await createStudent(other,{...fields,fullName:'Aluno externo',creationKey:randomUUID()})
+ const response=await handler('list')(req('?q=ativo&status=active'))
+ assert.equal(response.status,200)
+ const body=await response.json()
+ assert.deepEqual(body.summary,{active:1,archived:1,withoutRecentAssessment:1})
+ assert.equal(body.total,1);assert.equal(body.items[0].id,active.id)
+ assert.equal('email' in body.items[0],false)
 })

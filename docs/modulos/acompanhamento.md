@@ -4,7 +4,7 @@ A FormFisik é empresa independente fundada por Brandon Louis. Módulo exclusiva
 
 ## Operação
 
-`/acompanhamento` ativa o item existente no menu e reutiliza `StudentsPicker`: pesquisa por nome, alunos ativos e paginação de 20 no endpoint existente. Selecionar abre `/acompanhamento/[studentId]`; o identificador é o **vínculo privado `student_links.id`**, não uma identidade global. A ficha cadastral oferece o link “Acompanhamento físico”. Alunos arquivados continuam acessíveis por sua ficha; alterações exigem reativar primeiro o vínculo.
+`/acompanhamento` apresenta a carteira ativa paginada no servidor (20 alunos), com busca por nome, situação administrativa, ordenação e painel de atenção. O botão Nova avaliação reutiliza `StudentsPicker` em dialog acessível. Selecionar abre `/acompanhamento/[studentId]`; o identificador é o **vínculo privado `student_links.id`**, não uma identidade global. A ficha cadastral oferece o link “Acompanhamento físico”. Alunos arquivados continuam acessíveis por sua ficha; alterações exigem reativar primeiro o vínculo.
 
 A página individual apresenta a avaliação ativa mais recente, sem completar suas lacunas com dados antigos; histórico por data decrescente, com desempate por criação e UUID; criação, edição, detalhes, arquivamento e reativação. Histórico de avaliações tem 20 itens por página e filtro para incluir arquivadas. Não há exclusão silenciosa. Avaliações arquivadas deixam gráficos e comparações automáticas; continuam consultáveis e comparáveis por seleção explícita.
 
@@ -53,8 +53,19 @@ Histórico fotográfico tem filtros de data, posição e estado e páginas de 10
 
 Em Evolução, select no topo direito alterna Gráficos/Calendário sem perder aluno/período. Mês mostra A/F/A+F, ano mostra 12 meses e contagens. Selecionar data consulta até 10 avaliações e 10 registros fotográficos por página. Medidas/observações são consultadas no detalhe; fotografias abrem o registro privado. Indicadores são agregações, sem bytes. Datas brasileiras sem conversão para instante. Arquivamento e exclusão atualizam presença.
 
-Comparação fotográfica: duas datas e uma posição, escolha entre múltiplas imagens, troca de datas, duas imagens lado a lado preservando proporção, ampliação individual acessível e estados sem correspondente. Sem análise/estimativa/diagnóstico/IA. Não há compartilhamento público ou inserção em PDFs.
+Comparação fotográfica: duas datas e uma posição, escolha entre múltiplas imagens, troca de datas, duas imagens lado a lado preservando proporção, ampliação individual acessível e estados sem correspondente. Sem análise/estimativa/diagnóstico/IA. Não há compartilhamento público. A 013 não inseria fotos em PDFs; a 014 permite exportação opcional mediante autorização específica adicional, conforme a seção de relatórios abaixo.
 
 Sem configuração R2, novo registro e upload ficam indisponíveis com aviso verdadeiro. Metadados/avaliações/calendário continuam funcionando. Configuração presente não comprova conexão: a confirmação depende da operação efetiva. Armazenamento controlado existe exclusivamente em testes.
 
 Consulte [contratos/modelo](../engenharia/api-fotografias.md), [privacidade](../privacidade/fotografias.md), [R2 e recuperação](../operacao/fotografias-r2.md), [ADR 013](../arquitetura/ADR-013-fotografias-privadas.md) e [relatório 013](../engenharia/entrega-013.md).
+
+## Relatórios físicos — 014
+
+Acompanhamento e ficha do aluno oferecem Exportar relatório, com período, conteúdos, comparação, Compacto/Premium, prévia PDF.js e download privado. Dados/precisão/cálculos deste módulo são reutilizados; não há reconstrução clínica nem dados inventados. Fotos opcionais exigem autorização nova para documento compartilhável. Ver [módulo](relatorios-fisicos.md). O shell mantém cabeçalho/sidebar estáveis e painéis, períodos e seleção em memória, sem Web Storage.
+
+
+## Refinamento visual — novembro de 2026
+
+Carteira e detalhe utilizam o shell compartilhado e tokens dos temas claro/noturno. A carteira reutiliza `assessmentCounts`: alunos com avaliações ativas, avaliações em 30 dias e alunos sem avaliação recente. O painel de atenção mostra até cinco alunos sem avaliação ativa em 30 dias; “ver todos” aplica o filtro. Não existe prazo clínico presumido nem revisão profissional inventada.
+
+O detalhe abre em Resumo da evolução, com peso/data da última avaliação e contagem do histórico segundo o filtro ativo. Reutiliza `EvolutionWorkspace`, calendário, gráficos de pontos e últimas medidas; Avaliações e histórico preserva comparação, edição e auditoria; Fotografias preserva autorizações e operações existentes. Agenda é navegação explícita, sem data de retorno sugerida automaticamente. Os gráficos continuam sem interpolação e sem gordura corporal estimada. Dados da referência visual não foram inseridos na carteira.

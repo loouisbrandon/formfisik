@@ -1,0 +1,15 @@
+'use client'
+export {action,control} from '../intake/fields'
+export async function agendaApi<T>(params:Record<string,string>={},body?:object,signal?:AbortSignal):Promise<T>{let r:Response;try{r=await fetch('/api/agenda'+(body?'':'?'+new URLSearchParams(params)),{method:body?'POST':'GET',cache:'no-store',headers:body?{'Content-Type':'application/json'}:undefined,body:body?JSON.stringify(body):undefined,signal})}catch(e){if(signal?.aborted)throw e;throw Error('Falha de conexão. Seus campos foram preservados; tente novamente.')}const d=await r.json();if(r.status===401)window.location.replace('/login?reason=session');if(r.status===403&&['/conta','/assinatura','/assinatura/gerenciar'].includes(d.destination))window.location.replace(d.destination);if(!r.ok)throw Error(d.message??'Agenda indisponível. Tente novamente.');return d}
+export type Page<T>={items:T[];total:number;page:number}
+export type TypeItem={id:string;document:import('./schema').SessionFields;version:number;archived:boolean}
+export type Settings=import('./schema').AvailabilityFields&{version:number}
+export type Exception={id:string;date:string;windows:{start:number;end:number}[];reason:string;version:number}
+export type Occurrence={id:string;student_link_id:string|null;series_id:string|null;kind:'session'|'personal'|'block';title:string;full_name:string|null;starts_at:string;ends_at:string;occupied_start:string;occupied_end:string;timezone:string;date:string;local_time:string;mode:'onsite'|'online'|'external';state:'scheduled'|'completed'|'absent'|'canceled';projected_state:string;version:number;contract_id:string|null;delivery_id:string|null;late_canceled:boolean}
+export type Detail=Occurrence&{private_title:string;type_id:string|null;type_snapshot:import('./schema').SessionFields|null;fold:'reject'|'earlier'|'later';location:string;notes:string;effective_at:string|null;recorded_at:string|null;actor_id:string|null;delivery_version:number|null;fulfillments:{executionId:string;active:boolean;releasedAt:string|null}[]|null}
+export type Preview={allowed:boolean;digest:string;total:number;skippedMonths:string[];settingsVersion:number;excludedCount:number;occurrences:{date:string;time:string;start:string;end:string;conflicts:string[]}[]}
+export type Summary={scheduled:number;completed:number;absent:number;canceled:number;pending:number;reserved_hours:number;available_hours:number;occupied_hours:number;occupancy_percent:number|null;timezone:string}
+export type Calendar={timezone:string;weekly:Settings['weekly'];exceptions:{date:string;windows:Exception['windows']}[];days:{date:string;total:number;sessions:number;blocks:number;pending:number}[]}
+export const localDate=(zone='America/Sao_Paulo')=>new Intl.DateTimeFormat('sv-SE',{timeZone:zone}).format(new Date())
+export const stamp=(instant:string,zone:string)=>new Intl.DateTimeFormat('pt-BR',{timeZone:zone,dateStyle:'short',timeStyle:'short'}).format(new Date(instant))
+export const minuteText=(m:number)=>m===1440?'24:00':String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')

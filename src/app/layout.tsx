@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { Bebas_Neue, Montserrat, Rajdhani } from "next/font/google";
 import "./globals.css";
 
@@ -30,11 +31,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Per-response CSP nonces require dynamic HTML, including public auth pages.
+  await connection();
   return (
     <html
       lang="pt-BR"
