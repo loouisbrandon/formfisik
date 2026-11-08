@@ -5,7 +5,7 @@ import {join} from 'node:path'
 
 // Never print values, matching bytes, database URLs or credential-bearing errors.
 loadEnvConfig(process.cwd())
-const keys=['DATABASE_URL','ABUSE_HMAC_SECRET','STRIPE_SECRET_KEY','STRIPE_WEBHOOK_SECRET','STRIPE_CONNECT_SECRET_KEY','STRIPE_CONNECT_WEBHOOK_SECRET','SMTP_PASSWORD','R2_SECRET_ACCESS_KEY','R2_ACCESS_KEY_ID','STREAM_API_TOKEN','STREAM_WEBHOOK_SECRET','SETTINGS_ENCRYPTION_KEY']
+const keys=['DATABASE_URL','ABUSE_HMAC_SECRET','STRIPE_SECRET_KEY','STRIPE_WEBHOOK_SECRET','STRIPE_CONNECT_SECRET_KEY','STRIPE_CONNECT_WEBHOOK_SECRET','SMTP_PASSWORD','RESEND_API_KEY','R2_SECRET_ACCESS_KEY','R2_ACCESS_KEY_ID','STREAM_API_TOKEN','STREAM_WEBHOOK_SECRET','SETTINGS_ENCRYPTION_KEY']
 const secrets=keys.map(k=>process.env[k]).filter((v):v is string=>!!v&&v.length>=8)
 const database=process.env.DATABASE_URL
 if(database){try{const password=decodeURIComponent(new URL(database).password);if(password.length>=8)secrets.push(password)}catch{/* no credential-bearing parse errors */}}

@@ -78,4 +78,7 @@ GRANT UPDATE(user_id) ON settings_privacy_requests TO :"runtime_role"; -- idempo
 GRANT SELECT,INSERT,DELETE ON settings_email_changes TO :"runtime_role";
 GRANT UPDATE(email,email_verified_at) ON users TO :"runtime_role";
 GRANT USAGE ON SEQUENCE settings_events_id_seq TO :"runtime_role";
+-- 029: self-service closure; operator alone processes erasure.
+GRANT SELECT,INSERT ON account_closures TO :"runtime_role";
+GRANT UPDATE(disabled_at) ON users TO :"runtime_role";
 COMMIT;

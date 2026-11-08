@@ -6,7 +6,7 @@ import {db} from '../db'
 import {transaction} from '../exercises/repository'
 import {erasureInput,ErasureError} from './erasure'
 const object=z.object({jobId:z.uuid(),key:z.string().regex(/^progress\/[a-f0-9]{64}\.jpg$/)}).strict()
-const payloadSchema=z.object({version:z.literal(1),jobs:z.array(erasureInput).max(5000),objects:z.array(object).max(10000),mediaRevocations:z.array(z.object({id:z.uuid(),owner:z.uuid()}).strict()).max(10000).optional(),mediaCleanup:z.array(z.string().regex(/^[a-f0-9]{32}$/)).max(10000).optional()}).strict()
+const payloadSchema=z.object({version:z.literal(1),closures:z.array(z.object({id:z.uuid(),userId:z.uuid(),effectiveAt:z.iso.datetime()}).strict()).max(5000).optional(),jobs:z.array(erasureInput).max(5000),objects:z.array(object).max(10000),mediaRevocations:z.array(z.object({id:z.uuid(),owner:z.uuid()}).strict()).max(10000).optional(),mediaCleanup:z.array(z.string().regex(/^[a-f0-9]{32}$/)).max(10000).optional()}).strict()
 const envelopeSchema=z.object({payload:z.string().max(10000000),mac:z.string().regex(/^[a-f0-9]{64}$/)}).strict()
 const sign=(value:string)=>createHmac('sha256',config().abuseSecret).update('formfisik-erasure-ledger-v1\0').update(value).digest('hex')
 /** Restricted operational artifact: identifiers/object keys, never profile or credentials. */
@@ -16,7 +16,8 @@ export async function exportErasureLedger(){
   const jobs=await c.query('SELECT id,owner_id,scope,subject_id,approval_reference FROM privacy_erasure_jobs ORDER BY id LIMIT 5001')
   const objects=await c.query('SELECT job_id,object_key FROM privacy_erasure_objects ORDER BY job_id,object_key LIMIT 10001')
   const mediaRevocations=await c.query("SELECT id,owner_id AS owner FROM exercise_videos WHERE state='revoked' ORDER BY id LIMIT 10001"),mediaCleanup=await c.query('SELECT provider_id FROM media_cleanup ORDER BY provider_id LIMIT 10001')
-  const payload=JSON.stringify(payloadSchema.parse({version:1,mediaRevocations:mediaRevocations.rows,mediaCleanup:mediaCleanup.rows.map(r=>r.provider_id),jobs:jobs.rows.map(j=>({id:j.id,ownerId:j.owner_id,scope:j.scope,subjectId:j.subject_id,approvalReference:j.approval_reference})),objects:objects.rows.map(o=>({jobId:o.job_id,key:o.object_key}))}))
+  const closures=await c.query('SELECT id,user_id,effective_at FROM account_closures ORDER BY id LIMIT 5001')
+  const payload=JSON.stringify(payloadSchema.parse({version:1,closures:closures.rows.map(r=>({id:r.id,userId:r.user_id,effectiveAt:r.effective_at.toISOString()})),mediaRevocations:mediaRevocations.rows,mediaCleanup:mediaCleanup.rows.map(r=>r.provider_id),jobs:jobs.rows.map(j=>({id:j.id,ownerId:j.owner_id,scope:j.scope,subjectId:j.subject_id,approvalReference:j.approval_reference})),objects:objects.rows.map(o=>({jobId:o.job_id,key:o.object_key}))}))
   return JSON.stringify({payload,mac:sign(payload)})
  })
 }
@@ -28,6 +29,12 @@ export async function replayErasureLedger(raw:string){
  const data=payloadSchema.parse(JSON.parse(envelope.payload)),ids=new Set(data.jobs.map(j=>j.id))
  if(ids.size!==data.jobs.length||data.objects.some(o=>!ids.has(o.jobId))||data.jobs.some(j=>j.scope==='professional'&&j.subjectId!==j.ownerId))throw new ErasureError('INVALID_LEDGER_SCOPE')
  await transaction(async c=>{
+  for(const x of data.closures??[]){
+   const prior=await c.query('SELECT id,user_id,effective_at FROM account_closures WHERE id=$1 OR user_id=$2',[x.id,x.userId])
+   if(prior.rowCount&&(prior.rowCount!==1||prior.rows[0].id!==x.id||prior.rows[0].user_id!==x.userId||prior.rows[0].effective_at.toISOString()!==x.effectiveAt))throw new ErasureError('LEDGER_CONFLICT')
+   await c.query('INSERT INTO account_closures(id,user_id,effective_at) VALUES($1,$2,$3) ON CONFLICT(id) DO NOTHING',[x.id,x.userId,x.effectiveAt])
+   await c.query('UPDATE users SET disabled_at=COALESCE(disabled_at,clock_timestamp()) WHERE id=$1 AND $2::timestamptz<=clock_timestamp()',[x.userId,x.effectiveAt])
+  }
   for(const v of data.mediaRevocations??[])await c.query("UPDATE exercise_videos SET state='revoked' WHERE id=$1 AND owner_id=$2",[v.id,v.owner])
   for(const id of data.mediaCleanup??[])await c.query('INSERT INTO media_cleanup(provider_id) VALUES($1) ON CONFLICT(provider_id) DO UPDATE SET deleted_at=NULL,due_at=clock_timestamp()',[id])
   for(const j of data.jobs){

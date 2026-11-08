@@ -4,4 +4,4 @@ export const loginSchema = z.object({
   // Preserve password bytes. A login should not enforce a new registration policy.
   password: z.string().min(1, 'Informe sua senha.').max(128, 'Use até 128 caracteres.'),
 }).strict()
-export const invalidCredentials = 'Não foi possível entrar. Confira e-mail e senha e confirme seu endereço pelo link recebido no cadastro.'
+export const invalidCredentials = 'Não foi possível entrar. Confira e-mail e senha e confirme seu endereço com o código recebido no cadastro.'

@@ -1,21 +1,34 @@
 import 'server-only'
 import nodemailer from 'nodemailer'
 import { mailConfig } from './config'
+import { verificationEmailHtml } from './verification-email'
 
 export async function sendVerification(email: string, token: string | null) {
   const settings = mailConfig()
-  const url = token ? `${settings.appUrl}/verificar-email#${token}` : null
-  const text = url
-    ? `Confirme sua conta profissional FormFisik\n\nAbra o link e confirme seu e-mail:\n${url}\n\nO link expira em 30 minutos e só pode ser usado uma vez. Nenhuma assinatura ou período de teste será ativado. Se não solicitou, ignore esta mensagem.`
+  const text = token
+    ? `Confirme sua conta profissional FormFisik\n\nSeu código de confirmação: ${token}\n\nDigite este código na tela de cadastro. Ele expira em 10 minutos e só pode ser usado uma vez. Não compartilhe este código. Nenhuma assinatura ou período de teste será ativado. Se não solicitou, ignore esta mensagem.`
     : 'Recebemos uma solicitação de cadastro na FormFisik. Se você já possui uma conta, ela permanece inalterada. Se não solicitou, ignore esta mensagem.'
-  await sendAccountMail(email, 'Sua conta profissional FormFisik', text)
+  await sendAccountMail(email, 'Seu código de confirmação FormFisik', text, token ? verificationEmailHtml(settings.appUrl, token) : undefined)
 }
 
-async function sendAccountMail(email: string, subject: string, text: string) {
+async function sendAccountMail(email: string, subject: string, text: string, html?: string) {
   const settings = mailConfig()
+  if (settings.provider === 'resend') {
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST', redirect: 'error', cache: 'no-store', signal: AbortSignal.timeout(10000),
+        headers: { Authorization: `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from: settings.from, to: [email], subject, text, ...(html ? { html } : {}) }),
+      })
+      if (!response.ok) { await response.body?.cancel(); throw new Error('EMAIL_NOT_ACCEPTED') }
+      const result: unknown = await response.json()
+      if (!result || typeof result !== 'object' || !('id' in result) || typeof result.id !== 'string' || !result.id.trim()) throw new Error('EMAIL_NOT_ACCEPTED')
+      return
+    } catch { throw new Error('EMAIL_NOT_ACCEPTED') }
+  }
   const transport = nodemailer.createTransport(settings.mail)
   try {
-    const result = await transport.sendMail({ from: settings.from, to: email, subject, text, disableFileAccess: true, disableUrlAccess: true })
+    const result = await transport.sendMail({ from: settings.from, to: email, subject, text, html, disableFileAccess: true, disableUrlAccess: true })
     if (!result.accepted.length) throw new Error('EMAIL_NOT_ACCEPTED')
   } finally { transport.close() }
 }

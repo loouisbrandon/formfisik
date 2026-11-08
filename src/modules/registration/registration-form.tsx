@@ -5,11 +5,11 @@ import {useFeedbackMessage} from '@/modules/feedback/hooks'
 import {errorFallbacks} from '@/modules/feedback/messages'
 
 import { FormEvent, useRef, useState } from 'react'
-import Link from 'next/link'
-import { Eye, EyeOff, LoaderCircle, MailCheck, ShieldCheck } from 'lucide-react'
+import { Eye, EyeOff, LoaderCircle, ShieldCheck } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { endpoints } from '@/services/api/endpoints'
+import { CodeConfirmation } from './code-confirmation'
 import { registrationSchema } from './schema'
 
 import { PasswordStrength } from '@/modules/auth/password-strength'
@@ -29,6 +29,7 @@ export function RegistrationForm() {
   const [visible, setVisible] = useState({ password: false, confirmPassword: false })
   const [message, setMessage] = useFeedbackMessage('',errorFallbacks.default)
   const [success, setSuccess] = useState(false)
+  const [verificationId,setVerificationId]=useState('')
   const feedback = useRef<HTMLDivElement>(null)
   const passwordsMatch = values.password.length > 0 && values.password === values.confirmPassword
   const passwordsDiffer = values.confirmPassword.length > 0 && !passwordsMatch
@@ -56,6 +57,7 @@ export function RegistrationForm() {
         setMessage(data.message || 'Não foi possível concluir. Tente novamente.')
       } else {
         setValues({ fullName: '', email: '', password: '', confirmPassword: '' })
+        setVerificationId(data.verificationId)
         setSuccess(true)
         setMessage(data.message)
       }
@@ -65,16 +67,7 @@ export function RegistrationForm() {
       requestAnimationFrame(() => feedback.current?.focus())
     }
   }
-  if (success) return (
-    <div ref={feedback} tabIndex={-1} className="space-y-5 outline-none" role="status">
-      <MailCheck className="size-10 text-primary" aria-hidden="true" />
-      <h2 className="text-heading text-3xl">Confira seu e-mail</h2>
-      <p className="text-muted-foreground">{message}</p>
-      <p className="text-sm text-muted-foreground">O link vale por 30 minutos. Para receber outro, envie novamente o cadastro. Apenas o cadastro confirmado será utilizado.</p>
-      <Button variant="outline" className="h-11 w-full" onClick={() => { setSuccess(false); setMessage('') }}>Enviar cadastro novamente</Button>
-      <Link href="/login" className="block text-center text-primary underline underline-offset-4">Voltar para o login</Link>
-    </div>
-  )
+  if (success) return <CodeConfirmation verificationId={verificationId} onRestart={()=>{setSuccess(false);setVerificationId('');setMessage('')}}/>
   return (
     <form method="post" action={endpoints.register} onSubmit={submit} noValidate className="space-y-5" aria-busy={busy}>
       {fields.map(field => (

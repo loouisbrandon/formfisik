@@ -4,6 +4,8 @@ Estado: implementado para cadastro, autenticação, assinaturas, área profissio
 
 ## Princípios e identidade
 
+E-mail de confirmação: template server-only em `src/server/verification-email.ts`, fundo #0A0A0A, superfícies escuras e CTA #A9E600/preto, logo e arte existente `cta-neon-green.png`. Layout de tabelas com largura fluida até 640px, estilos inline, texto alternativo nas imagens e versão texto simples. Ação e informações críticas permanecem em HTML selecionável quando imagens são bloqueadas; não usar imagem única para todo o e-mail, scripts, fontes remotas ou controles falsos de copiar. Preservar link com fragmento, validade de 30 minutos e ausência de ativação comercial. Compatibilidade visual final depende do cliente de e-mail; homologar Gmail/Outlook antes de declarar equivalência visual.
+
 Clareza, disciplina, energia, legibilidade e acessibilidade. A FormFisik é uma empresa independente. Preservar preto, verde da marca nas ações, tipografia esportiva e superfícies discretas, sem sacrificar a compreensão dos estados.
 
 ## Cores e tokens
@@ -746,3 +748,11 @@ A ação de saída da sessão usa o rótulo Logout na sidebar e no perfil. Antes
 ## Estilos utilitários terceiros — remediação de segurança 08/11/2026
 
 O CSS anteriormente importado de `shadcn/tailwind.css` foi preservado integralmente em `src/styles/vendor/shadcn-tailwind.css`, sem decisão visual nova. `globals.css` importa essa cópia; origem, versão, hash e licença MIT constam em `licenses/README.md` e `licenses/shadcn-MIT.txt`. O CLI foi removido por trazer dependências vulneráveis desnecessárias ao aplicativo. Atualizações da cópia exigem revisão de segurança e comparação visual; não reinstalar automaticamente o gerador para alterar estilos.
+
+Refinamento do e-mail de confirmação: logo também no rodapé; assinatura “Sua evolução começa aqui” abaixo da logo superior; título “Confirme seu e-mail” em uma linha, com tamanho compatível com viewport de 320px.
+
+Shell de contratação: profissionais sem entitlement confirmado recebem variante em tela cheia do ProfessionalShell, sem sidebar, topbar, busca ou notificações. Preserva #app-content como scroll independente, altura controlada, marca e logout com confirmação. A variante é decidida no layout servidor pelo acesso canônico; não inferir acesso a partir do plano exibido, query string ou estado do navegador. Contas com acesso confirmado mantêm navegação profissional normal.
+
+Exclusão de conta: seção de risco em Privacidade e segurança com ação vermelha, senha atual, frase EXCLUIR MINHA CONTA e diálogo compartilhado de confirmação. Após agendamento exibe data e retenções, sem continuar mostrando formulário destrutivo. Loading/falha de consulta não habilita exclusão. Não comunicar eliminação física imediata quando somente o acesso foi encerrado.
+
+Confirmação de cadastro por código (030): no e-mail, código de seis dígitos em texto selecionável, fundo verde e texto preto substitui CTA/link; validade10min. Na tela, input único com label, inputMode numeric/autocomplete one-time-code e colagem integral, botão Confirmar código, reenvio com contador60s e retorno ao cadastro/login. Reenvio e erros comunicados por regiões status/alert. Links antigos seguem apenas para compatibilidade; textos e prazo anteriores do e-mail de cadastro são substituídos por este padrão.

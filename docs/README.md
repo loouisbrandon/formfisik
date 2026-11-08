@@ -73,3 +73,9 @@ Administração: [papel admin, estado real e limites](modulos/administracao.md).
 Auditoria de exposição, login e DevTools em 08/11/2026: [resultados, correções e bloqueios de produção](seguranca/auditoria-2026-11-08.md).
 
 Continuação da auditoria: [remediação de dependências, permissões e prevenção de regressões](seguranca/remediacao-2026-11-08.md).
+
+Staging externo: [Railway, banco restrito e Resend — configuração e evidências de 08/11/2026](operacao/staging-resend-2026-11-08.md). Não representa liberação de produção.
+
+Encerramento de conta: [regras, API, worker e retenções — 029](engenharia/exclusao-conta-2026-11.md). Implementação local, sem migração/deploy remoto implícito.
+
+Cadastro por código: [contratos, limites, compatibilidade e homologação — 030](engenharia/confirmacao-codigo-2026-11.md).

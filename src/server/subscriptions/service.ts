@@ -31,7 +31,7 @@ export async function startCheckout(userId: string, gateway: BillingGateway = st
   const settings = stripeSettings(selection)
   return locked(userId, async client => {
     // Recheck role/email under the same lock before any external work.
-    const user = await client.query("SELECT email FROM users WHERE id=$1 AND role='professional' AND email_verified_at IS NOT NULL AND disabled_at IS NULL", [userId])
+    const user = await client.query("SELECT email FROM users WHERE id=$1 AND role='professional' AND email_verified_at IS NOT NULL AND disabled_at IS NULL AND NOT EXISTS(SELECT 1 FROM account_closures x WHERE x.user_id=users.id)", [userId])
     if (!user.rowCount) throw new BillingConflict()
     await client.query('INSERT INTO billing_accounts(id,user_id) VALUES($1,$2) ON CONFLICT(user_id) DO NOTHING', [randomUUID(), userId])
     const account: Account = (await client.query('SELECT * FROM billing_accounts WHERE user_id=$1', [userId])).rows[0]

@@ -27,7 +27,7 @@ export const sessionContext=(userId:string)=>createHmac('sha256',config().abuseS
 export async function readSession(token: string | undefined, touch = false): Promise<Identity | null> {
   if (!token || !/^[\w-]{43}$/.test(token)) return null
   const predicate = `s.token_hash=$1 AND s.revoked_at IS NULL AND s.expires_at>clock_timestamp()
-    AND s.last_seen_at>clock_timestamp()-$2*interval '1 second' AND u.email_verified_at IS NOT NULL AND u.disabled_at IS NULL`
+    AND s.last_seen_at>clock_timestamp()-$2*interval '1 second' AND u.email_verified_at IS NOT NULL AND u.disabled_at IS NULL AND NOT EXISTS(SELECT 1 FROM account_closures x WHERE x.user_id=u.id AND x.effective_at<=clock_timestamp())`
   const result = touch
     ? await db().query(`UPDATE sessions s SET last_seen_at=clock_timestamp() FROM users u
         WHERE u.id=s.user_id AND ${predicate} RETURNING u.id,u.email,u.full_name,u.role`, [sessionDigest(token), IDLE_SECONDS])
@@ -44,7 +44,7 @@ export async function createSession(userId: string, previous?: string, expectedP
   try {
     await client.query('BEGIN')
     // Recheck user state under lock before issuing the new bearer cookie.
-    const user = await client.query('SELECT id FROM users WHERE id=$1 AND email_verified_at IS NOT NULL AND disabled_at IS NULL FOR SHARE', [userId])
+    const user = await client.query('SELECT id FROM users u WHERE id=$1 AND email_verified_at IS NOT NULL AND disabled_at IS NULL AND NOT EXISTS(SELECT 1 FROM account_closures x WHERE x.user_id=u.id AND x.effective_at<=clock_timestamp()) FOR SHARE', [userId])
     if (expectedPasswordHash) {
       const credential = await client.query('SELECT user_id FROM credentials WHERE user_id=$1 AND password_hash=$2', [userId, expectedPasswordHash])
       if (!credential.rowCount) throw new CredentialsChanged()

@@ -1,6 +1,7 @@
 'use client'
 import { useCallback,useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
+import { LogoutButton } from '@/modules/auth/logout-button'
 import { Button } from '@/components/ui/button'
 import { Sidebar } from '@/components/layout/sidebar'
 import { Topbar } from '@/components/layout/topbar'
@@ -9,7 +10,7 @@ import { ProfessionalNotice,ProfessionalNoticeProvider } from './notice'
 import {NavigationMemory} from './navigation-memory'
 import styles from './workspace.module.css'
 import { pageTitle } from './navigation'
-export function ProfessionalShell({ fullName, professional, children,identityContext,avatarVersion,planLabel }: { fullName: string; professional: boolean; children: ReactNode;identityContext?:string;avatarVersion?:number;planLabel?:string }) {
+export function ProfessionalShell({ fullName, professional, children,identityContext,avatarVersion,planLabel,onboarding=false }: {onboarding?:boolean; fullName: string; professional: boolean; children: ReactNode;identityContext?:string;avatarVersion?:number;planLabel?:string }) {
   const [theme,setTheme]=useState<'dark'|'light'>('dark')
   useEffect(()=>{const timer=setTimeout(()=>{try{if(localStorage.getItem('formfisik:theme')==='light')setTheme('light')}catch{}},0);return()=>clearTimeout(timer)},[])
   function toggleTheme(){setTheme(t=>{const next=t==='dark'?'light':'dark';try{localStorage.setItem('formfisik:theme',next)}catch{}return next})}
@@ -28,6 +29,7 @@ export function ProfessionalShell({ fullName, professional, children,identityCon
   function close() { dialog.current?.close(); setOpen(false); trigger.current?.focus() }
   function show() { trigger.current = document.activeElement as HTMLElement; dialog.current?.showModal(); setOpen(true) }
   if(identityChanged)return <main role="status" className="auth-surface min-h-dvh p-8">Verificando sua conta…</main>
+  if(onboarding)return <ProfessionalNoticeProvider><div data-theme="dark" ref={root} style={{height:'var(--professional-viewport,100dvh)'}} className={`${styles.workspace} auth-surface relative flex min-h-0 w-full flex-col overflow-hidden`}><main ref={content} id="app-content" tabIndex={-1} className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-6 outline-none sm:px-8 sm:py-10"><div className="mx-auto mb-8 flex max-w-[1280px] items-center justify-between gap-6"><span className="text-xl font-black italic tracking-tight" aria-label="FormFisik">FORM<span className="text-primary">FISIK</span></span><LogoutButton /></div><div className="mx-auto max-w-[1280px]"><ProfessionalNotice />{children}<div className="pt-6"><SessionStatus identityContext={identityContext} onIdentityChange={clearIdentity} /></div></div></main></div></ProfessionalNoticeProvider>
   return <NavigationMemory><ProfessionalNoticeProvider><div data-theme={theme} ref={root} style={{height:'var(--professional-viewport,100dvh)'}} className={`${styles.workspace} auth-surface relative min-h-0 w-full shrink-0 overflow-hidden lg:grid lg:grid-cols-[15rem_minmax(0,1fr)]`}>
     <a href="#app-content" className="sr-only z-50 rounded bg-primary p-3 text-primary-foreground focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Ir para o conteúdo</a>
     <aside className="hidden h-full min-h-0 border-r border-border bg-background lg:block"><Sidebar avatarVersion={avatarVersion} fullName={fullName} pathname={pathname} professional={professional} /></aside>
