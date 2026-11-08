@@ -1,1 +1,2 @@
-export default function Loading(){return <p role="status">Carregando treinos…</p>}
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
+export default function Loading(){return <LoadingSkeleton label="Carregando treinos…" variant="page"/>}

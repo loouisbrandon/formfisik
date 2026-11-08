@@ -1,3 +1,4 @@
+import {handleFeedback} from './helpers/feedback-browser'
 import assert from 'node:assert/strict'
 import {spawn} from 'node:child_process'
 import {mkdtemp,mkdir,writeFile,readFile,symlink,rm} from 'node:fs/promises'
@@ -32,7 +33,7 @@ async function main(){
   await context.addCookies([{name:'formfisik-session',value:ready.token,url:'http://localhost:3130',httpOnly:true,sameSite:'Lax'}])
   await context.route('**/api/**',async route=>{const original=route.request(),url=new URL(original.url());const response=await fetch('http://127.0.0.1:3131'+url.pathname+url.search,{method:original.method(),headers:await original.allHeaders(),body:['GET','HEAD'].includes(original.method())?undefined:original.postData()});const body=Buffer.from(await response.arrayBuffer());measured(original,url,response,body);await route.fulfill({status:response.status,headers:Object.fromEntries(response.headers),body})})
   const page=await context.newPage();page.setDefaultTimeout(25000);page.setDefaultNavigationTimeout(60000)
-  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));const out=process.env.AGENDA_EVIDENCE_DIR??'test-results/021/browser';await mkdir(out,{recursive:true});let rejectDiscard=false;page.on('dialog',async d=>{if(rejectDiscard&&d.message().includes('Descartar'))await d.dismiss();else await d.accept()})
+  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));const out=process.env.AGENDA_EVIDENCE_DIR??'test-results/021/browser';await mkdir(out,{recursive:true});let rejectDiscard=false;await handleFeedback(page,async d=>{if(rejectDiscard&&d.message().includes('Descartar'))await d.dismiss();else await d.accept()},{once:false})
   const date=(days=0)=>new Date(Date.now()+days*86400000).toLocaleDateString('sv-SE',{timeZone:'America/Sao_Paulo'})
   async function tab(name:string){const selector=page.getByLabel('Área da agenda',{exact:true});if(await selector.isVisible())await selector.selectOption({label:name});else await page.getByRole('button',{name,exact:true}).click()}
   async function audit(name:string){console.info('Checking '+name);for(const width of [1440,768,375,320]){await page.setViewportSize({width,height:900});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));const a=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();assert.deepEqual(a.violations.map(v=>({id:v.id,targets:v.nodes.map(n=>n.target)})),[]);await page.screenshot({path:out+'/'+name+'-'+width+'.png'})}}

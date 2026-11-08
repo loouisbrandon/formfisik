@@ -1,4 +1,6 @@
 'use client'
+import {useFeedbackError,useFeedbackMessage} from '@/modules/feedback/hooks'
+import {errorFallbacks} from '@/modules/feedback/messages'
 import { FormEvent, useRef, useState } from 'react'
 import { LoaderCircle, MailCheck } from 'lucide-react'
 import { Input } from '@/components/ui/input'
@@ -10,9 +12,9 @@ export function ForgotPasswordForm() {
   const [email, setEmail] = useState('')
   const [busy, setBusy] = useState(false)
   const [sent, setSent] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useFeedbackError(errorFallbacks.login)
   const [fieldError, setFieldError] = useState('')
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useFeedbackMessage('',errorFallbacks.login)
   const feedback = useRef<HTMLDivElement>(null)
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()

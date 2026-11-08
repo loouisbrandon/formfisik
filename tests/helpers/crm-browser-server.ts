@@ -1,5 +1,6 @@
 // Test process only: real PostgreSQL, real opaque sessions, explicit controlled provider.
 // Never imported or provisioned by the production application.
+import {agendaHandler} from '../../src/server/agenda/handlers'
 import {crmHandler} from '../../src/server/crm/handlers'
 import {initializeCrm,configuration} from '../../src/server/crm/core'
 import {intakeHandler,publicIntakeHandler} from '../../src/server/intake/handlers'
@@ -42,6 +43,7 @@ async function main(){
    const url=new URL(request.url),match=url.pathname.match(/^\/api\/students\/([\w-]+)(?:\/(status|pdf))?$/)
    let response:Response
    if(url.pathname==='/api/crm')response=await crmHandler(provider)(request)
+   else if(url.pathname==='/api/agenda')response=await agendaHandler(provider)(request)
    else if(url.pathname==='/api/intake/public')response=await publicIntakeHandler(request)
    else if(url.pathname==='/api/intake')response=await intakeHandler(provider)(request)
    else if(url.pathname==='/api/auth/session'){const user=await readSession(sessionToken(request.headers.get('cookie')));response=reply(user?{user}:{message:'Sessão inválida.'},user?200:401)}

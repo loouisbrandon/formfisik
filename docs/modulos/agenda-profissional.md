@@ -71,3 +71,7 @@ Soltar solicita detalhe e compara a versão exibida com a versão atual. A justi
 Movimento atua somente nesta ocorrência, sem deslocar implicitamente a série. Duração decorrida de bloqueios é preservada, incluindo múltiplos dias; atendimentos seguem a duração canônica do tipo na prévia. Destino é interpretado no fuso da grade e convertido ao fuso original da ocorrência; horários inexistentes/ambíguos exigem revisão. Intervalos de bloqueio que não possam representar a duração com a escolha de horário disponível são recusados, sem ajuste silencioso. Campo duration de bloco usa valor compatível com o schema, pois sua duração real é determinada pelo início/fim; isso também corrige edição de bloqueios superiores a 12 horas.
 
 Não houve nova migration, endpoint, dependência, sincronização externa, pagamento ou cumprimento contratual automático.
+
+## Refinamento das áreas secundárias — novembro/2026
+
+Resumo semanal de disponibilidade baseado nas configurações existentes, cards de tipos com descrições expandíveis, indicadores agrupados por atendimento/tempo e timeline do histórico. Formulários de disponibilidade, exceção e tipo mantêm schemas e comandos existentes, com apresentação compartilhada. Páginas, filtros e guards de descarte foram preservados. Atualizar agenda continua uma ação de recarga; também remonta a leitura paginada do histórico, que antes não reagia à atualização global. Leituras continuam privadas, paginadas e abortáveis; não há novas consultas nem alteração de modelo, autorização ou regra de agendamento.

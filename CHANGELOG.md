@@ -1,5 +1,9 @@
 # Histórico de alterações
 
+## 07/11/2026 — planos SaaS Standard/Premium/Pro
+
+Seis ofertas mensais/anuais de teste, catálogo Stripe provisionado com reuso/idempotência, migração028 preservando Pro mensal, seleção autenticada e validação canônica, capacidade de alunos ativos no cadastro/reativação/importação. 86 testes distintos aprovados, lint/typecheck/build e canários de segredo verificados; homologação hospedada pendente. [Relatório](docs/engenharia/assinaturas-multiplanos-2026-11.md).
+
 ## Entrega019 — serviços e consultorias locais
 
 Catálogo, planos/preços em centavos e versões imutáveis, acordos individuais/snapshots, vigência, renovação/cancelamento administrativo e obrigações/execuções com evidência explícita010/012/017. Integração CRM018, paginação/indicadores, eliminação/replay e grants016. [Relatório019](docs/engenharia/entrega-019.md). Sem financeiro020/Connect/assinatura eletrônica/deploy; NO-GO produtivo preservado.
@@ -193,3 +197,60 @@ Importação profissional completa: alunos/exercícios CSV, modelos JSON nativo 
 - Check-ins: acabamento das abas Solicitações, Modelos, Periodicidade, Indicadores e Histórico no padrão visual compartilhado; listas responsivas, cartões de séries/modelos, indicadores agrupados, timeline e estados de interação dos botões, sem alteração das regras de domínio.
 
 - 06/11/2026 — Financeiro: painel por origem, recebimentos externos independentes de Stripe, nova cobrança em drawer com primeiro vencimento dentro da vigência, exportação gerencial protegida, responsividade/temas e documentação da diretriz definitiva.30 testes de integração e Chrome/Axe aprovados; processamento real não ativado.
+
+## 2026-11-06 — Central de Comunicação
+
+Redesign conforme referência do fundador, contêiner amplo, indicadores compactos, seis abas principais e áreas auxiliares. Reutilização de registros/modelos/CRM/contextos; duplicação de modelo, variáveis seguras de primeiro nome e compromisso, projeções mínimas journal/prepared. Prévia de chat desativada. Nenhum envio externo, agendamento ou automação de mensagem habilitado. Testes/limites em docs/engenharia/redesign-comunicacao-2026-11.md.
+
+## 2026-11-06 — Central de Configurações
+
+Nova central visual e navegação de preferências, recorte local de avatar explicitamente não salvo, dados reais da sessão/assinatura e links canônicos. Sidebar com logotipo oficial e atalhos inferiores de conta/assinatura/configurações; importação pela central. Sem novas APIs, persistência de perfil, migrations ou operações destrutivas.
+
+## 2026-11-06 — Central de Tutoriais
+
+Adicionada central escrita com16 artigos revisados, busca textual, categorias paginadas, índice, relacionados e URLs compartilháveis. Novo atalho Tutoriais em Sistema; shell/temas preservados. Sem CMS, multimídia, serviços externos, dados de alunos ou alterações de regras de negócio.
+
+### Configurações funcionais — 06/11/2026
+
+- Persistência versionada de perfil/CREF declarado/focos, cadastro privado com CPF cifrado, foto e preferências internas reais.
+- Troca de senha, revogação de outras sessões, confirmação de novo e-mail pelo SMTP existente e protocolos de privacidade com consulta operacional.
+- Projeção pública mínima opt-in, retirada ao editar, sem documentos/endereço/e-mail privados; reutilização de assinatura/importações e documentação de fontes regulatórias.
+- Migration027 validada em banco descartável e aplicada localmente junto à026, com autorização explícita. Sem deploy/commit automático ou declaração de homologação jurídica/produção.
+
+### Feedback e confirmações — 06/11/2026
+
+- Toasts globais de5s no padrão FormFisik, com claro/escuro, fechamento, pausa de leitura e limite de avisos.
+- Confirmações e justificativas próprias em substituição aos dialogs do navegador; ações aguardam aceitação e rejeitam duplo clique concorrente.
+- Sanitização central e mensagens amigáveis por módulo, mantendo orientação de campo e feedback de recuperação.
+- Guardas internos personalizados; sem beforeunload ou persistência automática de rascunhos pessoais. Regras de API/negócio preservadas.
+
+## 2026-11-06 — Landing performance/lifestyle
+
+Landing redesenhada com hero sem fotografia, logo oficial verde/branca, magenta nas ações, plataforma, Wear/Studio futuros, plano Pro canônico, manifesto e footer. Identidade aplicada aos tokens compartilhados e navegação profissional. Menu responsivo, âncoras reais, metadata e testes Chrome/Axe. Ver `docs/engenharia/redesign-landing-2026-11.md`. Sem migração ou deploy.
+
+### Revisão visual fiel à referência
+
+Landing reorganizada em faixas compactas, com Exo2 extra-bold itálica, marca em variante magenta e arte de dispositivos/Wear/Studio/manifesto fornecida pelo usuário. Hero com anatomia corrigida e footer sem textos embutidos, derivados via image_gen; assets e prompts documentados. Cinco larguras, imagens, Axe, teclado e texto200% validados. Condições reais da assinatura e recursos futuros preservados.
+
+### Landing — ajuste de fidelidade visual
+
+- Reduzidos espaços excessivos entre as faixas; proporções de hero, dispositivos, Wear, profissionais, Studio e manifesto aproximadas da referência.
+- Preservados conteúdo, destinos, assets, plano canônico e layout mobile. Chrome/Axe aprovado de320 a2560px e texto200%.
+
+### Website público — navegação e apresentação
+
+- Landing editorial com caminhos para plataforma, Wear e Studio; login/cadastro e plano com destinos claros.
+- Prévia HTML navegável de Alunos/Treinos/Agenda, categorias expansíveis, conceito Studio e FAQ. Dados de demonstração identificados; operações futuras sinalizadas.
+- Fotografia e atlas substituídos por apresentação tipográfica até o envio das imagens pelo proprietário. Reutilização da marca, catálogo Pro e rotas existentes.
+
+
+### Website — marca, imagens e separação da área profissional
+
+Logo original branca/verde em header/footer; paleta pública com verde e detalhes roxo/rosa. Sidebar, ações e foco da área interna restaurados ao verde em ambos os temas. Hero e capturas Alunos/Treinos/Agenda fornecidas pelo usuário; ampliação acessível da captura. Foto Atlas Neon no card Oversized sem cortar as camisetas. Não altera autenticação, APIs, dados ou regras comerciais. Registros anteriores de magenta compartilhado são históricos e ficam substituídos por esta decisão.
+
+Foto da camiseta de compressão fornecida pelo usuário integrada ao card Compressão, mantendo dimensões da grade e enquadramento integral.
+
+
+### 2026-11-07 — Plataforma da landing em largura total
+
+Composição escura da referência com título branco/rosa, navegação lateral Alunos/Treinos/Agenda e cenário do MacBook enviado pelo usuário. Captura selecionada acompanha a perspectiva do monitor; ampliação acessível preservada. Layout empilhado no mobile, sem API ou alteração da área profissional. Detalhes e evidências em `docs/engenharia/website-publico-2026-11.md`.

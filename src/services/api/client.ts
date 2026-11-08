@@ -15,7 +15,7 @@ export async function apiClient<T>(path: string, options: RequestOptions = {}) {
   })
 
   if (!response.ok) {
-    throw new Error(`API request failed: ${response.status}`)
+    throw new Error(response.status===401?'Entre novamente para continuar.':response.status===403?'Você não tem acesso a esta ação.':response.status===409?'Os dados foram alterados. Atualize antes de tentar novamente.':response.status===429?'Aguarde um pouco antes de tentar novamente.':'Não foi possível concluir a ação. Tente novamente.')
   }
 
   return (await response.json()) as T

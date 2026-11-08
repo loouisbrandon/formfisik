@@ -1,9 +1,10 @@
 import 'server-only'
 import { randomUUID, createHash } from 'node:crypto'
 import { db } from '../db'
+import { subscriptionPlans, type PlanId } from '@/modules/subscriptions/plan'
 import type {PoolClient} from 'pg'
 import type { Student,StudentFields,StudentQuery } from '../../modules/students/schema'
-export class StudentConflict extends Error { constructor(public reason:'duplicate'|'version'|'key'){super(reason)} }
+export class StudentConflict extends Error { constructor(public reason:'duplicate'|'version'|'key'|'capacity'){super(reason)} }
 export class StudentNotFound extends Error {}
 export class ExportLimit extends Error {}
 const select=`SELECT l.*,s.full_name,s.email,s.phone,to_char(s.birth_date,'YYYY-MM-DD') AS birth_date,s.admin_notes FROM student_links l JOIN student_records s ON s.id=l.student_id AND s.professional_id=l.professional_id`
@@ -21,6 +22,13 @@ export async function listStudents(owner:string,q:StudentQuery,exporting=false){
  const items=row.items.map((r:Pick<Row,'id'|'full_name'|'status'|'version'|'created_at'|'updated_at'>)=>({id:r.id,fullName:r.full_name,status:r.status,version:r.version,createdAt:new Date(r.created_at).toISOString(),updatedAt:new Date(r.updated_at).toISOString()}))
  return {items,total:row.total,page:q.page,pageSize,pages:Math.max(1,Math.ceil(row.total/pageSize)),filters:q}
 }
+async function assertStudentCapacity(client: PoolClient, owner: string) {
+ const result=await client.query(`SELECT s.plan_id,(SELECT count(*)::int FROM student_links WHERE professional_id=$1 AND status='active') AS used FROM billing_accounts a JOIN billing_subscriptions s ON s.account_id=a.id WHERE a.user_id=$1`,[owner])
+ const plan=result.rows[0]?.plan_id as PlanId | undefined
+ // Authorization is checked by the caller. Legacy/no subscription has no new capacity restriction.
+ const limit=plan ? subscriptionPlans[plan].studentLimit : null
+ if(limit!==null && limit!==undefined && result.rows[0].used>=limit)throw new StudentConflict('capacity')
+}
 export async function createStudentInTransaction(client:PoolClient,owner:string,input:StudentFields&{creationKey:string;allowDuplicate?:boolean}){
  const digest=createHash('sha256').update(JSON.stringify([input.fullName,input.email,input.phone,input.birthDate,input.adminNotes])).digest('hex')
  let id=''
@@ -29,6 +37,7 @@ export async function createStudentInTransaction(client:PoolClient,owner:string,
   const prior=await client.query('SELECT id,creation_digest FROM student_links WHERE professional_id=$1 AND creation_key=$2',[owner,input.creationKey])
   if(prior.rowCount){if(prior.rows[0].creation_digest!==digest)throw new StudentConflict('key');id=prior.rows[0].id}
   else{
+   await assertStudentCapacity(client,owner)
    const duplicate=await client.query(`SELECT 1 FROM student_records WHERE professional_id=$1 AND lower(full_name)=lower($2) AND COALESCE(email,'')=$3 AND COALESCE(phone,'')=$4 AND COALESCE(to_char(birth_date,'YYYY-MM-DD'),'')=$5 LIMIT 1`,[owner,input.fullName,input.email,input.phone,input.birthDate])
    if(duplicate.rowCount&&!input.allowDuplicate)throw new StudentConflict('duplicate')
    const studentId=randomUUID();id=randomUUID()
@@ -48,10 +57,10 @@ export async function createStudent(owner:string,input:StudentFields&{creationKe
 export async function updateStudent(owner:string,id:string,version:number,change:StudentFields|{status:'active'|'archived'}){
  const client=await db().connect()
  try{
-  await client.query('BEGIN');const row=await client.query('SELECT * FROM student_links WHERE professional_id=$1 AND id=$2 FOR UPDATE',[owner,id])
+  await client.query('BEGIN');await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1,18018))',[owner]);const row=await client.query('SELECT * FROM student_links WHERE professional_id=$1 AND id=$2 FOR UPDATE',[owner,id])
   if(!row.rowCount)throw new StudentNotFound();if(row.rows[0].version!==version)throw new StudentConflict('version')
   let event:string|null=null
-  if('status' in change){if(change.status!==row.rows[0].status){event=change.status==='active'?'reactivated':'archived';await client.query(`UPDATE student_links SET status=$3,archived_at=CASE WHEN $3='archived' THEN now() ELSE NULL END,reactivated_at=CASE WHEN $3='active' THEN now() ELSE reactivated_at END,updated_at=now(),version=version+1 WHERE professional_id=$1 AND id=$2`,[owner,id,change.status])}}
+  if('status' in change){if(change.status!==row.rows[0].status){event=change.status==='active'?'reactivated':'archived';if(change.status==='active')await assertStudentCapacity(client,owner);await client.query(`UPDATE student_links SET status=$3,archived_at=CASE WHEN $3='archived' THEN now() ELSE NULL END,reactivated_at=CASE WHEN $3='active' THEN now() ELSE reactivated_at END,updated_at=now(),version=version+1 WHERE professional_id=$1 AND id=$2`,[owner,id,change.status])}}
   else{event='updated';await client.query('UPDATE student_records SET full_name=$3,email=$4,phone=$5,birth_date=$6,admin_notes=$7 WHERE professional_id=$1 AND id=$2',[owner,row.rows[0].student_id,change.fullName,change.email||null,change.phone||null,change.birthDate||null,change.adminNotes]);await client.query('UPDATE student_links SET updated_at=now(),version=version+1 WHERE professional_id=$1 AND id=$2',[owner,id])}
   if(event)await client.query('INSERT INTO student_administrative_events(professional_id,link_id,kind,version) SELECT professional_id,id,$3,version FROM student_links WHERE professional_id=$1 AND id=$2',[owner,id,event])
   await client.query('COMMIT')

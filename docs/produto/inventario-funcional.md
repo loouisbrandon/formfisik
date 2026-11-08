@@ -89,3 +89,15 @@ IMPLEMENTADO — GO local controlado (02/11/2026). [Módulo](../modulos/checkins
 ## Comunicação024
 
 Central IMPLEMENTADA, GO local controlado em02/11/2026. [Módulo](../modulos/comunicacao.md), [contratos](../engenharia/api-comunicacao.md), [relatório](../engenharia/entrega-024.md). Texto preparado não é enviado; contato manual não comprova entrega; leitura de aviso é do profissional. Canais externos e conversa autenticada do aluno permanecem futuros/condicionados029. Produção e Personal1.0 não homologadas.
+
+## CRM & Operação — novembro/2026
+
+IMPLEMENTADO — GO local controlado: central com indicadores canônicos, cards compactos, drawer por aluno, lista tabular, agenda diária e prioridades; modal e quadro próprio de tarefas, tarefas gerais/Aguardando/vínculo de compromisso em migration026. Responsável proprietário e regras018 preservados. Sem reatribuição para equipe, canais externos ou migration persistente. [Relatório, fórmulas e evidências](../engenharia/redesign-crm-2026-11.md). Não equivale a produção ou homologação Personal1.0.
+
+## Configurações027 — novembro2026
+
+IMPLEMENTADO em código e testes controlados: perfil profissional/focos/CREF declarado, dados privados, CPF cifrado, foto, preferências de avisos, senha/sessões, e-mail confirmado e atendimento de privacidade por protocolo. IMPLEMENTADO em ambiente controlado: publicação voluntária com projeção pública mínima, modalidade de visibilidade aprovada pelo fundador. Migrations026/027 aplicadas no banco local com aprovação explícita; smoke de Configurações/health200. Assinatura/importações reutilizadas. NÃO HOMOLOGADO: conformidade jurídica integral, validação de conselho, SMTP externo, retenção operacional, chave/backup e produção. Ver [Configurações](../modulos/configuracoes.md).
+
+## Landing performance/lifestyle — revisão visual local
+
+IMPLEMENTADO localmente: landing responsiva baseada na referência fornecida, hero com anatomia corrigida, seções de plataforma/Wear/Pro/Studio/manifesto, navegação real e condições canônicas de assinatura. Wear, Studio, aplicativo e comunidade permanecem conceitos/futuros conforme indicação da página; a arte não constitui funcionalidade entregue. Evidências: `docs/engenharia/redesign-landing-2026-11.md`; assets e prompts: `docs/design/landing-assets-2026-11.md`. Sem publicação ou homologação de produção.

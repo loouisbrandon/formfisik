@@ -3,6 +3,7 @@ export const subscriptionLabels = {
 } as const
 export type SubscriptionState = keyof typeof subscriptionLabels
 export type SubscriptionView = {
+  planId?: import('./plan').PlanId; billingInterval?: import('./plan').BillingInterval; contractedAmount?: number; studentLimit?: number | null
   state: SubscriptionState; paidAccess: boolean; financialStatus: string | null; invoiceStatus: string | null; paymentIssue: string | null
   trialStart: string | null; trialEnd: string | null; trialUsed: boolean; startedAt: string | null
   periodStart: string | null; periodEnd: string | null; cancelAt: string | null; canceledAt: string | null; endedAt: string | null

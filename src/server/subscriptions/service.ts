@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 import type { PoolClient } from 'pg'
 import type Stripe from 'stripe'
 import { db } from '../db'
-import { proPlan } from '../../modules/subscriptions/plan'
+import { proPlan, defaultSelection, planAmount, type PlanSelection } from '../../modules/subscriptions/plan'
 import { locked, transaction, type Account, type Attempt } from './store'
 import { loadSnapshot, persistSnapshot, externalId, invoiceSubscription } from './lifecycle'
 import { assertPrice, BillingConflict, BillingUnavailable, checkoutUrl, type BillingGateway, stripeGateway, stripeSettings } from './stripe'
@@ -27,8 +27,8 @@ async function applySession(client: PoolClient, account: Account, attempt: Attem
     await client.query("UPDATE billing_accounts SET sync_state='ok',last_sync_attempt_at=clock_timestamp() WHERE id=$1", [account.id])
   })
 }
-export async function startCheckout(userId: string, gateway: BillingGateway = stripeGateway()) {
-  const settings = stripeSettings()
+export async function startCheckout(userId: string, gateway: BillingGateway = stripeGateway(), selection: PlanSelection = defaultSelection) {
+  const settings = stripeSettings(selection)
   return locked(userId, async client => {
     // Recheck role/email under the same lock before any external work.
     const user = await client.query("SELECT email FROM users WHERE id=$1 AND role='professional' AND email_verified_at IS NOT NULL AND disabled_at IS NULL", [userId])
@@ -41,7 +41,7 @@ export async function startCheckout(userId: string, gateway: BillingGateway = st
     if (attempt?.stripe_session_id) {
       const session = await gateway.checkout(attempt.stripe_session_id)
       assertSession(session, account, attempt)
-      if (session.status === 'open') return { url: checkoutUrl(session.url) }
+      if (session.status === 'open') { if (attempt.plan_id !== selection.plan || attempt.billing_interval !== selection.interval) throw new BillingConflict(); return { url: checkoutUrl(session.url) } }
       await applySession(client, account, attempt!, session, gateway)
       if (session.status === 'complete') throw new BillingConflict()
       attempt = undefined
@@ -56,10 +56,11 @@ export async function startCheckout(userId: string, gateway: BillingGateway = st
     }
     if (!attempt) {
       // Verify configured TEST price/product, never take amount/trial/customer from browser.
-      assertPrice(await gateway.price(settings.priceId), settings.priceId, settings.productId)
-      attempt = (await client.query(`INSERT INTO billing_checkouts(id,account_id,price_id,product_id,app_origin,expires_at)
-        VALUES($1,$2,$3,$4,$5,to_timestamp($6)) RETURNING *`, [randomUUID(), account.id, settings.priceId, settings.productId, settings.origin, Math.floor(Date.now()/1000)+2100])).rows[0] as Attempt
+      assertPrice(await gateway.price(settings.priceId), settings.priceId, settings.productId, true, selection)
+      attempt = (await client.query(`INSERT INTO billing_checkouts(id,account_id,price_id,product_id,app_origin,expires_at,plan_id,billing_interval,amount)
+        VALUES($1,$2,$3,$4,$5,to_timestamp($6),$7,$8,$9) RETURNING *`, [randomUUID(), account.id, settings.priceId, settings.productId, settings.origin, Math.floor(Date.now()/1000)+2100,selection.plan,selection.interval,planAmount(selection)])).rows[0] as Attempt
     }
+    if (attempt.plan_id !== selection.plan || attempt.billing_interval !== selection.interval) throw new BillingConflict()
     if (attempt.expires_at.getTime() <= Date.now()) throw new BillingConflict()
     const input: Stripe.Checkout.SessionCreateParams = {
       mode: 'subscription', customer: account.stripe_customer_id!, client_reference_id: account.id,

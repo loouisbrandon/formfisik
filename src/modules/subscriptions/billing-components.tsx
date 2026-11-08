@@ -6,7 +6,7 @@ import { billingDate, billingMoney } from './presentation'
 
 export const billingLink = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-1 text-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary'
 export function BillingCard({ title, id, children, className }: { title: string; id: string; children: ReactNode; className?: string }) {
-  return <section aria-labelledby={id} className={cn('premium-surface min-w-0 rounded-2xl border border-border p-5 sm:p-7', className)}>
+  return <section aria-labelledby={id} className={cn('min-w-0 rounded-2xl border border-border bg-card p-5 sm:p-6', className)}>
     <h2 id={id} className="font-ui text-sm font-semibold uppercase tracking-[0.15em] text-muted-foreground">{title}</h2>
     {children}
   </section>
@@ -34,8 +34,8 @@ export function InvoiceHistory({ invoices }: { invoices: SubscriptionView['invoi
     <h3 className="text-sm font-semibold">Nenhuma fatura disponível</h3><p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">Quando houver uma cobrança, você poderá acompanhar as faturas disponíveis nesta seção.</p>
   </div> : <ul className="mt-4 divide-y divide-border">
     {invoices.map((invoice, index) => <li key={index} className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-2 py-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-center">
-      <div className="flex min-w-0 items-center gap-3"><FileText className="hidden size-5 shrink-0 text-muted-foreground sm:block" aria-hidden="true" /><div><p className="text-sm font-medium">Mensalidade Pro</p><time dateTime={invoice.createdAt} className="mt-1 block text-xs leading-5 text-muted-foreground">{billingDate(invoice.createdAt)}</time></div></div>
-      <span className={cn('justify-self-end rounded-lg px-2 py-1 font-ui text-sm font-semibold sm:justify-self-start', invoice.status === 'paid' ? 'bg-primary/10 text-primary' : 'bg-muted text-foreground')}>{invoiceLabel[invoice.status] ?? 'Em análise'}</span>
+      <div className="flex min-w-0 items-center gap-3"><FileText className="hidden size-5 shrink-0 text-muted-foreground sm:block" aria-hidden="true" /><div><p className="text-sm font-medium">{invoice.amountDue===0&&invoice.amountPaid===0?'Fatura sem cobrança':'Fatura da assinatura'}</p><time dateTime={invoice.createdAt} className="mt-1 block text-xs leading-5 text-muted-foreground">{billingDate(invoice.createdAt)}</time></div></div>
+      <span className={cn('justify-self-end rounded-lg px-2 py-1 font-ui text-sm font-semibold sm:justify-self-start', invoice.status === 'paid' ? 'bg-primary/10 text-primary' : 'bg-muted text-foreground')}>{invoice.status==='paid'&&invoice.amountDue===0&&invoice.amountPaid===0?'Sem valor a pagar':invoiceLabel[invoice.status] ?? 'Em análise'}</span>
       <div className="col-span-2 text-sm tabular-nums sm:col-span-1 sm:text-right"><p className="font-semibold">{billingMoney(invoice.amountDue)}</p><p className="mt-1 text-xs leading-5 text-muted-foreground">{invoice.status === 'paid' ? `Pago: ${billingMoney(invoice.amountPaid)}` : `Valor pago: ${billingMoney(invoice.amountPaid)}`}</p></div>
     </li>)}
   </ul>

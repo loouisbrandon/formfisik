@@ -173,3 +173,45 @@ Redesign operacional com seleção/resposta na mesma página, filtros SQL, métr
 Auditoria encontrou domínio020 já capaz de cobranças externas, parciais, correções e invalidações sem Connect. Prioridade desta execução: apresentação premium, dashboard por origem, recebimentos paginados, exportação filtrada e primeiro vencimento explícito dentro da vigência. Reutilizar operações/ledger020 e planos019; não criar nova contabilidade ou fonte comercial. Gateway real continua bloqueado. Diretriz definitiva: processamento opcional, externo sem comissão FormFisik, ausência de bloqueio automático do aluno por inadimplência. Sem migration/deploy.
 
 Validação do refinamento financeiro:30 testes PostgreSQL, Chrome/Axe nos dois temas, TypeScript, ESLint e build real aprovados. [Relatório e limitações](../engenharia/refinamento-financeiro-2026-11.md). Produção/integração real permanecem não homologadas.
+
+### CRM & Operação — redesign autorizado de novembro/2026
+
+GO local controlado. Diagnóstico:018 já concentra regras, tarefas e integrações; cards extensos e ausência de rotina/contexto justificam refinamento prioritário. Implementação validada localmente reutiliza018/021, acrescenta tarefa geral/Aguardando/vínculo explícito via026, sem equipe, scheduler ou nova fonte clínica/financeira. [Relatório](../engenharia/redesign-crm-2026-11.md). Aplicação persistente da migration e deploy não autorizados; NO-GO015 preservado. Validação:102 testes integrados, Chrome/Axe nos dois temas, texto200%, build HTTPS e canários aprovados. Prioridade operacional: revisão/autorização da026 e gates015; equipes e dispositivos físicos continuam fora da homologação local.
+
+### Comunicação — refinamento de novembro/2026
+
+IMPLEMENTADO local controlado: central visual, contatos, preparados, modelos duplicáveis, histórico mínimo e integração CRM preservada; [relatório](../engenharia/redesign-comunicacao-2026-11.md). Chat PREPARADO somente UI/documentação. Envio profissional, agendamento, automações externas e preferências de destinatário BLOQUEADOS por canal não homologado; não reutilizar SMTP de conta. Próxima entrega depende de autorização e validação de identidade/canal/retention/outbox. Sem backend de chat ou mobile.
+
+### Central de Configurações — novembro/2026
+
+Frontend e navegação implementados localmente: relatório em docs/engenharia/central-configuracoes-2026-11.md. Perfil e avatar são prévias locais, sem publicação/upload definitivo; preferências, encerramento/exclusão e dispositivos aguardam entregas específicas. Conta/assinatura/importação canônicas preservadas. Sem nova regra financeira ou migration.
+
+### Central de Tutoriais — novembro/2026
+
+Central escrita com16 artigos/16 categorias, busca local e links diretos implementada. Sem vídeos, CMS ou serviços externos. Favoritos, utilidade, métricas de acesso e busca global são possibilidades futuras sem autorização de implementação. Manutenção editorial acompanha cada módulo. Ver docs/engenharia/central-tutoriais-2026-11.md.
+
+## Configurações funcionais027 — novembro2026
+
+Implementar a persistência e segurança da central existente, sem reconstruir billing/importações. Cadastro privado, perfil/CREF declarado/focos, foto, preferências reais, senha/sessões, e-mail confirmado, projeção pública voluntária e protocolos de privacidade. [Escopo, pesquisa e operação](../modulos/configuracoes.md). Migrations026/027 aplicadas no banco local com autorização explícita; validação controlada não homologa produção. Revisão jurídica, política de retenção, rotação/backup de chave, verificação de CREF e operação humana de direitos continuam pendentes. Não ampliar para modalidades além de Personal1.0.
+
+## Feedback e confirmações compartilhadas — novembro2026
+
+Diagnóstico: confirmações nativas e mensagens técnicas inconsistentes entre módulos. Escopo autorizado: toast global de5s, linguagem amigável, dialogs próprios e preservação das confirmações de negócio. Reutilizar shell/tokens e validações existentes, sem refazer fluxos de domínio. Guard de saída interna é personalizado; recarregar/fechar aba não tem modal customizável e não utiliza beforeunload. [Arquitetura/evidências](../engenharia/feedback-e-confirmacoes-2026-11.md). Não altera homologação/NO-GO015.
+
+### Identidade performance/lifestyle e landing — 2026-11-06
+
+IMPLEMENTADO local: landing completa com hero sem foto, logo oficial preservada, acentos magenta compartilhados, navegação real, plano Pro canônico e Wear/Studio explicitamente futuros. Diagnóstico: landing anterior com destinos incompletos; solução restrita à apresentação e identidade, sem refazer fluxos funcionais. Evidências e limites: `docs/engenharia/redesign-landing-2026-11.md`. Revisão posterior IMPLEMENTADA localmente: composição fiel à referência, hero corrigida via image_gen, produtos/Studio/manifesto da referência e footer recriado sem UI embutida. Registro de assets e prompts em `docs/design/landing-assets-2026-11.md`. Isso não autoriza loja, reservas ou novas modalidades.
+
+### Website público — evolução de navegação e conteúdo
+
+Diagnóstico autorizado: composição dependente de recortes da referência, textos pequenos e poucas interações de exploração. Prioridade desta entrega: refinar o website público existente, com navegação clara, prévia HTML navegável do sistema, categorias Wear, apresentação Studio, oferta Pro e dúvidas frequentes. Fotos serão fornecidas depois; não gerar novos assets. Reutilizar rotas de acesso/cadastro/assinatura e catálogo comercial. Sem checkout Wear, reservas Studio, coleta de leads ou nova modalidade. Relatório em `docs/engenharia/website-publico-2026-11.md`.
+
+
+Refinamento autorizado durante a entrega: logos oficiais sem recoloração; verde operacional restaurado após diagnóstico de magenta nos tokens globais/sidebar; cores de campanha isoladas. Imagens específicas de hero, Alunos/Treinos/Agenda e Oversized recebidas e integradas. Não gerar fotografias adicionais. Continuidade local, sem deploy ou mudança de regras comerciais.
+
+
+07/11/2026 — evolução SaaS autorizada: três planos/seis preços em sandbox, backend e limites ativos implementados/testados. Homologação hospedada bloqueada por segredo de webhook/Portal; upgrade/downgrade, IA e comissionamento permanecem futuros. [Evidências](../engenharia/assinaturas-multiplanos-2026-11.md).
+
+### Refinamento local — navegação e Exercícios (novembro/2026)
+
+IMPLEMENTADO: boundaries por módulo, navegação pendente e remoção da reconciliação Stripe redundante na navegação com snapshot canônico recente, preservando a validade de cinco minutos já existente. Refinamento delimitado de criação particular, contribuição oficial e acompanhamento de solicitações, sem refazer o catálogo ou mudar contratos. Evidências e limitações em [navegação e Exercícios](../engenharia/navegacao-e-exercicios-2026-11.md). Benchmark de produção e homologação Personal 1.0 continuam pendentes; prioridade de desempenho antes do lançamento, sem alterar o NO-GO015.

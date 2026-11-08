@@ -6,6 +6,7 @@ import type {BillingGateway} from '../subscriptions/stripe'
 import {failure,jsonBody,limit,reply,sameOrigin} from '../http'
 import {crmQuery,stageFields,taskFields} from '@/modules/crm/schema'
 import {configuration,CrmError,initializeCrm,transaction} from './core'
+import {overview} from './overview'
 import {board,cards} from './facts'
 import {archiveStage,move,previewArchive,previewMove,reorderStages,saveStage,settings} from './stages'
 import {getTask,history,listTasks,saveTask,synchronizeTasks,taskStatus} from './tasks'
@@ -18,8 +19,8 @@ const command=z.discriminatedUnion('action',[
  z.object({action:z.literal('move'),...key,...boardVersion,studentId:id,to:id,version,acknowledgedRecommendations:z.boolean(),confirmed:z.literal(true)}).strict(),
  z.object({action:z.literal('archive_preview'),stageId:id,to:id.optional()}).strict(),
  z.object({action:z.literal('stage_archive'),...key,...boardVersion,stageId:id,to:id.optional(),digest:z.string().regex(/^[a-f0-9]{64}$/),acknowledgedRecommendations:z.boolean(),confirmed:z.literal(true)}).strict(),
- z.object({action:z.literal('task_save'),...key,id:id.optional(),version:version.optional(),studentId:id,fields:taskFields}).strict(),
- z.object({action:z.literal('task_status'),...key,id,version,status:z.enum(['pending','in_progress','completed','canceled'])}).strict(),
+ z.object({action:z.literal('task_save'),...key,id:id.optional(),version:version.optional(),studentId:id.nullable(),fields:taskFields}).strict(),
+ z.object({action:z.literal('task_status'),...key,id,version,status:z.enum(['pending','in_progress','waiting','completed','canceled'])}).strict(),
  z.object({action:z.literal('task_archive'),...key,id,version}).strict(),
  z.object({action:z.literal('synchronize'),...key,...boardVersion,after:id.optional()}).strict(),
 ])
@@ -32,6 +33,7 @@ export function crmHandler(gateway?:BillingGateway){return async(request:Request
  await initializeCrm(user.id)
  if(request.method==='GET'){
   const q=crmQuery.parse(Object.fromEntries(new URL(request.url).searchParams))
+  if(q.view==='overview')return reply(await overview(user.id,q),200)
   if(q.view==='settings')return reply(await configuration(user.id),200)
   if(q.view==='tasks')return reply(await listTasks(user.id,q),200)
   if(q.view==='task'){if(!q.id)throw new CrmError(400);return reply(await getTask(user.id,q.id),200)}

@@ -29,3 +29,7 @@ npm run exercises:import
 O importador verifica checksums, IDs únicos, correspondência com nomes originais, schemas, taxonomias e auditoria contra o manifesto antes de escrever. Campos inválidos ou divergência interrompem a importação; os cinco casos conhecidos são excluídos de forma reproduzível. Uma transação e lock impedem importações concorrentes. `(dataset,source_id)` preserva o mesmo UUID; digest impede mudança silenciosa. Reexecução retorna `inserted:0`, não recria versões/eventos nem substitui nomes. Uma alteração de fonte/revisão exige revisão explícita, novo manifesto e estratégia de versionamento; editar o checksum para ignorar a revisão não é procedimento operacional válido.
 
 A publicação inicial significa disponibilidade no catálogo do ambiente, **não homologação técnica**. Descrições, traduções e classificações exigem revisão profissional antes do lançamento comercial. Não foram geradas instruções ou classificações por IA.
+
+## Disponibilização no banco local — 07/11/2026
+
+Diagnóstico por contagem no banco local configurado: `exercise_entries` e `exercise_datasets` estavam vazias. Executado o importador existente (`npm run exercises:import`), sem migration: 873 auditados, 868 publicados/inseridos, 5 excluídos pelas regras do manifesto e 106 sinalizados na auditoria. A operação não sobrescreve particulares e não inclui mídia. Disponibilidade local não substitui a revisão técnica profissional ou homologação de produção.

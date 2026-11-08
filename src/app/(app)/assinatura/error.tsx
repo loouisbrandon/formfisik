@@ -1,7 +1,10 @@
 'use client'
+import {useEffect} from 'react'
+import {toast} from '@/modules/feedback/service'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-export default function SubscriptionError({ retry }: { retry: () => void }) {
+export default function SubscriptionError({ reset:retry }: { reset: () => void }) {
+  useEffect(()=>{toast("Não foi possível abrir sua assinatura. Tente novamente.")},[])
   return <div className="auth-surface flex  items-center justify-center px-4 py-10"><section className="premium-surface w-full max-w-lg space-y-5 rounded-2xl border border-border p-6">
     <h1 className="text-heading text-4xl">Não foi possível abrir sua assinatura</h1>
     <p role="alert" className="leading-7 text-muted-foreground">Tente novamente em instantes ou volte à sua conta para continuar.</p>

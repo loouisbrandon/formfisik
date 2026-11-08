@@ -17,6 +17,6 @@ test('predictable sequences and repetition do not earn the highest level', () =>
 test('strength remains an estimate rather than a mandatory complexity rule', () => {
   const phrase = passwordStrength('minha longa caminhada pelas montanhas')
   assert.equal(phrase.level, 4)
-  assert.equal(passwordStrength('abc').hint, 'Continue: o mínimo é 12 caracteres.')
+  assert.equal(passwordStrength('abc').hint, 'Continue: o mínimo é 8 caracteres.')
   assert.deepEqual(Object.keys(phrase).sort(), ['hint', 'label', 'level'])
 })

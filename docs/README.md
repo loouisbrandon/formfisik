@@ -53,3 +53,17 @@ Os documentos técnicos existentes em `modulos/`, `engenharia/`, `arquitetura/`,
 ## Importação026
 
 [Formatos/política](modulos/importacao.md) · [API](engenharia/api-importacao.md) · [ADR027](arquitetura/ADR-027-importacao-transacional.md) · [operação/privacidade](operacao/importacao.md) · [relatório026](engenharia/entrega-026.md). Alunos/exercícios CSV e modelos JSON nativos, com validação e confirmação; GO local controlado, sem adapters externos ou produção autorizada.
+
+Tutoriais funcionais para usuários: [módulo e manutenção editorial](modulos/tutoriais.md); [relatório da central](engenharia/central-tutoriais-2026-11.md). O catálogo público ao usuário é uma curadoria separada dos documentos técnicos internos.
+
+Configurações funcionais: [módulo, pesquisa e contratos](modulos/configuracoes.md) · [validação novembro2026](engenharia/configuracoes-funcionais-2026-11.md). Substitui o estado de prévia local descrito no relatório histórico da interface, sem alterar gates de produção.
+
+Experiência compartilhada: [toasts, erros amigáveis e confirmações](engenharia/feedback-e-confirmacoes-2026-11.md), incluindo limites de navegação ao fechar/recarregar a aba.
+
+- [Landing e identidade performance/lifestyle — implementação e evidências locais](engenharia/redesign-landing-2026-11.md).
+- [Assets e prompts da landing de campanha](design/landing-assets-2026-11.md).
+- [Website público — pesquisa, navegação, prévia interativa e validação](engenharia/website-publico-2026-11.md).
+
+- [Assinaturas Standard/Premium/Pro — catálogo, backend e homologação local](engenharia/assinaturas-multiplanos-2026-11.md).
+
+Refinamento de navegação e Exercícios: [diagnóstico, decisões e evidências locais](engenharia/navegacao-e-exercicios-2026-11.md).

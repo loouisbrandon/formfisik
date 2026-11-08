@@ -1,4 +1,6 @@
 import 'server-only'
+import type {PoolClient} from 'pg'
+import {db} from '../db'
 // Pure projection of canonical facts. No content, external delivery or background side effects.
 export const noticeSource=`
  SELECT 'checkin:'||o.id||':'||s.revision AS source_key,o.student_link_id,'checkin'::text AS context_kind,o.id AS context_id,s.revision AS context_version,
@@ -15,3 +17,11 @@ export const noticeSource=`
  SELECT 'contract:'||id||':'||version||':ending',student_link_id,'contract',id,version,'contract_ending',ends_on::timestamp AT TIME ZONE 'America/Sao_Paulo'
  FROM professional_contracts WHERE professional_id=$1 AND state='active' AND ends_on BETWEEN (clock_timestamp() AT TIME ZONE 'America/Sao_Paulo')::date AND (clock_timestamp() AT TIME ZONE 'America/Sao_Paulo')::date+7`
 export const notificationRows=`SELECT n.source_key,n.student_link_id,n.context_kind,n.context_id,n.context_version,n.kind,n.source_at,s.full_name,r.read_at FROM (${noticeSource})n JOIN student_links l ON l.professional_id=$1 AND l.id=n.student_link_id JOIN student_records s ON s.professional_id=l.professional_id AND s.id=l.student_id LEFT JOIN communication_reads r ON r.professional_id=$1 AND r.source_key=n.source_key WHERE l.status='active' AND ($2::uuid IS NULL OR l.id=$2)`
+// One small owner-scoped preference read; compatibility while a local migration awaits authorization.
+let settingsAvailable=false
+export async function notificationRowsFor(owner:string,client:Pick<PoolClient,'query'>=db()){
+ if(!settingsAvailable){const exists=await client.query("SELECT to_regclass('professional_settings') IS NOT NULL AS ready");if(!exists.rows[0].ready)return notificationRows;settingsAvailable=true}
+ const row=await client.query('SELECT preferences FROM professional_settings WHERE user_id=$1',[owner])
+ const p=row.rows[0]?.preferences??{}
+ return notificationRows+` AND CASE n.context_kind WHEN 'appointment' THEN ${p.agenda!==false?'true':'false'} WHEN 'checkin' THEN ${p.checkins!==false?'true':'false'} ELSE ${p.contracts!==false?'true':'false'} END`
+}

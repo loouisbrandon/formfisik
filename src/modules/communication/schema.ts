@@ -2,7 +2,7 @@ import {z} from '@/lib/validation'
 import {taskFields} from '../crm/schema'
 import {date} from '../agenda/schema'
 import {text as safeText} from '../consultancies/schema'
-export const variables=['aluno.nome','profissional.nome','contexto.tipo','hoje'] as const
+export const variables=['aluno.nome','profissional.nome','contexto.tipo','hoje','aluno.primeiroNome','compromisso.data','compromisso.hora'] as const
 export const contextLabels={workout:'Prescrição de treino',checkin:'Check-in',appointment:'Atendimento da agenda',contract:'Contratação',assessment:'Avaliação física'} as const
 export const channels={email:'E-mail',whatsapp:'WhatsApp',phone:'Telefone',in_person:'Presencial',other:'Outro'} as const
 export const kinds={prepared:'Mensagem preparada — não enviada',external_declared:'Contato externo declarado'} as const
@@ -24,7 +24,7 @@ export const communicationCommand=z.discriminatedUnion('action',[
  z.object({action:z.literal('task_status'),...key,id:z.uuid(),version,status:z.enum(['pending','in_progress','completed','canceled'])}).strict(),
 ])
 
-export const communicationQuery=z.object({view:z.enum(['contacts','history','record','templates','template','contexts','notifications','indicators','tasks']),id:z.uuid().optional(),studentId:z.uuid().optional(),page:z.coerce.number().int().min(1).max(100000).default(1),q:z.string().trim().max(120).default(''),kind:z.enum(['all','prepared','external_declared']).default('all'),channel:z.enum(['all','email','whatsapp','phone','in_person','other']).default('all'),state:z.enum(['active','archived','all']).default('active'),recent:z.enum(['all','recent','stale']).default('all'),unread:z.enum(['all','yes']).default('all'),contextKind:z.enum(['workout','checkin','appointment','contract','assessment']).default('workout'),assessmentAuthorized:z.enum(['yes','no']).default('no'),from:date.optional(),to:date.optional()}).strict().refine(q=>(!q.from&&!q.to)||!!q.from&&!!q.to&&q.to>=q.from&&Date.parse(q.to)-Date.parse(q.from)<=366*86400000,'Período máximo de 367 datas.')
+export const communicationQuery=z.object({view:z.enum(['contacts','history','record','templates','template','contexts','notifications','indicators','tasks','journal','prepared']),id:z.uuid().optional(),studentId:z.uuid().optional(),page:z.coerce.number().int().min(1).max(100000).default(1),q:z.string().trim().max(120).default(''),kind:z.enum(['all','prepared','external_declared']).default('all'),channel:z.enum(['all','email','whatsapp','phone','in_person','other']).default('all'),state:z.enum(['active','archived','all']).default('active'),recent:z.enum(['all','recent','stale','pending']).default('all'),unread:z.enum(['all','yes']).default('all'),contextKind:z.enum(['workout','checkin','appointment','contract','assessment']).default('workout'),assessmentAuthorized:z.enum(['yes','no']).default('no'),from:date.optional(),to:date.optional()}).strict().refine(q=>(!q.from&&!q.to)||!!q.from&&!!q.to&&q.to>=q.from&&Date.parse(q.to)-Date.parse(q.from)<=366*86400000,'Período máximo de 367 datas.')
 export type ContextRef=z.infer<typeof contextRef>
 export type RecordFields=z.infer<typeof recordFields>
 export type CommunicationCommand=z.infer<typeof communicationCommand>

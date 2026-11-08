@@ -19,7 +19,7 @@ async function snapshot(c:PoolClient,owner:string,p:Period):Promise<Snapshot>{
  (SELECT count(*) FROM professional_contracts WHERE professional_id=$1 AND previous_id IS NOT NULL AND ${instant('created_at')}) AS renewals,
  (SELECT count(DISTINCT contract_id) FROM professional_commercial_events WHERE professional_id=$1 AND kind='contract_canceled' AND ${instant('occurred_at')}) AS canceled,
  (SELECT count(*) FROM professional_deliveries d JOIN professional_contracts c ON c.professional_id=d.professional_id AND c.id=d.contract_id WHERE d.professional_id=$1 AND d.state IN('pending','in_progress') AND c.state IN('active','suspended')) AS deliveries,
- (SELECT count(*) FROM crm_tasks WHERE professional_id=$1 AND NOT archived AND status IN('pending','in_progress')) AS tasks,
+ (SELECT count(*) FROM crm_tasks WHERE professional_id=$1 AND NOT archived AND status IN('pending','in_progress','waiting')) AS tasks,
  (SELECT count(*) FROM professional_commercial_events WHERE professional_id=$1 AND kind='contract_active' AND ${instant('occurred_at')}) AS activations,
  (SELECT COALESCE(sum(price_cents),0)::text FROM professional_contracts WHERE professional_id=$1 AND state<>'draft' AND starts_on BETWEEN $2::date AND $3::date) AS contract_value`,args)).rows[0]
  const groups:Group[]=[], metric=(id:string,label:string,value:unknown,definition:string,scope:Metric['scope']='period',unit:Metric['unit']='count'):Metric=>({id,label,value:value===null?null:String(value),definition,scope,unit})

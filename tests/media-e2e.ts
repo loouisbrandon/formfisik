@@ -1,3 +1,4 @@
+import {handleFeedback} from './helpers/feedback-browser'
 import assert from 'node:assert/strict'
 import {spawn} from 'node:child_process'
 import {mkdtemp,mkdir,writeFile,readFile,symlink,rm} from 'node:fs/promises'
@@ -36,7 +37,7 @@ async function main(){
   await context.route('https://www.youtube.com/iframe_api',r=>r.fulfill({contentType:'text/javascript',body:'window.YT={Player:function(){this.destroy=function(){};}};window.onYouTubeIframeAPIReady?.();'}));
   await context.route('https://upload.videodelivery.net/**',async r=>{await fetch('http://127.0.0.1:3135/fixture/complete');await r.fulfill({status:200,body:'{}'})});
   await context.route('https://customer-controlled.cloudflarestream.com/**',r=>r.fulfill({contentType:'text/html',body:'<html><body>Controlled Stream playback</body></html>'}));
-  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));const out='test-results/023/browser';await mkdir(out,{recursive:true});const rejectDiscard=false;page.on('dialog',async d=>{if(rejectDiscard&&d.message().includes('Descartar'))await d.dismiss();else await d.accept()})
+  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));const out='test-results/023/browser';await mkdir(out,{recursive:true});const rejectDiscard=false;await handleFeedback(page,async d=>{if(rejectDiscard&&d.message().includes('Descartar'))await d.dismiss();else await d.accept()},{once:false})
   await page.goto('http://localhost:3134/videos?exerciseId='+ready.exercise)
   await page.getByText('Exercício selecionado: Supino sintético mídia',{exact:true}).waitFor()
   await page.getByRole('button',{name:'Adicionar link do YouTube',exact:true}).click()

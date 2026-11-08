@@ -1,4 +1,5 @@
 import 'server-only'
+import { subscriptionPlans, type PlanId } from '@/modules/subscriptions/plan'
 import { db } from '../db'
 import { billingConfigured, portalConfigurationId, stripeGateway, validPortalConfiguration, type BillingGateway } from './stripe'
 import { reconcileUser } from './service'
@@ -47,6 +48,7 @@ export async function subscriptionStatus(userId: string, refresh = false, gatewa
   const boundary = trial ? row?.trial_end : row?.period_end
   const until = paidAccess ? new Date(Math.min(boundary.getTime(),cancelAt?.getTime() ?? Infinity,row.paid_through && !trial ? row.paid_through.getTime() : Infinity)) : null
   return {
+    planId: row?.plan_id ?? undefined,billingInterval: row?.billing_interval ?? undefined,contractedAmount: row?.amount ?? undefined,studentLimit: row?.plan_id ? subscriptionPlans[row.plan_id as PlanId].studentLimit : undefined,
     state,paidAccess,financialStatus: row?.provider_status ?? null,invoiceStatus: row?.invoice_status ?? null,paymentIssue: row?.payment_issue ?? null,
     trialStart: iso(row?.trial_start),trialEnd: iso(row?.trial_end),trialUsed: !!row?.trial_used_at,startedAt: iso(row?.started_at),periodStart: iso(row?.period_start),periodEnd: iso(row?.period_end),
     cancelAt: iso(cancelAt),canceledAt: iso(row?.canceled_at),endedAt: iso(row?.ended_at),accessUntil: iso(until),

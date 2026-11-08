@@ -98,3 +98,8 @@ Sem credenciais não houve homologação de Checkout/Portal, aceite/recusa de ca
 Painel organizado em Meu plano, Meu período, Gerenciamento e Histórico de faturas, com estado de acesso separado do financeiro. Datas/dias restantes e valores são apresentação dos dados recebidos, sem mudar entitlement. Capacidades de ação continuam exclusivamente na resposta da API. Indisponibilidade, valores ausentes e cancelamento pendente têm linguagem simples; nenhum dado fictício é introduzido na aplicação.
 
 Composição, componentes, estados e microcopy têm fonte única no [Design System — seção 006.5](../design/DESIGN_SYSTEM.md). Oferta e retorno usam a mesma linguagem; logs/contratos backend permanecem técnicos e intactos. Relatório: [entrega 006.5](../engenharia/entrega-006.5.md). Homologação externa Stripe continua pendente conforme documentação operacional.
+
+
+## Evolução multiplanos —07/11/2026
+
+Standard49,90/30 alunos ativos, Premium89,90/50 e Pro139,90/ilimitados, mensal ou anual único com20% de desconto. Substitui oferta histórica única para novas contratações. Trial único30dias/cartão preservados. Contratos antigos continuam Pro mensal. [API, migration028, limites, provisionamento e validação](../engenharia/assinaturas-multiplanos-2026-11.md).

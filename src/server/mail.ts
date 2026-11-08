@@ -30,3 +30,9 @@ export async function sendPasswordRecovery(email: string, token: string | null) 
 export async function sendPasswordChanged(email: string) {
   await sendAccountMail(email, 'Sua senha FormFisik foi alterada', 'A senha da sua conta FormFisik foi redefinida e suas sessões anteriores foram encerradas. Para acessar, entre novamente com a nova senha. Se não reconhece esta alteração, solicite imediatamente uma nova recuperação de senha no site oficial da FormFisik.')
 }
+
+export async function sendEmailChange(email:string,token:string){
+ const url=`${mailConfig().appUrl}/confirmar-alteracao-email#${token}`
+ await sendAccountMail(email,'Confirme seu novo e-mail FormFisik',`Foi solicitada a alteração do e-mail de acesso à sua conta FormFisik. Confirme no link abaixo:\n${url}\nO link expira em 30 minutos e só pode ser usado uma vez. Se não solicitou a alteração, ignore esta mensagem. Nenhuma alteração ocorre sem confirmação.`)
+}
+export async function sendEmailChanged(email:string){await sendAccountMail(email,'E-mail de acesso FormFisik alterado','O e-mail de acesso à sua conta foi alterado e as sessões anteriores foram encerradas. Se não reconhece a alteração, entre em contato pelo canal oficial da FormFisik.')}

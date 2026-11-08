@@ -31,9 +31,10 @@ async function enroll() {
   return sub
 }
 test('navigation has only existing links, one active subscription group and unavailable future modules',()=>{
-  assert.deepEqual(professionalNavigation.map(x=>x.href),['/dashboard','/indicadores','/importar','/alunos','/agenda','/consultorias','/financeiro','/crm','/comunicacao','/checkins','/anamneses','/videos','/exercicios','/treinos','/acompanhamento','/assinatura/gerenciar','/conta'])
-  assert.equal(futureModules.length,1)
+  assert.deepEqual(professionalNavigation.map(x=>x.href),['/dashboard','/indicadores','/tutoriais','/alunos','/agenda','/consultorias','/financeiro','/crm','/comunicacao','/checkins','/anamneses','/videos','/exercicios','/treinos','/acompanhamento','/assinatura/gerenciar','/conta','/configuracoes'])
+  assert.equal(futureModules.length,0)
   assert.equal(pageTitle('/assinatura/retorno'),'Minha assinatura')
+  assert.equal(pageTitle('/importar'),'Importar dados')
   assert.equal(activeNavigation('/conta','/dashboard'),false)
 })
 test('unauthenticated, forged, expired, revoked and unconfirmed sessions cannot open the dashboard',async()=>{
@@ -71,8 +72,12 @@ test('paid subscription, canonical expiry, provider failure, and cancellation de
   const handler=createDashboardHandler(provider)
   assert.equal((await handler(request())).status,200)
   provider.failReads=true
+  // A recent verified snapshot needs no provider request during navigation.
+  assert.equal((await handler(request())).status,200)
+  await db().query("UPDATE billing_subscriptions SET verified_at=now()-interval '6 minutes'")
   assert.equal((await handler(request())).status,503)
   provider.failReads=false;sub.status='canceled';sub.ended_at=Math.floor(Date.now()/1000)
+  await db().query("UPDATE billing_accounts SET last_sync_attempt_at=now()-interval '61 seconds'")
   const denied=await handler(request());assert.equal(denied.status,403);assert.equal((await denied.json()).destination,'/assinatura/gerenciar')
 })
 test('one user cannot select another identity or entitlement using query parameters, and polling does not renew idle time',async()=>{
@@ -95,6 +100,7 @@ test('rate limiting contains repeated canonical provider requests',async()=>{
 
 test('trial expiration is enforced by canonical provider state without a delivered webhook',async()=>{
   const sub=await enroll();sub.trial_end=Math.floor(Date.now()/1000)-1;sub.trial_start=sub.trial_end-30*86400
+  await db().query("UPDATE billing_subscriptions SET verified_at=now()-interval '6 minutes'")
   const response=await createDashboardHandler(provider)(request())
   assert.equal(response.status,403);assert.equal((await response.json()).destination,'/assinatura/gerenciar')
 })
@@ -108,3 +114,9 @@ test('absent Stripe configuration cannot be replaced by paid URL flags or persis
     const canonical=await createDashboardHandler(provider)(request());assert.equal(canonical.status,503);assert.equal((await canonical.json()).status,'unavailable')
   }finally{process.env.STRIPE_SECRET_KEY=previous}
 })
+
+ test('locally expired verified trial denies immediately, without waiting for freshness expiry',async()=>{
+ await enroll()
+ await db().query("UPDATE billing_subscriptions SET trial_end=now()-interval '1 second'")
+ assert.equal((await createDashboardHandler(provider)(request())).status,403)
+ })

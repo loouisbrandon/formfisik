@@ -1,10 +1,10 @@
 # Design System — FormFisik
 
-Estado: implementado para cadastro, autenticação, assinaturas, área profissional, gestão de alunos, exercícios e prescrições. Landing existente como referência. Homologação Stripe externa permanece pendente; exportação Compacta/Premium implementada na 011.
+Estado: implementado para cadastro, autenticação, assinaturas, área profissional, gestão de alunos, exercícios e prescrições. Landing performance/lifestyle implementada localmente. Homologação Stripe externa permanece pendente; exportação Compacta/Premium implementada na 011.
 
 ## Princípios e identidade
 
-Clareza, disciplina, energia, legibilidade e acessibilidade. A FormFisik é uma empresa independente. Preservar preto, verde de performance, tipografia esportiva e superfícies discretas, sem sacrificar a compreensão dos estados.
+Clareza, disciplina, energia, legibilidade e acessibilidade. A FormFisik é uma empresa independente. Preservar preto, verde da marca nas ações, tipografia esportiva e superfícies discretas, sem sacrificar a compreensão dos estados.
 
 ## Cores e tokens
 
@@ -12,7 +12,8 @@ Fonte executável: `src/app/globals.css`. Não duplicar tokens arbitrariamente p
 
 | Uso | Valor atual |
 | --- | --- |
-| Marca / primary | `#96D100` |
+| Ações / primary | `#96D100` global; `#A9E600` no shell profissional, texto preto |
+| Marca oficial | Branco e verde-lima dos assets originais |
 | Fundo escuro | `#0A0A0A` |
 | Texto claro | `#F4F4F4` |
 | Roxo institucional | `#1B1035` |
@@ -81,7 +82,7 @@ Cabeçalho público: navegação extensa em xl; menu compacto abaixo de xl; alte
 
 Estados de solicitação: pronto, validando, enviando, confirmação genérica ou erro recuperável. Estados de redefinição: verificando link, pronto, indisponibilidade temporária com retry, link inválido com nova solicitação, alterando e sucesso com link para login. Erro de infraestrutura não é apresentado como token inválido. Sucesso de pedido não afirma que endereço exista ou que a caixa postal recebeu o e-mail.
 
-Labels: E-mail; Nova senha; Confirme a nova senha. Inputs 48 px, autocomplete email/new-password, política textual de 12–128 caracteres. Erros vinculados com aria-describedby/aria-invalid. Botão de mostrar/ocultar senhas possui nome e aria-pressed; ação principal usa font-ui para preservar texto preto sobre verde. Loading com texto e ícone decorativo respeita movimento reduzido. Feedback anunciado e foco no primeiro erro ou confirmação; rolagem natural em telas baixas.
+Labels: E-mail; Nova senha; Confirme a nova senha. Inputs 48 px, autocomplete email/new-password, política textual de 8–128 caracteres, com maiúscula, minúscula e caractere especial. Erros vinculados com aria-describedby/aria-invalid. Botão de mostrar/ocultar senhas possui nome e aria-pressed; ação principal usa font-ui para preservar texto preto sobre verde. Loading com texto e ícone decorativo respeita movimento reduzido. Feedback anunciado e foco no primeiro erro ou confirmação; rolagem natural em telas baixas.
 
 Padrões proibidos: token em query, Web Storage, analytics ou campos ocultos; sucesso fictício de envio; autenticação automática após reset; confundir pedido de recuperação com alteração concluída; link de recuperação sem funcionalidade.
 
@@ -405,7 +406,7 @@ No desktop, `.backdrop` é fixa e mede100svh: o cover considera a viewport, não
 
 Login, cadastro, confirmação de e-mail, solicitação de recuperação e redefinição reutilizam `AuthVisualShell`: mesma fotografia, identidade laranja, marca, tipografia, centralização e card. `RecoveryShell` compõe o shell comum; formulários/validações/endpoints são preservados. Cadastro explica confirmação obrigatória, privacidade e separação entre conta e assinatura, com condições comerciais em details. Não adiciona OAuth ou trial fictício. Layout extenso permite rolagem, sem cortar campos, ações ou estados.
 
-Cadastro e redefinição incluem `PasswordStrength`: quatro segmentos laranja inclinados, trilha escura, preenchimento luminoso e rótulos Inicial/Em evolução/Forte/Muito forte. Estado vazio não recebe nível; conforme o texto cresce, o nível é recalculado localmente. Comprimento é o critério principal; sequências iniciais previsíveis e repetição reduzem a estimativa. O indicador não impõe mistura de caracteres nem altera o contrato de12–128 caracteres do servidor; não estima entropia criptográfica nem consulta bases externas. Senha não é enviada para serviços de avaliação nem persistida pelo medidor.
+Cadastro e redefinição incluem `PasswordStrength`: quatro segmentos laranja inclinados, trilha escura, preenchimento luminoso e rótulos Inicial/Em evolução/Forte/Muito forte. Estado vazio não recebe nível; conforme o texto cresce, o nível é recalculado localmente. Comprimento é o critério principal; sequências iniciais previsíveis e repetição reduzem a estimativa. O indicador não impõe mistura de caracteres nem altera o contrato de8–128 caracteres, com maiúscula, minúscula e caractere especial do servidor; não estima entropia criptográfica nem consulta bases externas. Senha não é enviada para serviços de avaliação nem persistida pelo medidor.
 
 Sem animação pulsante/partículas; transições respeitam prefers-reduced-motion. Semântica `role=meter`, nome acessível, mínimo0/máximo4/valor atual e descrição textual; cores não são o único sinal. Não usar aria-live a cada tecla para evitar anúncios contínuos. Indicador aparece somente ao definir uma senha, nunca no login. Componentes: `password-strength.tsx`, `password-strength-score.ts`, `password-strength.module.css`. Testes unitários cobrem progressão, padrões previsíveis, repetição e frases sem exigência de complexidade.
 
@@ -537,3 +538,207 @@ Solicitações usam linhas compactas com identidade, formulário, período/prazo
 ### Financeiro — novembro/2026
 
 Cabeçalho Financeiro com exportação e Nova cobrança; abas Visão geral, Cobranças, Recebimentos, Planos, Repasses, Histórico e Configurações. Sidebar/shared shell, superfícies/bordas por tema, verde-lima nas ações. Desktop: quatro indicadores e dois painéis por linha; até1350px painéis empilhados; até900px linhas financeiras refluem; até600px navegação select e cards compactos. Origem integrada/lima e externa/azul sempre acompanhadas por texto. Valores desconhecidos/parciais explícitos. Nova cobrança reutiliza ServiceDrawer com rótulo de fechamento contextual, foco/modal nativos e proteção de rascunho. Hover, foco, disabled, active e movimento reduzido seguem padrão comum.
+
+### Financeiro — colunas independentes (06/11/2026)
+
+Na visão geral, gráfico e cobranças recentes formam a coluna principal; recebimentos por origem e ações prioritárias formam a coluna lateral, com intervalo de 20 px. No desktop, a coluna lateral distribui a altura disponível entre seus dois cards e alinha sua base à de cobranças recentes, mantendo 20 px entre os cards, sem vincular ações à linha inferior do gráfico. Até 1350 px, as colunas se empilham sem alterar a rolagem do shell profissional.
+
+## CRM & Operação — novembro/2026
+
+Central usa ProfessionalShell sem rolagem global adicional. Cabeçalho compacto, quatro indicadores, navegação Kanban/Lista/Minhas tarefas/Histórico, filtros progressivos e região de rotina lateral a partir de1200px. Cards com iniciais, próxima ação, prazo e tarefas agregadas; detalhes em drawer de até540px. Quadro horizontal controlado em desktop/tablet, seleção de etapa e cards em coluna no mobile. Lista tabular possui região própria de rolagem horizontal.
+
+Cores e superfícies seguem workspace-card/background/foreground/primary/border do shell, inclusive tema escuro; paleta das etapas permanece decorativa e o estado tem texto. Verde principal com texto primary-foreground; foco visível, alvos44px, animação discreta e respeito a reduced-motion. Modal de tarefa até620px, campos avançados recolhíveis, foco contido por dialog nativo, Escape com proteção de alterações e retorno ao acionador. Drawer e modal posicionam conteúdo relativo ao próprio elemento sem ampliar o documento externo. Não se adicionam fotos fictícias ou métricas de demonstração. Evidências e limites: [relatório CRM](../engenharia/redesign-crm-2026-11.md).
+
+### CRM — largura e abas operacionais (06/11/2026)
+
+Rota `/crm` utiliza o contêiner amplo do ProfessionalShell, com os mesmos recuos dos módulos recentes. Título 31 px, texto operacional 13–14 px, pesos 600–750 em controles e títulos; em telas a partir de 1800 px, tabela com 14 px e nomes com 15 px. Lista em painel com cabeçalho, avatar de iniciais e etapa textual; tarefas em cards de largura mínima de 320 px quando disponível; histórico em linha do tempo paginada. Filtros e rotina lateral usam superfícies e bordas dos temas existentes. Hover lima suave, foco visível, disabled e movimento reduzido. Em celular, lista reflui por aluno, sem exigir rolagem horizontal.
+
+### Comunicação — composição da referência (06/11/2026)
+
+Cabeçalho com título31px, descrição13px, Criar modelo e Registrar contato. Quatro métricas compactas com ícones48px e valor25px; sem dados ilustrativos. Seis abas principais com seleção lima arredondada e sublinhado; áreas auxiliares em menu contextual Mais áreas, ou seletor no mobile. Colunas desktop na proporção1.47:1, tabela de acompanhamento à esquerda e prioridades/modelos à direita, intervalo18px. Busca ocupa a linha, filtros adicionais progressivos, três chips principais. Cards brancos no claro/grafite no escuro, bordas discretas, tabelas e ações compactas. Contexto de aluno não cria faixa extra na visão geral. Até1350px áreas empilhadas; até639px tabela reflui por aluno e métricas em duas colunas. Hover, foco, disabled e reduced-motion obrigatórios. Chat: três colunas com aviso de desenvolvimento, composição/anexos/envio desativados; nenhum estado de mensagem fictício.
+
+### Configurações — referência premium (06/11/2026)
+
+Cabeçalho36px, descrição16px; Preferências334px à esquerda e conteúdo à direita, intervalo30px. Perfil superior com acento lima, avatar circular180–195px, nome28px e ações de edição/foto. Grade2×2 com ícones neutros e botões de borda lima; privacidade em card horizontal inferior. Textos/posições seguem referência, dados reais e iniciais sem foto. Tokens claro/escuro existentes. Tablet/mobile empilham áreas. Recorte1:1 circular com zoom/reposicionamento acessíveis, explicitamente não salvo e sem upload. Sidebar usa wordmark oficial nomelogo.png proporcional; conta/assinatura/configurações no rodapé, Indicadores em Sistema, importação pela central.
+
+### Tutoriais — central de conhecimento (06/11/2026)
+
+Composição da referência: título em caixa alta38px, subtítulo16px, busca42px, banner lima Comece por aqui com ícone de livro, ação à direita. Três colunas desktop nas proporções0.95/2.15/0.66: categorias, artigo e índice lateral. Categorias com ícones e contagens reais, máximo8 por página; seleção com superfície/acento lima. Artigo com passos numerados circulares, dica e CTA; informações adicionais em seção progressiva. Três cards de destaque inferiores. Até1350px índice reorganizado, até900px áreas empilhadas, até639px tipografia e controles ajustados. Claro/escuro e ícones existentes. Foco do índice vai ao passo no scroll do shell; reduced-motion respeitado. Não usar contagens ou artigos fictícios para imitar a imagem.
+
+## Configurações funcionais — novembro2026
+
+A central mantém o layout e tokens já definidos. Formulários privados e apresentação pública são seções distintas; nome/CREF e focos não usam selo de verificação. Focos são checkboxes agrupados com legend, seleção/foco visíveis nos dois temas. Ações sensíveis exigem senha atual e feedback; publicação tem escopo explícito e confirmação, padrão privado. Upload usa recorte existente e gravação com validação real no servidor; solicitações exibem protocolo/estado. O shell recebe apenas a versão da foto, nunca dados privados de cadastro. Componentes novos não criam scroll global. Regras e limites em [Configurações](../modulos/configuracoes.md).
+
+Minha conta usa `details/summary` nativos em grupos exclusivos (dados pessoais, e-mail, senha e sessões), com foco/teclado e rascunhos preservados. Evita empilhar quatro formulários completos em uma página extensa.
+
+### Tutoriais — orientações progressivas por etapa
+
+Artigos mantêm numeração e índice de etapas. Cada etapa pode oferecer disclosure nativo “Ver orientações e cuidados”, com resumo curto sempre visível e detalhes em lista recolhida. Cabeçalho informa a quantidade real de etapas. Summary tem foco visível, hover com tokens do workspace e acionamento por teclado; claro/noturno e texto200% preservados. Detalhes expandem no fluxo de `#app-content`, sem scroll global ou modal. A busca inclui o conteúdo recolhido; não precisa abrir todas as orientações para localizar um assunto. Não apresentar leitura como treinamento concluído, progresso certificado ou recurso habilitado.
+
+## Toasts e confirmações — novembro2026
+
+Feedback global: toast compacto flutuante inferior direito, card/borda do tema, ícone sem depender só da cor, sucesso em verde-lima e erro com cor semântica. Duração5000ms; pausa em hover/foco, fechamento manual, no máximo3 avisos e duplicidade suprimida. Mantém o erro relevante junto ao campo. Progressão/animação respeitam movimento reduzido.
+
+Confirmar, descartar ou justificar usa dialog FormFisik, nunca confirm/alert/prompt do navegador. Ícone, título claro, consequência em linguagem simples, Voltar inicialmente focado, ação explícita, Escape e foco restaurado. Decisões assíncronas não podem executar mutações antes da aceitação. Justificativas em textarea5–500 caracteres, com validação de domínio adicional. Sem scroll global ou margens de compensação. [Contrato e limitações](../engenharia/feedback-e-confirmacoes-2026-11.md).
+
+## Evolução performance & lifestyle — 2026-11-06 (registro histórico)
+
+Decisão de magenta compartilhado e recoloração da marca **revogada** pelo refinamento abaixo. O texto desta seção registra a composição anterior; não orienta novas alterações.
+
+A landing e os acentos compartilhados passam a combinar preto, magenta `#FF397E` e verde-lima da marca. Esta decisão substitui o verde como `primary` de ações; verde continua na logo oficial, gráficos e estados positivos. Texto sobre o magenta usa preto `#0A0A0A`; textos de destaque no canvas claro usam magenta escuro `#B5164A`. Preservar os arquivos oficiais `public/images/nomelogo.png` e `logocompleta.png`, proporção e geometria. Na revisão de fidelidade pedida pelo usuário, a landing usa a máscara alpha da marca para uma variante branca/magenta; o shell mantém a marca original. Não criar nova geometria de logo.
+
+A landing (`src/modules/marketing/landing.module.css`) é editorial escura, independente do tema da área profissional. Exo 2 peso900 itálica em títulos de campanha, Arial/Helvetica no texto compacto da landing; fontes operacionais existentes preservadas. Tipografia expressiva fica no marketing; telas operacionais mantêm hierarquia legível, formulários e densidade existentes. O `ProfessionalShell` mantém a estrutura de viewport e rolagem independente, com novos acentos nos tokens e seleção lateral.
+
+Padrões atuais: hero com fotografia corrigida, faixas com largura total da viewport e espaçamento vertical fluido, dispositivos conceituais identificados, fotos editoriais dos produtos futuros, painel Pro claro/escuro, manifesto original e footer fotográfico. A imagem original funciona como atlas visual delimitado por CSS; textos comerciais, botões e estrutura são HTML. Magenta de campanha `#FF0077` em grandes títulos, `#FF3895` em texto pequeno escuro e `#DF0068` nas ações com texto branco para contraste. Navegação mobile expansível, Escape devolve foco ao botão, link de salto e foco visível. Sem animação contínua, respeitando movimento reduzido. Wear e Studio não devem aparentar compra/reserva disponível.
+
+
+### Landing — largura total e respiro vertical (composição anterior)
+
+A landing ocupa100% da viewport, sem limite externo de1600px. Fundos e faixas alcançam ambas as bordas; os recuos internos preservam leitura. Em desktop, hero usa altura mínima fluida de520–1000px, demais seções recebem padding vertical via clamp, e cards/painel Pro têm mais espaço entre elementos. Entre701–1000px o painel profissional distribui o conteúdo em duas colunas. Mobile recebe espaçamento vertical de32–40px, sem ampliar tipografia ou bloquear a rolagem. Arte recortada mantém proporção e alinhamento central para não revelar outras regiões do atlas.
+
+Validação inclui1920 e2560px além de1440/1024/768/375/320px; todas as seções devem alcançar as bordas da viewport sem scroll horizontal, incluindo texto200% a320px. Nenhuma dessas regras modifica o ProfessionalShell.
+
+### Landing — composição contínua da referência
+
+A revisão de fidelidade mantém largura total, mas substitui o respiro vertical amplo anterior por faixas editoriais contínuas. No desktop: hero próxima de37,8vw, plataforma26,55vw, cards Wear19vw e Studio14,8vw. Imagens encostam nos limites das faixas; espaçamento interno protege textos/ações. Tablet mantém painel profissional em duas colunas e mobile mantém reflow sem depender das proporções desktop. Alteração isolada ao CSS de marketing, sem impacto no shell profissional.
+
+### Website público — navegação e conteúdo sem fotografia
+
+A revisão do website substitui a composição por recortes da imagem. Identidade preta com verde-lima nas ações e detalhes discretos em roxo/rosa, com tipografia de campanha Exo2 apenas na hero, Wear, Studio e assinatura da marca. Títulos de leitura usam Arial bold; textos têm largura confortável, hierarquia e espaçamentos em unidades estáveis. Fundos ocupam a viewport; conteúdo usa limite1280px/1600px em monitores grandes. Seções claras destacam prévia do produto, coleção e FAQ, sem alterar o tema da área profissional.
+
+Novos padrões locais: diretório editorial com âncoras abaixo da hero; prévia com abas acessíveis e capturas fornecidas pelo usuário; capas de categorias com fotografia quando disponível; details/summary para coleção, estágio do Studio e FAQ; plano com condições legíveis e CTA específico. Ações têm hover/foco, redução de movimento e destinos reais. As fotografias futuras entram nas áreas editoriais sem carregar texto comercial dentro da imagem. Não desenhar ações fictícias de compra/reserva ou links sem destino.
+
+
+### Marca oficial, hero e isolamento de temas — revisão vigente 06/11/2026
+
+Header e footer exibem o arquivo original `nomelogo.png` branco/verde, sem máscara, filtros ou recoloração. A landing usa tokens próprios `--marketing-*`, sem redefinir `--primary`/`--ring` globais. Verde forte `#B6ED00` nas ações públicas, rosa `#FF68AB` em pequenos destaques e roxo em detalhes/área Studio. Textos principais permanecem neutros; evitar grandes superfícies rosa.
+
+O sistema autenticado mantém `primary`/`ring` verde `#A9E600`, seleção lateral verde e texto de destaque `#3F5E12` no tema claro. Tokens globais/autenticação retornam a `#96D100`. Nenhuma mudança na estrutura de viewport, navegação ou scroll. Estilos públicos não podem recolorir o shell, inclusive após navegação cliente entre rotas.
+
+Hero usa fotografia enviada pelo usuário (`hero-bodybuilder-magenta.png`) como fundo responsivo com Next Image, texto HTML à esquerda, atleta à direita e proteção de contraste. Alunos/Treinos/Agenda usam as três capturas enviadas, com aba ativa por clique/teclado e ampliação em dialog próprio (fechar/Escape/foco restaurado). Card Oversized usa `wear-oversized-atlas.png` com contain para mostrar as duas camisetas; título/descrição ficam fora da fotografia. Não redesenhar nem recortar textos contidos nas capturas; conteúdo explicativo permanece em HTML acessível. Compressão também usa a fotografia enviada, com enquadramento integral. Acessórios também usa a imagem fornecida, com mochila, garrafa e equipamentos de treino.
+
+
+### Hero — enquadramento e bordas suaves (07/11/2026)
+
+Atleta ampliado pela altura da composição, mídia em proporção1672/941 e máscara suave nas quatro bordas, sem blur no tecido/estampa. Foto preservada integralmente no desktop, foco à direita/topo no mobile. Frases auxiliares da hero removidas por solicitação do usuário. Barra de rolagem externa fica invisível apenas quando a landing está montada (`html:has(.landing)`); rolagem por mouse/toque/teclado e estilos do ProfessionalShell continuam independentes.
+
+
+### Plataforma — composição MacBook em largura total (07/11/2026)
+
+Seção pública sem contêiner externo limitado: fundo preto/magenta ocupa a viewport inteira, recuos internos fluidos, título Exo2 itálico branco/rosa e contexto com ícone à direita. Navegação vertical por benefícios à esquerda: Gestão de alunos, Treinos inteligentes e Agenda e atendimentos. Seleção atualiza descrição e captura projetada no monitor. CTA rosa com texto branco e hover escuro, ação Ver a plataforma com ícone circular; ambas seguem destinos reais. Rosa é local à campanha, sem alterar tokens operacionais.
+
+Foto fornecida em `platform-laptop-scene.png`, proporção1919/820, posicionada na base. Capturas originais verdes projetadas em quatro pontos do monitor com matrix3d; um ResizeObserver local escala a cena sem deformar a foto. Nada de filtros que recoloram a área profissional. Até1000px conteúdo empilha, seleção em três colunas e cena recortada lateralmente para destacar o computador. Até320px e texto200% sem overflow externo. Dialog próprio amplia a captura sem perspectiva, com Escape, fechar e foco restaurado. Teclado nas abas aceita setas verticais/horizontais, Home e End. Referência não autoriza disponibilizar loja/Studio ou recursos além do inventário.
+
+
+Refinamento de densidade da seção Plataforma (07/11/2026): altura mínima desktop de700px/39.3vw, recuos verticais menores e benefícios com intervalos12–14px. Mantidos títulos, CTAs, projeção do monitor e layout mobile; redução aproximada de10% na altura da composição.
+
+
+Plataforma — refinamento posterior de07/11/2026: altura mínima650px/36.4vw, espaçamentos reduzidos, cenário proporcional com82% da largura desktop e centralização horizontal. Máscara de transparência nas quatro bordas aplicada ao conjunto foto/captura, preservando estampa/interface nítidas. Mobile usa menos ampliação e ponto focal no computador; rolagem e ação Ampliar preservadas. Substitui as dimensões da revisão de densidade anterior.
+
+
+Plataforma — ajuste lateral (07/11/2026): esfumado direito começa em76% e fica totalmente transparente antes do limite da imagem, ocultando a borda do arquivo. Botão flutuante Ampliar tela removido; a ação Ver a plataforma ao lado do CTA continua acessível para visualizar a captura.
+
+
+### Wear — cards da referência (07/11/2026)
+
+Seção branca com conteúdo amplo, cabeçalho em duas colunas e headline esportiva preta/verde. Verde textual `#6E9800` mantém contraste de título grande sobre branco; lime `#B6ED00` em ações. Aviso Primeira coleção — em preparação em borda preta com ícone e contexto à direita. Fotografias fornecidas preservadas em três cards brancos de borda1.5px/cantos30px, mídia proporcional sem recortar produtos, faixa de identificação com ícone/título/descrição/seta e ação larga. Oversized recebe CTA verde; demais ações em borda preta, todas com hover e foco visível. Detalhes continuam via details/summary, sem simular venda disponível. Até900px cabeçalho empilha; até700px cards em coluna. Sem recolorir as fotos ou os tokens da área interna.
+
+
+Plataforma — alinhamento vertical (07/11/2026): altura mínima desktop ajustada para max(630px,34.8vw). O bloco de benefícios, descrição e CTAs fica centralizado no espaço abaixo do cabeçalho por flex; até1000px mantém fluxo empilhado. Imagem e máscaras preservadas. Validado em navegador local nas larguras2559/1440/768/320px, sem overflow horizontal; desktop com centro do bloco coincidente com o centro da área disponível.
+
+
+### Plano profissional — campanha magenta (07/11/2026)
+
+Seção de preço escura com benefícios em grade à esquerda e card Pro à direita. Headline esportiva branca/magenta, ícones em blocos discretos, borda iluminada e CTA rosa com hover. Logo oficial preservada. Fundo fornecido em `pro-pricing-background.png`, centralizado no tamanho original (1919×819), sem ampliação, com máscaras nas quatro bordas. Até900px as colunas empilham; até480px benefícios ficam em coluna. Valores e prazo continuam provenientes do catálogo de assinatura existente; cadastro e consulta da assinatura usam as rotas atuais.
+
+
+Preço — refinamento de densidade (07/11/2026): tipografia de apresentação e benefícios reduzida sutilmente; card limitado a600px, com recuos internos e intervalos menores, preço até68px e CTA de56px. Em telas empilhadas o card permanece centralizado. Condições comerciais e conteúdo preservados.
+
+
+### Studio e essência — composição clara (07/11/2026)
+
+Studio em fundo branco, cabeçalho com linha e aviso de desenvolvimento, apresentação à esquerda e benefícios em três colunas à direita, separados por borda vertical. CTA verde aponta para o disclosure da etapa do projeto. Essência em faixa cinza suave arredondada, título esportivo preto/verde e texto em coluna adjacente. Verde textual #729B00 para contraste; botões lime #B6ED00. Até900px blocos empilham; até600px benefícios ficam em lista. Texto público descreve presença digital/física e impacto na vida das pessoas, mantendo a diretriz empresarial nos documentos institucionais. Não há reservas ou unidades disponíveis.
+
+
+### CTA final — campanha verde (07/11/2026)
+
+Imagem fornecida cta-neon-green.png ao fundo, centralizada, proporcional e limitada à largura original2172px no desktop, com máscaras nas quatro bordas. Conteúdo à esquerda: kicker, headline esportiva branca/lime, três benefícios, CTA largo com cantos chanfrados e condições reais do teste. Foco remove o recorte do botão para manter outline visível. Em celular imagem vira fundo atenuado e os benefícios empilham. Tokens restritos à landing; cadastro mantém rota existente.
+
+
+### Rodapé — dark com luz nos cantos (07/11/2026)
+
+Fundo sólido #101112 com grain procedural SVG feTurbulence de opacidade .045, sem fotografia. Gradientes radiais rosa à esquerda e verde à direita partem dos cantos, com blur e recorte local. Logo escrita oficial centralizada entre duas linhas em gradiente, acima dos créditos. Navegação organizada por divisórias, avisos Em breve preservados e links reais. Camadas decorativas não recebem foco nem eventos; layout empilha no celular sem ampliar o documento.
+
+
+Cadastro (07/11/2026): senha e confirmação possuem botões independentes de mostrar/ocultar, com Eye/EyeOff, área40px, nomes acessíveis, aria-pressed e foco visível. Não enviam o formulário nem alteram o valor digitado.
+
+
+Confirmação de senha no cadastro (07/11/2026): com ambos os valores preenchidos e iguais, os dois campos recebem borda lime #A9E600, inclusive no foco, e mensagem “As senhas coincidem”. Confirmação diferente informa “As senhas ainda não coincidem”; campos vazios não indicam sucesso. Feedback anunciado com aria-live e descrito pelos campos. Igualdade não substitui validação da política no servidor.
+
+
+### Comparação de planos na landing (07/11/2026)
+
+Três cards escuros com bordas discretas e destaque magenta no Pro, seletor Mensal/Anual com aria-pressed e totais anunciados. Standard49,90/30 alunos, Premium89,90/50 alunos, Pro139,90/ilimitados. Anual20% menor, exibindo equivalente mensal e cobrança anual única explicitamente. Pro mensal preserva CTA de cadastro; demais combinações sinalizam contratação em breve. IA no Pro e parceria de comissionamento nos três são futuras, identificadas sem prometer disponibilidade. Até760px cards empilham. Componente PricingPreview é necessário para o seletor interativo sem tornar toda a landing client; não altera catálogo de billing, permissões ou checkout.
+
+
+Assinaturas multiplanos (07/11/2026): landing encaminha plano/periodicidade para a página autenticada; selectores com labels, valor total do período e quantidade de alunos ativos explícitos. Anual usa /ano com cobrança única; não exibir equivalente mensal como parcela. Gerenciamento usa plano/preço canônicos e condições do período. IA/comissionamento permanecem identificados como futuros. Sem seleção de IDs Stripe ou valor no cliente.
+
+
+### Central de assinatura — redesign07/11/2026
+
+Planos, retorno e gerenciamento usam SubscriptionHeader e subscriptions.module.css dentro do ProfessionalShell, sem max-width estreito ou scroll global próprio. Tipografia Montserrat compatível com módulos operacionais, cards bg-card, bordas discretas e lime #A9E600 nas ações selecionadas; cores semânticas acompanham claro/escuro. PlanCards reutiliza catálogo canônico e alterna mensal/anual, com total anual explícito, capacidade ativa e recursos futuros. Estado Seu plano vem do snapshot autenticado. Comparação não habilita upgrade/downgrade.
+
+Confirmação em duas colunas exibe estado real, resumo contratado/datas e próximo passo; acesso ao dashboard só destacado quando paidAccess é confirmado. Gerenciamento preserva Portal/cancelamento e histórico; comparação progressiva reduz extensão. Fatura zero rotulada Sem valor a pagar/Fatura sem cobrança, sem inventar mensalidade Pro. Mobile empilha cards e resumo, botões confortáveis/foco explícito.
+
+
+Topbar e plano contratado (07/11/2026): busca centralizada por grid com colunas laterais equilibradas, campo44px com borda/hover/foco e ícone; removidas divisórias verticais entre controles. Badge junto ao tema exibe nome contratado obtido de consulta mínima server-side por usuário, sem IDs externos ou chamada Stripe adicional; não concede acesso. Mobile mantém busca compacta e tema acessível. Cards de planos destacam o contrato existente quando presente; seleção de comparação não desloca esse destaque. Sem contrato, seleção continua interativa.
+
+
+### Busca global — paleta de comandos (07/11/2026)
+
+Referências: https://manual.raycast.com/search-bar e https://support.apple.com/en-gb/guide/mac-help/mh26783/26/mac/26. Dialog opaco bg-card, borda discreta, sombra e backdrop escuro com blur; abertura Ctrl+K/Meta+K ou botão, Escape restaura foco. Input combobox com resultados listbox/option, setas e Enter, seleção lime. Resultados locais de navegação aparecem imediatamente; busca privada automática começa com3 caracteres após250ms, AbortController descarta consultas obsoletas. Sem histórico pessoal em armazenamento.
+
+
+Busca temporal: termos de calendário exibem lista cronológica com data/hora/situação, contagem e paginação20 registros. Dia numérico pode consultar com1–2 caracteres; demais registros mantêm mínimo3. Meses sem ano interpretados no ano atual da Agenda.
+
+### Carregamento dos módulos
+
+Os módulos reutilizam `LoadingSkeleton` (`src/components/ui/loading-skeleton.tsx`) nos carregamentos iniciais, listas, detalhes e leituras auxiliares. As variantes `page`, `list` e `inline` usam superfícies e bordas semânticas, sem cores da landing page. A boundary compartilhada do grupo autenticado mantém o shell durante a navegação. O texto de carregamento fica disponível somente para leitores de tela (`role=status`); os blocos decorativos ficam ocultos da árvore acessível. A animação respeita movimento reduzido. Erros, estados vazios e operações de salvamento mantêm seus tratamentos próprios.
+
+### Exercícios — editores e solicitações
+
+A navegação do módulo usa ícones e estado ativo em verde discreto, com ação de seleção separada. Criação particular e proposta oficial compartilham editor em três seções: identificação, músculos e orientações; nomes alternativos ficam em disclosure opcional. Grupos musculares são checkboxes apresentados como chips, com foco e seleção explícitos. Em desktop, um painel auxiliar explica o fluxo; em telas menores, as instruções essenciais permanecem no formulário. Solicitações usam cards, badges textuais de estado, datas e paginação existente. Preservar tokens dark/light e confirmação própria antes de descartar edição.
+
+A sidebar pode apresentar um ponto de atividade no link pendente via `useLinkStatus`, sem deslocar o conteúdo. As boundaries de cada módulo reutilizam o skeleton comum e permitem prefetch parcial do Next, preservando o shell interativo.
+
+### Dropdowns de seleção compartilhados
+
+`src/components/ui/select.css`, importado pelo CSS global, padroniza os seletores simples existentes sem substituir controles, valores, eventos, labels ou contratos dos formulários. Usa personalização nativa progressiva (`appearance: base-select` / `::picker(select)`): menu opaco com tokens `popover`, bordas de 12 px, sombra, opções espaçadas, seleção com verde discreto/checkmark e foco visível. A altura da lista é limitada à viewport, com rolagem interna; o menu usa a top layer nativa, inclusive em dialogs. Não acrescenta JavaScript, dependências ou consultas. Múltiplos/listboxes (`multiple` ou `size`) preservam seu comportamento próprio. Navegadores sem suporte mantêm o picker do sistema, com hover/foco e cores de fallback. Movimento reduzido e cores forçadas são considerados.
+
+Referência técnica: [seletores personalizáveis na MDN](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Customizable_select). A paridade visual do menu depende do suporte do navegador; não pressupor aparência idêntica em navegadores sem `base-select`.
+
+### Detalhes do exercício
+
+`ExerciseDetails` compartilha cabeçalho com nome em Montserrat, badge textual de escopo/estado e versão; ícone abstrato de movimento sem representar mídia inexistente. Categoria, equipamento e nível usam cards semânticos. A execução aparece em etapas numeradas, com grupos musculares e aliases em painel auxiliar; até 900 px a composição vira uma coluna. Origem/licença/revisão ficam em disclosure, mantendo visíveis os avisos de revisão técnica e os dados sinalizados. Demonstrações e ações particulares são slots opcionais para reutilização em seletores/moderação. Não acrescentar mídias, instruções ou classificações presumidas. Retorno à biblioteca preserva a memória de filtros existente.
+
+### Áreas secundárias da Agenda
+
+Disponibilidade, tipos, indicadores e histórico compartilham cabeçalho com ícone, título em Montserrat e descrição contextual. Disponibilidade mostra as faixas efetivamente cadastradas por dia e separa exceções e bloqueios. Tipos usam cards com modalidade, duração, intervalos e estado textual, com descrição longa em disclosure. Indicadores separam contagens, ocupação e horas, preservando o estado não calculável e os limites conceituais. Histórico usa timeline paginada sem ocultar justificativas. Configurações mantêm seções/dias recolhíveis e proteção de alterações. A ação Atualizar agenda fica separada na navegação, com feedback de carregamento e movimento reduzido. Tudo usa tokens semânticos dark/light; grades viram uma coluna no mobile, sem alterar a rolagem do shell.
+
+### Painéis da topbar
+
+Perfil e notificações usam dialogs opacos, ancorados no canto superior direito, com altura limitada à viewport, cabeçalho fixo e backdrop discreto. Perfil reúne avatar, nome, plano e links com descrição; logout mantém o fluxo existente. Notificações compartilham introdução compacta, explicação expandível, cards de não lidos e estado vazio sem simular avisos. Um gesto iniciado e terminado no backdrop fecha esses dois painéis; clique interno ou arraste iniciado dentro não fecha. Escape, botão de fechar e restauração do foco permanecem disponíveis. Busca mantém seu tratamento separado. `aria-haspopup`/`aria-expanded` identificam os acionadores. Cores seguem os temas do shell, sem estilos da landing page.
+
+Paginação de notificações: controles compactos de 32 px com chevrons, nomes acessíveis e contador discreto. Omitir quando o total é zero ou cabe em uma página. Preservar retorno em página posterior que ficou vazia após atualização, desde que ainda existam avisos no filtro; não alterar a paginação compartilhada dos outros módulos.
+
+No painel de perfil, Sair da conta usa vermelho suave no estado normal e hover vermelho alaranjado, com contraste adaptado aos temas claro/escuro, foco visível e respeito a movimento reduzido. Tratamento restrito ao botão deste painel; ação de logout preservada.
+
+Logout da sidebar e do painel de perfil compartilham o mesmo tratamento vermelho suave/hover vermelho alaranjado, com variantes claro/escuro e foco. Minha conta na sidebar abre a subárea de Configurações e mantém o atalho ativo conforme o parâmetro de entrada; Configurações continua levando à visão geral.
+
+Sidebar: espaço adicional de 40 px após a marca separa o início dos módulos. Logo e ações de conta permanecem fixas; a navegação conserva sua rolagem independente em alturas reduzidas.
+
+O rodapé da sidebar mantém 32 px de respiro inferior, elevando o conjunto de assinatura, conta, configurações e perfil sem alterar o espaçamento após a logo.
+
+Dashboard: as linhas de Evolução/Agenda e Atenção/Atividades compartilham a proporção 1,3:1 e gap de 18 px, mantendo as bordas verticais alinhadas no desktop e a quebra responsiva existente.
+
+A ação de saída da sessão usa o rótulo Logout na sidebar e no perfil. Antes de enviar a requisição, apresenta a confirmação própria do app; cancelar preserva a sessão, e confirmar mantém o fluxo existente de revogação e retorno ao login. Botão fica desabilitado enquanto aguarda a decisão ou a requisição, evitando cliques repetidos. Não significa encerramento/exclusão de conta.

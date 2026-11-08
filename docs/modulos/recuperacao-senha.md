@@ -8,7 +8,7 @@ Estado: implementado. Verificações desta entrega em [Entrega 003](../engenhari
 2. Informar e-mail válido. Mensagem genérica orienta conferir caixa de entrada/spam, sem informar se a conta existe.
 3. Usuário confirmado recebe link com token temporário de 30 minutos. Solicitar não muda senha nem revoga sessões.
 4. Abrir `/redefinir-senha#token`: a tela limpa o fragmento, valida no servidor sem consumir, então permite nova senha e confirmação.
-5. Salvar nova senha (12–128 caracteres). Sucesso revoga todas as sessões, invalida todos os links pendentes e apresenta confirmação.
+5. Salvar nova senha (8–128 caracteres, com maiúscula, minúscula e caractere especial). Sucesso revoga todas as sessões, invalida todos os links pendentes e apresenta confirmação.
 6. Seguir “Entrar com a nova senha” para `/login?reason=reset`. Login é obrigatório e não é realizado automaticamente.
 
 Link ausente, expirado ou usado mostra mensagem única e link funcional para novo pedido. Conexão/backend indisponível permite repetir a validação sem declarar link inválido. Depois de atualizar a página, reabrir o link original do e-mail: o token não é preservado no navegador. Se resposta da troca se perder após commit, verificar o login com a nova senha; reaplicar token consumido será recusado.
@@ -42,3 +42,6 @@ RecoveryShell reutiliza identidade, tipografia, cores, cards e inputs existentes
 Reutiliza DATABASE_URL, APP_URL HTTPS em produção, SMTP_HOST/PORT/USER/PASSWORD, MAIL_FROM e segredo de limites. Não introduz segredo JWT ou serviço externo. [Ambientes e SMTP](../operacao/ambientes.md).
 
 Executar suites sequencialmente contra banco descartável terminado em `_test`: `npm test` e `npm run test:e2e` com TEST_DATABASE_URL. Integração utiliza PostgreSQL real e SMTP local; E2E obtém o token da mensagem capturada no servidor SMTP controlado, nunca de uma resposta falsa do produto. Resultados finais, limites e arquivos constam na Entrega 003.
+
+
+Atualização de07/11/2026: cadastro, redefinição e troca nas configurações reutilizam passwordSchema. Exigidos8–128 caracteres, letra maiúscula, minúscula e caractere especial (espaço não conta). Número não é obrigatório. Login preserva compatibilidade com senhas existentes; bytes e espaços não são normalizados. Teste dedicado cobre limites, categorias, confirmações e compatibilidade do login.

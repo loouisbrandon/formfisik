@@ -50,7 +50,7 @@ export function createStudentHandler(operation:'list'|'create'|'get'|'edit'|'sta
    return reply({student:await updateStudent(user.id,id,input.data.version,input.data)},200)
   }catch(error){
    if(error instanceof StudentNotFound)return reply({message:'Aluno não encontrado.'},404)
-   if(error instanceof StudentConflict)return reply({message:error.reason==='duplicate'?'Há um cadastro com os mesmos dados. Confira a carteira antes de cadastrar outra pessoa.':error.reason==='version'?'Este registro foi atualizado. Recarregue o perfil antes de salvar.':'Esta tentativa de cadastro já foi utilizada. Reabra o formulário.',code:error.reason},409)
+   if(error instanceof StudentConflict)return reply({message:error.reason==='capacity'?'Seu plano atingiu o limite de alunos ativos. Arquive um aluno para liberar uma vaga.':error.reason==='duplicate'?'Há um cadastro com os mesmos dados. Confira a carteira antes de cadastrar outra pessoa.':error.reason==='version'?'Este registro foi atualizado. Recarregue o perfil antes de salvar.':'Esta tentativa de cadastro já foi utilizada. Reabra o formulário.',code:error.reason},409)
    if(error instanceof ExportLimit)return reply({message:'O relatório aceita até 500 alunos. Refine os filtros para exportar.'},422)
    return failure(error,'students_operation_unavailable')
   }

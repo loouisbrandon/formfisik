@@ -1,4 +1,6 @@
 'use client'
+import {errorFallbacks} from '@/modules/feedback/messages'
+import {confirmAction,reportError} from '@/modules/feedback/service'
 import {useEffect,useRef,useState} from 'react'
 import {useUnsavedChanges} from '../shared/use-unsaved-changes'
 import {crmApi,action,control} from './api'
@@ -11,8 +13,8 @@ export function CrmSettings({settings,stages,onSaved,onError,onDirtyChange}:{set
  useEffect(()=>{if(dirty||configDirty||baseVersion===settings.version)return;const timer=setTimeout(()=>{setBaseVersion(settings.version);setInitial(settings.initial_stage_id);setDays(settings.recent_days);setAuto({review:settings.auto_review,workout:settings.auto_workout,assessment:settings.auto_assessment});const s=stages.find(v=>v.id===selected);if(s)setFields({name:s.name,description:s.description,color:s.color,active:s.active,operator:s.operator,rules:s.rules})},0);return()=>clearTimeout(timer)},[settings,stages,dirty,configDirty,baseVersion,selected])
  useEffect(()=>{onDirtyChange(dirty||configDirty);return()=>onDirtyChange(false)},[dirty,configDirty,onDirtyChange])
  useUnsavedChanges(dirty||configDirty,'Descartar alterações não salvas das etapas e regras do CRM?')
- async function work(fn:()=>Promise<void>){if(pending.current)return;pending.current=true;setBusy(true);onError('');try{await fn()}catch(e){onError(e instanceof Error?e.message:'Falha ao configurar o CRM.')}finally{pending.current=false;setBusy(false)}}
- function choose(id:string){if(dirty&&!confirm('Descartar alterações desta etapa?'))return;const s=stages.find(s=>s.id===id);setSelected(id);setFields(s?{name:s.name,description:s.description,color:s.color,active:s.active,operator:s.operator,rules:s.rules}:empty);setDirty(false);setArchive(null);setArchiveTo('');setAck(false)}
+ async function work(fn:()=>Promise<void>){if(pending.current)return;pending.current=true;setBusy(true);onError('');try{await fn()}catch(e){onError(e instanceof Error?reportError(e,errorFallbacks.crm):'Falha ao configurar o CRM.')}finally{pending.current=false;setBusy(false)}}
+ async function choose(id:string){if(dirty&&!(await confirmAction('Descartar alterações desta etapa?')))return;const s=stages.find(s=>s.id===id);setSelected(id);setFields(s?{name:s.name,description:s.description,color:s.color,active:s.active,operator:s.operator,rules:s.rules}:empty);setDirty(false);setArchive(null);setArchiveTo('');setAck(false)}
  const patch=(p:Partial<StageFields>)=>{setFields({...fields,...p});setDirty(true);setArchive(null)}
  const selectedStage=stages.find(s=>s.id===selected),available=stages.filter(s=>!s.archived)
  return <div className="space-y-6"><h2 className="text-heading text-3xl">Etapas e regras</h2><p className="text-sm text-muted-foreground">Condições são verificadas pelo servidor no momento da movimentação. Não alteram os estados de anamnese, treino ou avaliação.</p>

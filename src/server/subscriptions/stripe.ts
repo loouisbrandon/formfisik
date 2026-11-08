@@ -1,13 +1,15 @@
 import 'server-only'
 import Stripe from 'stripe'
+import { defaultSelection, planAmount, type PlanSelection } from '@/modules/subscriptions/plan'
 import { config } from '../config'
 
 export class BillingUnavailable extends Error {}
 export class BillingConflict extends Error {}
-export function stripeSettings() {
+export function stripeSettings(selection: PlanSelection = defaultSelection) {
   const key = process.env.STRIPE_SECRET_KEY
-  const priceId = process.env.STRIPE_PRICE_ID
-  const productId = process.env.STRIPE_PRODUCT_ID
+  const suffix = `${selection.plan.toUpperCase()}_${selection.interval === 'year' ? 'ANNUAL' : 'MONTHLY'}`
+  const priceId = (selection.plan === 'pro' && selection.interval === 'month' ? process.env.STRIPE_PRICE_ID : undefined) || process.env[`STRIPE_PRICE_${suffix}`]
+  const productId = (selection.plan === 'pro' ? process.env.STRIPE_PRODUCT_ID : undefined) || process.env[`STRIPE_PRODUCT_${selection.plan.toUpperCase()}`]
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
   // This delivery is LOCAL TEST ONLY; no escape hatch for live keys/remote origins.
   const origin = config().appUrl
@@ -15,8 +17,8 @@ export function stripeSettings() {
   if (!key?.startsWith('sk_test_') || !priceId?.startsWith('price_') || !productId?.startsWith('prod_') || !webhookSecret?.startsWith('whsec_') || !['localhost', '127.0.0.1', '[::1]'].includes(host)) throw new BillingUnavailable()
   return { key, priceId, productId, webhookSecret, origin }
 }
-export function billingConfigured() {
-  try { stripeSettings(); return true } catch { return false }
+export function billingConfigured(selection: PlanSelection = defaultSelection) {
+  try { stripeSettings(selection); return true } catch { return false }
 }
 export function stripeClient() {
   return new Stripe(stripeSettings().key, { timeout: 10000, maxNetworkRetries: 1 })
@@ -56,9 +58,9 @@ export function stripeGateway(): BillingGateway {
     portal: input => stripe.billingPortal.sessions.create(input),
   }
 }
-export function assertPrice(price: Stripe.Price, expectedId: string, productId: string, requireActive = true) {
+export function assertPrice(price: Stripe.Price, expectedId: string, productId: string, requireActive = true, selection: PlanSelection = defaultSelection) {
   const product = price.product
-  if (price.livemode || (requireActive && !price.active) || price.id !== expectedId || price.currency !== 'brl' || price.unit_amount !== 13990 || price.type !== 'recurring' || price.recurring?.interval !== 'month' || price.recurring.interval_count !== 1 || price.recurring.usage_type !== 'licensed' || typeof product === 'string' || product.deleted || product.id !== productId || (requireActive && !product.active) || product.livemode) throw new BillingUnavailable()
+  if (price.livemode || (requireActive && !price.active) || price.id !== expectedId || price.currency !== 'brl' || price.unit_amount !== planAmount(selection) || price.type !== 'recurring' || price.recurring?.interval !== selection.interval || price.recurring.interval_count !== 1 || price.recurring.usage_type !== 'licensed' || typeof product === 'string' || product.deleted || product.id !== productId || (requireActive && !product.active) || product.livemode) throw new BillingUnavailable()
 }
 
 export function portalConfigurationId() {

@@ -1,4 +1,6 @@
 'use client'
+import {useFeedbackMessage} from '@/modules/feedback/hooks'
+import {errorFallbacks} from '@/modules/feedback/messages'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -7,7 +9,7 @@ import { endpoints } from '@/services/api/endpoints'
 export function VerifyEmail() {
   const [token, setToken] = useState('')
   const [state, setState] = useState<'ready' | 'busy' | 'success' | 'error'>('ready')
-  const [message, setMessage] = useState('Clique abaixo para confirmar seu endereço. O link só pode ser usado uma vez.')
+  const [message, setMessage] = useFeedbackMessage('Clique abaixo para confirmar seu endereço. O link só pode ser usado uma vez.',errorFallbacks.default)
   useEffect(() => {
     const value = window.location.hash.slice(1)
     window.history.replaceState(null, '', window.location.pathname)

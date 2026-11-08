@@ -1,9 +1,10 @@
 import 'server-only'
+import type { PlanId, BillingInterval } from '@/modules/subscriptions/plan'
 import type { PoolClient } from 'pg'
 import { db } from '../db'
 
 export type Account = { id: string; user_id: string; stripe_customer_id: string | null; trial_used_at: Date | null; created_at: Date }
-export type Attempt = { id: string; account_id: string; stripe_session_id: string | null; state: string; price_id: string; product_id: string; app_origin: string; expires_at: Date }
+export type Attempt = { id: string; account_id: string; stripe_session_id: string | null; state: string; price_id: string; product_id: string; app_origin: string; expires_at: Date; plan_id: PlanId; billing_interval: BillingInterval; amount: number }
 export async function locked<T>(userId: string, work: (client: PoolClient) => Promise<T>) {
   const client = await db().connect()
   let locked = false

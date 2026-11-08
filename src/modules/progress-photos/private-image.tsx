@@ -1,9 +1,10 @@
 'use client'
+import {toast} from '@/modules/feedback/service'
 import Image from 'next/image'
 import {useRef,useState} from 'react'
 import {action} from '../exercises/browser'
 import {positions,type PhotoImage} from './schema'
 export function PrivatePhoto({image,date}:{image:PhotoImage;date:string}){const [error,setError]=useState(false),[retry,setRetry]=useState(0),[zoom,setZoom]=useState(false),dialog=useRef<HTMLDialogElement>(null),trigger=useRef<HTMLButtonElement>(null);const label=positions[image.position]+(image.description?' · '+image.description:'')+' · '+date
- const photo=(zoom=false)=><Image unoptimized src={'/api/photo-images/'+image.id+'?attempt='+retry} alt={label} width={image.width} height={image.height} className={zoom?'mx-auto h-[70dvh] w-full object-contain':'h-64 w-full rounded-lg bg-muted/30 object-contain'} onError={()=>setError(true)}/>
+ const photo=(zoom=false)=><Image unoptimized src={'/api/photo-images/'+image.id+'?attempt='+retry} alt={label} width={image.width} height={image.height} className={zoom?'mx-auto h-[70dvh] w-full object-contain':'h-64 w-full rounded-lg bg-muted/30 object-contain'} onError={()=>{setError(true);toast('Fotografia indisponível. Verifique a conexão e seu acesso.')}}/>
  return <div className="min-w-0 space-y-3">{error?<div role="alert" className="space-y-3 rounded-lg border border-border p-2 text-sm sm:p-4"><p>Fotografia indisponível. Verifique a conexão e seu acesso.</p><button type="button" className={action} onClick={()=>{setError(false);setRetry(v=>v+1)}}>Repetir imagem</button></div>:photo()}<button type="button" ref={trigger} className={action} onClick={()=>{setZoom(true);dialog.current?.showModal()}} disabled={error}>Ampliar {positions[image.position]}</button><dialog ref={dialog} aria-label={'Ampliação: '+label} onClose={()=>{setZoom(false);trigger.current?.focus()}} className="fixed inset-0 m-auto max-h-[95dvh] w-[min(60rem,calc(100%-2rem))] overflow-y-auto rounded-xl border border-border bg-background p-4 text-foreground backdrop:bg-black/80"><p className="mb-3 break-words text-sm">{label}</p>{zoom&&photo(true)}<button autoFocus className={action+' mt-4'} type="button" onClick={()=>dialog.current?.close()}>Fechar ampliação</button></dialog></div>
 }

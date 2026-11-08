@@ -16,7 +16,7 @@ export function trialDaysRemaining(end: string | null, now: number) {
 }
 export function stateCopy(view: SubscriptionView) {
   switch (view.state) {
-    case 'none': return { title: 'Seu plano começa por aqui', description: 'Conheça o FormFisik Pro e escolha quando dar o próximo passo.' }
+    case 'none': return { title: 'Seu plano começa por aqui', description: 'Conheça os planos FormFisik e escolha quando dar o próximo passo.' }
     case 'checkout_pending': return { title: 'Falta concluir sua contratação', description: 'Volte à página do plano para continuar. Seu acesso será liberado após a confirmação.' }
     case 'unavailable': return { title: 'Não foi possível consultar sua assinatura', description: 'O serviço está indisponível no momento. Tente atualizar novamente. Nenhuma alteração ou cobrança foi confirmada nesta consulta.' }
     case 'payment_pending': return { title: 'Seu pagamento está pendente', description: 'Consulte a cobrança para concluir o pagamento e recuperar o acesso.' }

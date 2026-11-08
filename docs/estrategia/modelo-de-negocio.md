@@ -6,8 +6,9 @@ Estado: regras comerciais definidas; oferta web implementada na 004 e Checkout/t
 
 | Item | Regra |
 | --- | --- |
-| Plano | Plano único: FormFisik Pro |
-| Preço | R$ 139,90 mensais |
+| Planos | Standard (30 alunos ativos), Premium (50) e Pro (ilimitados) |
+| Mensal | Standard R$49,90; Premium R$89,90; Pro R$139,90 |
+| Anual | Cobrança única anual com20% de desconto: R$479,04 / R$863,04 / R$1.343,04, respectivamente |
 | Período experimental | 30 dias |
 | Início do teste | Cartão obrigatório |
 | Fim do teste | Cobrança automática, salvo cancelamento anterior |
@@ -63,3 +64,12 @@ Gestão local dos recebimentos do aluno pelo serviço do profissional, separada 
 ## Diretriz definitiva de gestão financeira — 06/11/2026
 
 O financeiro profissional020 está implementado localmente com recebimentos externos e domínio integrado controlado, conforme documentação do módulo. A FormFisik é plataforma de gestão, sem intermediação obrigatória. Recebimentos externos são permitidos sem comissão FormFisik; o profissional pode utilizar todo o controle externo sem conta Stripe. Processamento integrado é opcional e ainda não homologado. Inadimplência do aluno não provoca bloqueio automático. Pro permanece independente da relação profissional/aluno. Esta diretriz atualiza as descrições históricas de020 futuro e de comissão externa indefinida acima.
+
+
+## Evolução autorizada — 07/11/2026
+
+Substitui a regra histórica de plano único nas seções anteriores: três planos SaaS, cobrança mensal ou anual única com20% de desconto. Trial30 dias e cartão obrigatório mantidos, único por conta independentemente do plano/periodicidade; não há novo trial por troca. App completo significa os módulos atuais, não funcionalidades futuras. IA exclusiva do Pro e parceria de comissionamento nos três são futuras; não implementadas ou habilitadas por esta entrega.
+
+Limites contam vínculos de alunos ativos (arquivados não ocupam vaga). Cadastro e reativação são serializados por profissional; importação reutiliza o mesmo fluxo. Registros existentes preservados como Pro mensal; sem migração comercial automática. Não há upgrade/downgrade, recontratação após encerramento, crédito, proration ou alteração de contratos existentes. Portal continua sem mudança de plano. Valores acordados profissional/aluno permanecem separados do Billing SaaS.
+
+Catálogo externo criado somente no sandbox de teste mediante autorização: dois produtos novos, cinco preços novos, Pro mensal reutilizado. Homologação hospedada e webhooks reais não são comprovados por criação de catálogo. [Relatório e limitações](../engenharia/assinaturas-multiplanos-2026-11.md).

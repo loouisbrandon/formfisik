@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
       { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=()' },
       { key: 'Cross-Origin-Resource-Policy', value: 'same-origin' },
       ...(process.env.NODE_ENV === 'production' && process.env.APP_URL?.startsWith('https://') ? [{ key: 'Strict-Transport-Security', value: 'max-age=31536000' }] : []),
-    ] }, { source: '/responder', headers: [{key:'X-Robots-Tag',value:'noindex, nofollow, noarchive'},{key:'Referrer-Policy',value:'no-referrer'},{key:'Cache-Control',value:'private, no-store'}] }, { source: '/redefinir-senha', headers: [
+    ] }, { source:'/profissionais/:path*',headers:[{key:'Cache-Control',value:'private, no-store'},{key:'X-Robots-Tag',value:'noindex, nofollow, noarchive'}] }, { source:'/confirmar-alteracao-email',headers:[{key:'Cache-Control',value:'no-store'},{key:'Referrer-Policy',value:'no-referrer'},{key:'X-Robots-Tag',value:'noindex, nofollow'}] }, { source: '/responder', headers: [{key:'X-Robots-Tag',value:'noindex, nofollow, noarchive'},{key:'Referrer-Policy',value:'no-referrer'},{key:'Cache-Control',value:'private, no-store'}] }, { source: '/redefinir-senha', headers: [
       { key: 'Referrer-Policy', value: 'no-referrer' },
       { key: 'Cache-Control', value: 'no-store' },
       { key: 'X-Robots-Tag', value: 'noindex, nofollow' },

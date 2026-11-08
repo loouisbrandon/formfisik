@@ -5,3 +5,15 @@
 @media(prefers-reduced-motion:reduce){.area button,.area a{transition:none}}
 .newCharge{display:grid;gap:16px;min-width:0}.newCharge h2{font-size:21px}.newCharge h3{font-size:14px}.newCharge p{font-size:12px;overflow-wrap:anywhere}.newCharge label{display:block}.newCharge label.flex{display:flex}.newCharge ul{list-style:none}.newCharge li{padding:14px 0}.newCharge button{border-radius:8px;font-size:12px;min-height:38px}.newCharge form{border-top:1px solid var(--border);padding-top:14px}.newCharge .step{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--positive-text)}
 @media(min-width:601px){.filters>label{white-space:nowrap;flex-shrink:0}.filters>label select{width:auto;max-width:260px}}
+
+/* Independent stacks prevent the chart from pushing priority actions down. */
+.dashboardColumn{display:grid;align-content:start;gap:20px;min-width:0}
+
+@media(min-width:1351px){
+ .dashboardColumns{align-items:stretch}
+ .dashboardColumn:first-child{align-content:stretch;grid-template-rows:auto 1fr}
+ .dashboardColumn:last-child{align-content:stretch;grid-template-rows:minmax(min-content,1fr) minmax(min-content,1fr)}
+ .dashboardColumn:last-child>.card{display:flex;flex-direction:column}
+ .dashboardColumn:last-child>.card>.description:last-child{margin-top:auto;padding-top:12px}
+ .dashboardColumn:last-child .distribution{flex:1}
+}

@@ -1,4 +1,5 @@
 import 'server-only'
+import { z } from '@/lib/validation'
 import Stripe from 'stripe'
 import { db } from '../db'
 import { boundedBody, BodyTooLarge, failure, jsonBody, limit, reply, sameOrigin } from '../http'
@@ -15,9 +16,10 @@ export async function checkout(request: Request) {
     if (!user) return reply({ message: 'Entre com sua conta confirmada.' }, 401)
     if (user.role !== 'professional') return reply({ message: 'Perfil não permitido.' }, 403)
     const input = await jsonBody(request)
-    if (!input || typeof input !== 'object' || Array.isArray(input) || Object.keys(input).length) return reply({ message: 'A oferta é definida pelo servidor. Não envie valores ou identificadores.' }, 400)
+    const selected = z.object({ plan: z.enum(['standard','premium','pro']).default('pro'), interval: z.enum(['month','year']).default('month') }).strict().safeParse(input)
+    if (!selected.success) return reply({ message: 'Selecione um plano e uma periodicidade válidos. Não envie valores ou identificadores.' }, 400)
     await limit(`checkout:user:${user.id}`, 10, 60)
-    return reply(await startCheckout(user.id), 200)
+    return reply(await startCheckout(user.id, undefined, selected.data), 200)
   } catch (error) {
     if (error instanceof BillingConflict) return reply({ message: 'Já existe uma contratação ou tentativa em verificação para esta conta. Atualize o estado da assinatura antes de tentar novamente.' }, 409)
     if (error instanceof BillingUnavailable) return reply({ message: 'Checkout de teste indisponível. Verifique a configuração local ou tente novamente.' }, 503)

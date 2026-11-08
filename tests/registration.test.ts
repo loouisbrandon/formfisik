@@ -22,7 +22,7 @@ const smtp = new SMTPServer({ authOptional: true, disabledCommands: ['STARTTLS']
 } })
 import { register, verifyEmail, digest } from '../src/server/registration'
 import { db } from '../src/server/db'
-const input = { fullName: 'Bruna Profissional', email: 'bruna@example.test', password: 'uma frase segura 123', confirmPassword: 'uma frase segura 123' }
+const input = { fullName: 'Bruna Profissional', email: 'bruna@example.test', password: 'Uma frase segura 123!', confirmPassword: 'Uma frase segura 123!' }
 function request(path: string, data: unknown, origin = process.env.APP_URL) {
   return new Request(`${process.env.APP_URL}${path}`, { method: 'POST', headers: { 'content-type': 'application/json', origin: origin! }, body: JSON.stringify(data) })
 }
@@ -78,7 +78,7 @@ test('duplicate verified address returns identical public response without chang
   const first = await registerRequest()
   await verifyEmail(request('/api/accounts/verify', { token: tokenAt() }))
   const previous = (await db().query('SELECT * FROM credentials')).rows[0].password_hash
-  const duplicate = await registerRequest({ ...input, password: 'different password 123', confirmPassword: 'different password 123' })
+  const duplicate = await registerRequest({ ...input, password: 'Different password 123!', confirmPassword: 'Different password 123!' })
   assert.equal(duplicate.status, first.status)
   assert.deepEqual(await duplicate.json(), await first.json())
   assert.equal((await db().query('SELECT * FROM credentials')).rows[0].password_hash, previous)
@@ -88,7 +88,7 @@ test('duplicate verified address returns identical public response without chang
 test('pending retries bind the chosen password to its own link; parallel confirmation consumes once', async () => {
   await registerRequest()
   const old = tokenAt()
-  const nextPassword = 'new secure phrase 456'
+  const nextPassword = 'New secure phrase 456!'
   await registerRequest({ ...input, password: nextPassword, confirmPassword: nextPassword })
   const chosen = tokenAt()
   const replies = await Promise.all([verifyEmail(request('/api/accounts/verify', { token: chosen })), verifyEmail(request('/api/accounts/verify', { token: chosen }))])
@@ -111,7 +111,7 @@ test('SMTP refusal rolls back pending attempt; no simulated success; retry recov
   assert.equal((await registerRequest()).status, 202)
 })
 test('email normalization and password spaces preserved', async () => {
-  const password = '  senha com espaços  '
+  const password = '  Senha com espaços!  '
   assert.equal((await registerRequest({ ...input, email: 'BRUNA@EXAMPLE.TEST', password, confirmPassword: password })).status, 202)
   await verifyEmail(request('/api/accounts/verify', { token: tokenAt() }))
   assert.equal((await db().query('SELECT email FROM users')).rows[0].email, input.email)

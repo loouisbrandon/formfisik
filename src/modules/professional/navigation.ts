@@ -1,7 +1,7 @@
 export const professionalNavigation = [
   { label: 'Dashboard', href: '/dashboard', icon: 'dashboard' },
   { label: 'Indicadores', href: '/indicadores', icon: 'dashboard' },
-  { label: 'Importar dados', href: '/importar', icon: 'students' },
+  { label: 'Tutoriais', href: '/tutoriais', icon: 'account' },
   { label: 'Alunos', href: '/alunos', icon: 'students' },
   { label: 'Agenda', href: '/agenda', icon: 'dashboard' },
   { label: 'Consultorias', href: '/consultorias', icon: 'workouts' },
@@ -16,11 +16,13 @@ export const professionalNavigation = [
   { label: 'Acompanhamento', href: '/acompanhamento', icon: 'assessments' },
   { label: 'Minha assinatura', href: '/assinatura/gerenciar', icon: 'subscription' },
   { label: 'Minha conta', href: '/conta', icon: 'account' },
+  { label: 'Configurações', href: '/configuracoes', icon: 'account' },
 ] as const
-export const futureModules = ['Configurações'] as const
+export const futureModules = [] as const
 export function activeNavigation(path: string, href: string) {
   return href === '/assinatura/gerenciar' ? path.startsWith('/assinatura') : path === href || path.startsWith(href+'/')
 }
 export function pageTitle(path: string) {
+  if(path==='/importar')return 'Importar dados'
   return professionalNavigation.find(item => activeNavigation(path, item.href))?.label ?? 'Área profissional'
 }

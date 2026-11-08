@@ -67,3 +67,13 @@ Cards agregam checkin_overdue e checkin_review e link para contexto do aluno. Se
 ## Integração024
 
 Central profissional reutiliza tarefas e transições018 para pendências; não cria segunda fila nem altera etapas automaticamente. Card oferece acesso contextual, sem corpo de comunicação ou dados de saúde. [Comunicação](comunicacao.md).
+
+## Evolução CRM & Operação — novembro/2026
+
+IMPLEMENTADO — GO local controlado: [relatório de redesign](../engenharia/redesign-crm-2026-11.md). Esta seção atualiza as restrições históricas018: tarefa pode ser geral (aluno opcional), estado Aguardando passa a existir, compromisso canônico pode ser vinculado explicitamente. Responsável continua o proprietário; sem equipes/reatribuição entre profissionais. Migration026 preparada, não aplicada ao banco persistente.
+
+Central com indicadores reais, lista tabular, cards compactos, drawer contextual, agenda diária paginada, tarefas prioritárias, modal progressivo e Kanban separado de tarefas. Mesmos serviços e regras canônicas; não há efeito clínico/financeiro por movimento ou conclusão. Fórmulas, paginação, retenção, componentes e evidências no relatório. Os eventos existentes não são reescritos para acompanhar mudanças de nome/estado.
+
+### Refinamento de largura e leitura — 06/11/2026
+
+CRM principal utiliza toda a largura disponível no shell compartilhado. Lista, Minhas tarefas e Histórico receberam painéis, tipografia reforçada e estados de interação consistentes. Mantidos endpoints, isolamento, filtros, paginação de 20 registros e mutações existentes; nenhuma alteração de dados ou migration necessária para este refinamento visual.

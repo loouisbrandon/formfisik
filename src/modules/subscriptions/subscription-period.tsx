@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import { CalendarDays } from 'lucide-react'
 import { BillingCard } from './billing-components'
 import { billingDate, billingMoney, trialDaysRemaining } from './presentation'
-import { proPrice } from './plan'
+import { proPrice, formatPlanAmount } from './plan'
 import type { SubscriptionView } from './status'
 
 export function SubscriptionPeriod({ view, now }: { view: SubscriptionView; now: number }) {
@@ -15,7 +15,7 @@ export function SubscriptionPeriod({ view, now }: { view: SubscriptionView; now:
         <div><p className="text-sm text-muted-foreground">{view.state === 'expired' ? 'Seu teste gratuito terminou em' : 'Seu teste gratuito termina em'}</p><p className="mt-2 font-ui text-3xl font-semibold tabular-nums">{billingDate(view.trialEnd)}</p></div>
         {remaining !== null && <p className={cn('rounded-xl border px-4 py-3 font-ui text-lg font-semibold', view.state === 'expired' ? 'border-border bg-muted/30 text-muted-foreground' : 'border-primary/20 bg-primary/5 text-primary')}>{view.state === 'expired' ? 'Teste encerrado' : remaining === 0 ? 'Termina hoje' : `${remaining} ${remaining === 1 ? 'dia restante' : 'dias restantes'}`}</p>}
       </div>
-      <p className="mt-5 text-sm leading-7 text-muted-foreground">{view.state === 'expired' ? 'Não há acesso ativo confirmado após o teste.' : stopped ? 'A renovação está cancelada. Não haverá primeira cobrança desta assinatura.' : `Depois do teste, a cobrança de ${proPrice} por mês é automática, salvo cancelamento anterior.`}</p>
+      <p className="mt-5 text-sm leading-7 text-muted-foreground">{view.state === 'expired' ? 'Não há acesso ativo confirmado após o teste.' : stopped ? 'A renovação está cancelada. Não haverá primeira cobrança desta assinatura.' : `Depois do teste, a cobrança de ${view.contractedAmount ? formatPlanAmount(view.contractedAmount) : proPrice} por ${view.billingInterval === 'year' ? 'ano' : 'mês'} é automática, salvo cancelamento anterior.`}</p>
     </> : <>
       <div className="mt-5 flex items-start gap-3"><CalendarDays className="mt-1 size-5 shrink-0 text-muted-foreground" aria-hidden="true" /><div><p className="text-sm text-muted-foreground">{stopped ? view.state === 'canceled' ? 'Assinatura encerrada em' : 'Fim da renovação' : 'Próxima cobrança'}</p><p className="mt-2 font-ui text-3xl font-semibold tabular-nums">{stopped ? billingDate(view.state === 'canceled' ? view.endedAt ?? view.cancelAt : view.cancelAt ?? view.endedAt) : view.nextBillingAt ? billingDate(view.nextBillingAt) : 'Sem data prevista'}</p></div></div>
       {!stopped && <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5"><p className="text-sm text-muted-foreground">Valor previsto</p><p className="font-ui text-xl font-semibold tabular-nums">{billingMoney(view.nextBillingAmount)}</p></div>}

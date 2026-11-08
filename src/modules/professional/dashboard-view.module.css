@@ -11,8 +11,7 @@
 .kpi h2 { font-size: 15px; font-weight: 700; line-height: 1.5; color: var(--foreground); }
 .kpi strong { display: block; font-size: clamp(30px,2vw,40px); font-weight: 700; line-height: 1.25; letter-spacing: -.8px; margin-top: 8px; overflow-wrap: anywhere; }
 .kpi p { font-size: 13px; line-height: 1.6; color: var(--muted-foreground); margin-top: 5px; }
-.middle { display: grid; grid-template-columns: minmax(0,1.35fr) minmax(0,1fr); gap: 18px; }
-.bottom { display: grid; grid-template-columns: minmax(0,1.3fr) minmax(0,1fr); gap: 18px; }
+.middle,.bottom { display: grid; grid-template-columns: minmax(0,1.3fr) minmax(0,1fr); gap: 18px; }
 .panel { min-width: 0; border: 1px solid var(--border); border-radius: 12px; background: var(--workspace-card); padding: 20px; }
 .panelHeader { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
 .titleRow { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }

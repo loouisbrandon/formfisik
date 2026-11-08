@@ -47,3 +47,9 @@ Card recebe contract_count inteiro e flags contract_active,contract_near,deliver
 ## Campos mínimos022
 
 Card acrescenta checkin_overdue/checkin_review (contagens) e UI aponta para agenda de check-ins do vínculo. Não inclui valores de escalas, notas ou respostas. Regras de movimentação e condições de anamnese não são alteradas.
+
+## Extensões operacionais — migration026
+
+`view=overview&page=N&studentId?` retorna metrics{students,today,overdue,week,completed,without_action},date,timezone,agenda{items,total,page},tasks (até6). Agenda é projeção mínima do serviço021; página20. Contagens/fuso/ordenação definidos no [relatório](redesign-crm-2026-11.md). Mesmos controles privados018.
+
+`task_save.studentId` aceita null; fields.appointmentId opcional/null, validado no mesmo proprietário/aluno. Tarefa geral required=true é rejeitada. `task_status` e taskStatus aceitam waiting; transições de terminais continuam somente reabertura para pending. `tasks` aceita from/to de vencimento e taskSort=due(default)/priority. `responsible=me` é o único responsável permitido. Board/cards aceitam priority para tarefas abertas associadas. Novos campos de card: next_appointment_id/title (sem notas/localização). Migration026 é requisito de runtime; não foi aplicada ao banco persistente.

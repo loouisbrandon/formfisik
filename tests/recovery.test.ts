@@ -13,7 +13,7 @@ if (!connection || !new URL(connection).pathname.endsWith('_test')) throw new Er
 Object.assign(process.env, { DATABASE_URL: connection, APP_URL: 'http://localhost:3107', ABUSE_HMAC_SECRET: randomBytes(32).toString('hex'), SMTP_HOST: '127.0.0.1', SMTP_PORT: '15261', MAIL_FROM: 'FormFisik <test@formfisik.test>' })
 const email = 'recovery@example.test'
 const password = 'previous secure phrase 123'
-const nextPassword = '  new secure phrase 456  '
+const nextPassword = '  New secure phrase 456!  '
 let id = ''
 let originalHash = ''
 const messages: string[] = []

@@ -1,0 +1,8 @@
+// Isolated test harness; never imported by application runtime.
+import {createServer} from 'node:http'
+import {configureAgendaTests,agendaFixture,migrate,db} from './agenda-fixture'
+import {communicationHandler} from '../../src/server/communication/handlers'
+import {createDashboardHandler} from '../../src/server/professional-dashboard'
+import {readSession,sessionToken} from '../../src/server/sessions'
+import {reply} from '../../src/server/http'
+async function main(){const connection=configureAgendaTests('http://localhost:3180');await migrate(connection);const f=await agendaFixture();const server=createServer(async(req,res)=>{try{const chunks:Buffer[]=[];for await(const chunk of req)chunks.push(Buffer.from(chunk));const r=new Request('http://localhost:3180'+req.url,{method:req.method,headers:req.headers as Record<string,string>,body:['GET','HEAD'].includes(req.method!)?undefined:Buffer.concat(chunks).toString()});let response:Response;if(req.url?.startsWith('/api/communication'))response=await communicationHandler(f.provider)(r);else if(req.url?.startsWith('/api/professional/dashboard'))response=await createDashboardHandler(f.provider)(r);else if(req.url?.startsWith('/api/auth/session')){const user=await readSession(sessionToken(r.headers.get('cookie')));response=reply(user?{user}:{},user?200:401)}else response=reply({},404);res.writeHead(response.status,Object.fromEntries(response.headers));res.end(Buffer.from(await response.arrayBuffer()))}catch{res.writeHead(503);res.end('{}')}});await new Promise<void>(resolve=>server.listen(3181,'127.0.0.1',resolve));process.send?.({type:'ready',token:f.session.token,student:f.student});process.on('SIGTERM',()=>{server.close();void db().end().then(()=>process.exit(0))})}void main()

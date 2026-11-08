@@ -3,7 +3,7 @@ import type Stripe from 'stripe'
 import type { PoolClient } from 'pg'
 import { assertPrice, BillingUnavailable, BillingConflict, type BillingGateway } from './stripe'
 import type { Account, Attempt } from './store'
-import { proPlan } from '../../modules/subscriptions/plan'
+import { proPlan, subscriptionPlans, type PlanSelection } from '../../modules/subscriptions/plan'
 
 export const externalId = (value: string | { id: string } | null | undefined) => typeof value === 'string' ? value : value?.id
 export function invoiceSubscription(invoice: Stripe.Invoice) { return externalId(invoice.parent?.subscription_details?.subscription) }
@@ -12,15 +12,16 @@ function assertInvoice(invoice: Stripe.Invoice, account: Account, sub: Stripe.Su
 }
 export async function loadSnapshot(account: Account, attempt: Attempt, sub: Stripe.Subscription, gateway: BillingGateway, eventInvoice?: Stripe.Invoice) {
   const item = sub.items.data[0]
+  const selection: PlanSelection = { plan: attempt.plan_id, interval: attempt.billing_interval }
   if (sub.livemode || sub.customer !== account.stripe_customer_id || sub.metadata.formfisik_account_id !== account.id || sub.metadata.formfisik_checkout_id !== attempt.id || sub.items.data.length !== 1 || item.quantity !== 1 || !sub.trial_start || !sub.trial_end || sub.trial_end-sub.trial_start !== proPlan.trialDays*86400 || !item.current_period_start || !item.current_period_end || item.current_period_end <= item.current_period_start || !sub.start_date || sub.collection_method !== 'charge_automatically') throw new BillingUnavailable()
   // Archiving a price must not revoke an already contracted subscription.
-  assertPrice(item.price, attempt.price_id, attempt.product_id, false)
+  assertPrice(item.price, attempt.price_id, attempt.product_id, false, selection)
   const invoiceId = externalId(sub.latest_invoice)
   const invoice = invoiceId ? await gateway.invoice(invoiceId) : null
   if (invoice) assertInvoice(invoice, account, sub)
   if (eventInvoice) assertInvoice(eventInvoice, account, sub)
   const paidLine = invoice?.status === 'paid' && invoice.amount_remaining === 0 && !invoice.lines.has_more && invoice.lines.data.find(line =>
-    externalId(line.pricing?.price_details?.price) === attempt.price_id && line.amount >= proPlan.monthlyPriceCents && line.period.start <= item.current_period_start && line.period.end >= item.current_period_end)
+    externalId(line.pricing?.price_details?.price) === attempt.price_id && line.amount >= attempt.amount && line.period.start <= item.current_period_start && line.period.end >= item.current_period_end)
   let upcoming: number | null = null
   if (['trialing','active'].includes(sub.status) && !sub.cancel_at && !sub.cancel_at_period_end && !sub.pause_collection) {
     try {
@@ -39,10 +40,10 @@ export async function persistSnapshot(client: PoolClient, account: Account, atte
   if (previous.rowCount && previous.rows[0].stripe_subscription_id !== sub.id) throw new BillingConflict()
   // A payment method is mandatory on INITIAL enrollment, not after a later card removal.
   if (!previous.rowCount && !sub.default_payment_method) throw new BillingUnavailable()
-  await client.query(`INSERT INTO billing_subscriptions(account_id,checkout_id,stripe_subscription_id,provider_status,trial_start,trial_end,price_id,product_id,currency,monthly_amount)
-    VALUES($1,$2,$3,$4,to_timestamp($5),to_timestamp($6),$7,$8,'brl',13990)
+  await client.query(`INSERT INTO billing_subscriptions(account_id,checkout_id,stripe_subscription_id,provider_status,trial_start,trial_end,price_id,product_id,currency,monthly_amount,plan_id,billing_interval,amount)
+    VALUES($1,$2,$3,$4,to_timestamp($5),to_timestamp($6),$7,$8,'brl',$9,$10,$11,$12)
     ON CONFLICT(account_id) DO UPDATE SET provider_status=EXCLUDED.provider_status,trial_start=EXCLUDED.trial_start,trial_end=EXCLUDED.trial_end,verified_at=clock_timestamp()`,
-    [account.id,attempt.id,sub.id,sub.status,sub.trial_start,sub.trial_end,attempt.price_id,attempt.product_id])
+    [account.id,attempt.id,sub.id,sub.status,sub.trial_start,sub.trial_end,attempt.price_id,attempt.product_id,subscriptionPlans[attempt.plan_id].monthlyPriceCents,attempt.plan_id,attempt.billing_interval,attempt.amount])
   await client.query(`UPDATE billing_subscriptions SET started_at=to_timestamp($2),period_start=to_timestamp($3),period_end=to_timestamp($4),cancel_at_period_end=$5,cancel_at=to_timestamp($6),canceled_at=to_timestamp($7),ended_at=to_timestamp($8),collection_paused=$9,latest_invoice_id=$10,paid_through=to_timestamp($11),upcoming_amount=$12 WHERE account_id=$1`,
     [account.id,sub.start_date,item.current_period_start,item.current_period_end,sub.cancel_at_period_end,sub.cancel_at,sub.canceled_at,sub.ended_at,!!sub.pause_collection,invoice?.id ?? null,paidThrough,upcoming])
   for (const inv of [invoice,eventInvoice?.id === invoice?.id ? null : eventInvoice]) {

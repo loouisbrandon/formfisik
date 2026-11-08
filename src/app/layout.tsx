@@ -1,3 +1,4 @@
+import {FeedbackProvider} from '@/modules/feedback/provider';
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Bebas_Neue, Montserrat, Rajdhani } from "next/font/google";
@@ -44,7 +45,7 @@ export default async function RootLayout({
       className={`${bebasNeue.variable} ${rajdhani.variable} ${montserrat.variable} dark h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col"><FeedbackProvider>{children}</FeedbackProvider></body>
     </html>
   );
 }

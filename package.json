@@ -37,7 +37,11 @@
     "test:finance:e2e": "tsx tests/finance-e2e.ts",
     "test:agenda:e2e": "tsx tests/agenda-e2e.ts",
     "media:cleanup": "node --conditions=react-server --import tsx scripts/cleanup-media.ts",
-    "test:media:e2e": "tsx tests/media-e2e.ts"
+    "test:media:e2e": "tsx tests/media-e2e.ts",
+    "test:tutorials:e2e": "tsx tests/tutorials-e2e.ts",
+    "test:settings:e2e": "node --conditions=react-server --import tsx tests/settings-e2e.ts",
+    "settings:privacy": "node --conditions=react-server --import tsx scripts/settings-privacy.ts",
+    "test:feedback:e2e": "tsx tests/feedback-e2e.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1161.0",

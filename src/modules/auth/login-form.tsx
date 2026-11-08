@@ -1,4 +1,8 @@
 'use client'
+import {validationErrors} from '@/modules/feedback/service'
+import {friendlyFieldError} from '@/modules/feedback/messages'
+import {useFeedbackMessage} from '@/modules/feedback/hooks'
+import {errorFallbacks} from '@/modules/feedback/messages'
 import { FormEvent, useRef, useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Eye, EyeOff, LoaderCircle, LockKeyhole, Mail, ShieldCheck } from 'lucide-react'
@@ -16,7 +20,7 @@ export function LoginForm() {
   const [errors, setErrors] = useState<Errors>({})
   const [visible, setVisible] = useState(false)
   const [busy, setBusy] = useState(false)
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useFeedbackMessage('',errorFallbacks.login)
   const feedback = useRef<HTMLDivElement>(null)
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -25,7 +29,7 @@ export function LoginForm() {
     setMessage('')
     if (!parsed.success) {
       const nextErrors = parsed.error.flatten().fieldErrors
-      setErrors(nextErrors)
+      setErrors(validationErrors(nextErrors))
       document.getElementById(Object.keys(nextErrors)[0])?.focus()
       return
     }
@@ -41,7 +45,7 @@ export function LoginForm() {
         window.location.replace(result.destination === '/dashboard' ? '/dashboard' : '/conta')
         return
       }
-      setErrors(result.errors || {})
+      setErrors(validationErrors(result.errors || {}))
       setMessage(result.message || 'Não foi possível entrar. Tente novamente.')
     } catch { setMessage('Falha de conexão. Confira sua rede e tente novamente.') }
     setBusy(false)
@@ -53,7 +57,7 @@ export function LoginForm() {
       <div className={styles.field}><Mail aria-hidden="true" className={styles.fieldIcon} /><Input id="email" type="email" name="email" autoComplete="username" required maxLength={254} disabled={busy} className={styles.input} placeholder="E-mail"
         value={values.email} onChange={event => { setValues(v => ({ ...v, email: event.target.value })); setErrors(e => ({ ...e, email: undefined })) }}
         aria-invalid={!!errors.email} aria-describedby="email-error" /></div>
-      <p id="email-error" className="text-sm text-red-300">{errors.email?.[0]}</p>
+      <p id="email-error" className="text-sm text-red-300">{friendlyFieldError(errors.email?.[0])}</p>
     </div>
     <div className="space-y-2">
       <label htmlFor="password" className={styles.fieldLabel}>Senha</label>
@@ -67,7 +71,7 @@ export function LoginForm() {
           {visible ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
         </Button>
       </div>
-      <p id="password-error" className="text-sm text-red-300">{errors.password?.[0]}</p>
+      <p id="password-error" className="text-sm text-red-300">{friendlyFieldError(errors.password?.[0])}</p>
     </div>
     <div className={styles.formOptions}><span><ShieldCheck size={16} aria-hidden="true" /> Sessão protegida</span><Link href="/esqueci-senha">Esqueci minha senha</Link></div>
     <div ref={feedback} tabIndex={-1} role="alert" className="text-sm leading-6 text-red-300 outline-none">{message}</div>

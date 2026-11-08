@@ -14,7 +14,8 @@ export type DashboardResult = { status: 'allowed'; data: ProfessionalDashboard }
 export async function professionalAccess(user: Identity, gateway?: BillingGateway): Promise<Exclude<DashboardResult,{status:'allowed'}>|{status:'allowed'}> {
   if (user.role !== 'professional') return { status: 'denied', destination: '/conta' }
   try {
-    const access = await subscriptionStatus(user.id, true, gateway, false)
+    // Reuse the canonical five-minute verification window; expired/error states still reconcile and fail closed.
+    const access = await subscriptionStatus(user.id, false, gateway, false)
     if (access.state === 'unavailable') return access.financialStatus === null ? { status: 'denied', destination: '/assinatura' } : { status: 'unavailable' }
     if (!access.paidAccess) return { status: 'denied', destination: access.state === 'none' ? '/assinatura' : '/assinatura/gerenciar' }
     return { status: 'allowed' }
