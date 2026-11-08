@@ -56,6 +56,7 @@ export async function getSession(request: Request) {
   try {
     const user = await readSession(sessionToken(request.headers.get('cookie')))
     if (!user) return unauthenticated()
+    await limit(`session-read:${user.id}`, 120, 60)
     return reply({ authenticated: true,context:sessionContext(user.id) }, 200)
   } catch (error) { return failure(error, 'auth_dependency_unavailable') }
 }
@@ -64,6 +65,7 @@ export async function getAccount(request: Request) {
     const user = await readSession(sessionToken(request.headers.get('cookie')))
     if (!user) return unauthenticated()
     if (user.role !== 'professional') return reply({ message: 'Acesso não permitido para este perfil.' }, 403)
+    await limit(`account-read:${user.id}`, 90, 60)
     // Identity always comes from the session; no caller-selected user ID.
     return reply({ user, access: await accessFor(user) }, 200)
   } catch (error) { return failure(error, 'auth_dependency_unavailable') }
@@ -73,6 +75,7 @@ export async function paidAccess(request: Request) {
   try {
     const user = await readSession(sessionToken(request.headers.get('cookie')))
     if (!user) return unauthenticated()
+    await limit(`paid-access-read:${user.id}`, 30, 60)
     const access = await accessFor(user,true)
     return reply({ message: access.paidAccess ? 'Assinatura elegível confirmada no servidor.' : 'Acesso pago indisponível para esta conta.', access }, access.paidAccess ? 200 : 403)
   } catch (error) { return failure(error, 'auth_dependency_unavailable') }

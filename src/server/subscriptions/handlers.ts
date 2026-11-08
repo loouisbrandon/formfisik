@@ -17,7 +17,7 @@ export async function checkout(request: Request) {
     if (user.role !== 'professional') return reply({ message: 'Perfil não permitido.' }, 403)
     const input = await jsonBody(request)
     const selected = z.object({ plan: z.enum(['standard','premium','pro']).default('pro'), interval: z.enum(['month','year']).default('month') }).strict().safeParse(input)
-    if (!selected.success) return reply({ message: 'Selecione um plano e uma periodicidade válidos. Não envie valores ou identificadores.' }, 400)
+    if (!selected.success) return reply({ message: 'Selecione um plano e uma periodicidade válidos.' }, 400)
     await limit(`checkout:user:${user.id}`, 10, 60)
     return reply(await startCheckout(user.id, undefined, selected.data), 200)
   } catch (error) {
@@ -31,6 +31,7 @@ export async function billingStatus(request: Request) {
     const user = await readSession(sessionToken(request.headers.get('cookie')))
     if (!user) return reply({ message: 'Entre com sua conta confirmada.' }, 401)
     if (user.role !== 'professional') return reply({ message: 'Perfil não permitido.' }, 403)
+    await limit(`billing-status:${user.id}`, 90, 60)
     // IDs supplied by the browser are deliberately not accepted or used.
     const refresh = new URL(request.url).searchParams.get('refresh') === '1'
     if (refresh) await limit(`billing-refresh:${user.id}`, 30, 60)

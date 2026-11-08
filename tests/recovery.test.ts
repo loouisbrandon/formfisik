@@ -10,7 +10,7 @@ import { login, getSession } from '../src/server/auth'
 import { createSession, CredentialsChanged } from '../src/server/sessions'
 const connection = process.env.TEST_DATABASE_URL
 if (!connection || !new URL(connection).pathname.endsWith('_test')) throw new Error('Use banco isolado terminado em _test')
-Object.assign(process.env, { DATABASE_URL: connection, APP_URL: 'http://localhost:3107', ABUSE_HMAC_SECRET: randomBytes(32).toString('hex'), SMTP_HOST: '127.0.0.1', SMTP_PORT: '15261', MAIL_FROM: 'FormFisik <test@formfisik.test>' })
+Object.assign(process.env, { DATABASE_URL: connection, APP_URL: 'http://localhost:3107', ABUSE_HMAC_SECRET: randomBytes(32).toString('hex'), SMTP_HOST: '127.0.0.1', SMTP_USER:'', SMTP_PASSWORD:'', SMTP_PORT: '15261', MAIL_FROM: 'FormFisik <test@formfisik.test>' })
 const email = 'recovery@example.test'
 const password = 'previous secure phrase 123'
 const nextPassword = '  New secure phrase 456!  '

@@ -742,3 +742,7 @@ O rodapé da sidebar mantém 32 px de respiro inferior, elevando o conjunto de a
 Dashboard: as linhas de Evolução/Agenda e Atenção/Atividades compartilham a proporção 1,3:1 e gap de 18 px, mantendo as bordas verticais alinhadas no desktop e a quebra responsiva existente.
 
 A ação de saída da sessão usa o rótulo Logout na sidebar e no perfil. Antes de enviar a requisição, apresenta a confirmação própria do app; cancelar preserva a sessão, e confirmar mantém o fluxo existente de revogação e retorno ao login. Botão fica desabilitado enquanto aguarda a decisão ou a requisição, evitando cliques repetidos. Não significa encerramento/exclusão de conta.
+
+## Estilos utilitários terceiros — remediação de segurança 08/11/2026
+
+O CSS anteriormente importado de `shadcn/tailwind.css` foi preservado integralmente em `src/styles/vendor/shadcn-tailwind.css`, sem decisão visual nova. `globals.css` importa essa cópia; origem, versão, hash e licença MIT constam em `licenses/README.md` e `licenses/shadcn-MIT.txt`. O CLI foi removido por trazer dependências vulneráveis desnecessárias ao aplicativo. Atualizações da cópia exigem revisão de segurança e comparação visual; não reinstalar automaticamente o gerador para alterar estilos.

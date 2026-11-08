@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --hostname 127.0.0.1",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -41,7 +41,9 @@
     "test:tutorials:e2e": "tsx tests/tutorials-e2e.ts",
     "test:settings:e2e": "node --conditions=react-server --import tsx tests/settings-e2e.ts",
     "settings:privacy": "node --conditions=react-server --import tsx scripts/settings-privacy.ts",
-    "test:feedback:e2e": "tsx tests/feedback-e2e.ts"
+    "test:feedback:e2e": "tsx tests/feedback-e2e.ts",
+    "security:exposure": "tsx scripts/audit-browser-exposure.ts",
+    "security:build": "tsx scripts/build-security-check.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1161.0",
@@ -82,10 +84,14 @@
     "eslint-config-next": "^16.4.3",
     "smtp-server": "^3.21.1",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "shadcn": "^4.7.0"
+    "typescript": "^5"
   },
   "engines": {
     "node": ">=22 <25"
+  },
+  "overrides": {
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "11.0.5"
+    }
   }
 }

@@ -2,7 +2,7 @@
 // Review new entries together with the corresponding domain validation.
 export const approvedMessages:ReadonlySet<string>=new Set([
   "Seu plano atingiu o limite de alunos ativos. Arquive um aluno para liberar uma vaga.",
-  "Selecione um plano e uma periodicidade válidos. Não envie valores ou identificadores.",
+  "Selecione um plano e uma periodicidade válidos.",
   "Plano ou periodicidade inválidos.",
   "A confirmação da nova senha não confere.",
   "A conta não está apta a receber pagamentos.",

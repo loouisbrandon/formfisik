@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  productionBrowserSourceMaps: false,
   images: {localPatterns:[{pathname:'/images/**',search:''},{pathname:'/_next/static/media/**',search:''},{pathname:'/icon.png',search:''}],remotePatterns:[]},
   serverExternalPackages: ['pdfkit'],
   outputFileTracingIncludes: { '/api/health':['./db/migrations/*.sql'], '/api/students/**': ['./assets/fonts/**/*'], '/api/workouts/**': ['./assets/fonts/**/*'], '/api/students/**/physical-reports': ['./assets/fonts/**/*'] },

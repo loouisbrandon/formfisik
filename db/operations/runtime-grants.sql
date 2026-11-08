@@ -24,7 +24,6 @@ GRANT SELECT,INSERT ON crm_events TO :"runtime_role";
 GRANT USAGE ON SEQUENCE crm_events_id_seq TO :"runtime_role";
 GRANT SELECT ON exercise_datasets,exercise_moderators,exercise_moderator_events TO :"runtime_role";
 GRANT USAGE ON SEQUENCE student_administrative_events_id_seq,exercise_events_id_seq TO :"runtime_role";
-COMMIT;
 
 -- 019 administrative services. Immutable agreements/events; privacy worker uses separate role.
 GRANT SELECT,INSERT,UPDATE ON professional_services,professional_service_plans,professional_contracts,professional_deliveries,professional_commercial_operations TO :"runtime_role";
@@ -71,3 +70,12 @@ GRANT SELECT,INSERT ON professional_imports,professional_import_rows,professiona
 GRANT UPDATE(state,version,approval_digest,request_digest) ON professional_imports TO :"runtime_role";
 GRANT UPDATE(state,decision,input,error_code,result_id,student_link_id) ON professional_import_rows TO :"runtime_role";
 GRANT USAGE ON SEQUENCE professional_import_events_id_seq TO :"runtime_role";
+
+-- 027: account/profile settings; privacy resolution remains operator-only.
+GRANT SELECT,INSERT,UPDATE ON professional_settings TO :"runtime_role";
+GRANT SELECT,INSERT ON settings_privacy_requests,settings_events TO :"runtime_role";
+GRANT UPDATE(user_id) ON settings_privacy_requests TO :"runtime_role"; -- idempotent request only
+GRANT SELECT,INSERT,DELETE ON settings_email_changes TO :"runtime_role";
+GRANT UPDATE(email,email_verified_at) ON users TO :"runtime_role";
+GRANT USAGE ON SEQUENCE settings_events_id_seq TO :"runtime_role";
+COMMIT;

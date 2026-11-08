@@ -93,3 +93,11 @@ Sessão opaca/entitlement/owner, Origin/schema/body/rate, convites256bits/digest
 ## Comunicação024
 
 Sessão/entitlement/propriedade por aluno e referência, Origin/strict32KiB/15s, GET120/POST40/min, DTO mínimo e detalhes sob demanda. Texto simples e variáveis whitelist renderizadas no servidor, sem código/HTML; prévia/digest/locks/versões/idempotência e auditoria sem corpo. Registros/versões imutáveis, runtime sem DELETE ou alteração dos históricos. Avisos não contêm saúde e leitura é do profissional. Eliminação016 saneia retries e remove dados antes das fontes; restore reaplica ledger. Sem nova identidade pública, canal externo ou uso do SMTP de conta. [Segurança/limites024](../engenharia/entrega-024.md).
+
+## Revalidação de exposição — 08/11/2026
+
+A [auditoria local](auditoria-2026-11-08.md) acrescenta limites por conta às leituras de sessão/conta/acesso/assinatura/avatar e fecha a janela de expiração por inatividade nas configurações sensíveis após lock. `npm run security:exposure -- --history` verifica valores configurados em artefatos públicos, arquivos rastreados e histórico sem imprimir segredos. Exige build de produção prévio; não substitui canários de build, revisão de padrões desconhecidos ou auditoria da infraestrutura. NO-GO015 e pendências operacionais preservados.
+
+## Remediação complementar — 08/11/2026
+
+[Remediação](remediacao-2026-11-08.md): árvore npm sem advisories conhecidos; CSS do gerador preservado com licença, override restrito do globber, expiração pós-lock na troca de e-mail, grants027 transacionais, diagnóstico de ownership/CREATE e CI preparado com canários e PostgreSQL descartável. Trava de migration impede fallback divergente quando TEST_DATABASE_URL é informado. Validação local não materializa WAF, grants persistentes ou homologação de provedores; NO-GO externo permanece.

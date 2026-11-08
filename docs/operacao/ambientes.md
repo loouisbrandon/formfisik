@@ -90,3 +90,9 @@ CSP por nonce exige HTML dinâmico; Zod usa interpretador jitless. Definir APP_U
 ## Estabilização 016
 
 Health agora exige todas as migrations/checksums desta versão, inclusive016. Banco existente não foi consultado nem recebeu migration; não iniciar versão nova contra schema parcial como se fosse pronto. Procedimentos de validação, grants, backups/restore, diagnóstico, filas e eliminação no [runbook016](estabilizacao-016.md). Testes destrutivos continuam restritos a PostgreSQL descartável com dados sintéticos; configuração presente não homologa Stripe/R2/SMTP. Agendas e alertas de nuvem continuam não provisionados.
+
+## Segurança local e release — 08/11/2026
+
+`npm run dev` escuta somente em 127.0.0.1. `npm run security:build` é teste com segredos sintéticos e scanner de artefatos; **não usar seus artefatos como deploy**. O CI preparado usa banco efêmero e não possui credenciais de nuvem/deploy. Para migrar banco descartável com TEST_DATABASE_URL no ambiente, definir DATABASE_URL explicitamente com o mesmo valor; o CLI rejeita divergências. `operations:check` retorna falha também para privilégios básicos inadequados; conta administrativa de desenvolvimento não é runtime de produção.
+
+O usuário confirmou nesta data que ainda não há ambiente FormFisik hospedado. Configuração de WAF/TLS, separação de credenciais e rotinas/alertas deve acompanhar o provisionamento explicitamente autorizado do ambiente próprio, com aplicação/ensaio dos grants revisados. [Resultado e limites](../seguranca/remediacao-2026-11-08.md).

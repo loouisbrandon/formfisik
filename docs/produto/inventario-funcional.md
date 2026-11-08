@@ -101,3 +101,7 @@ IMPLEMENTADO em código e testes controlados: perfil profissional/focos/CREF dec
 ## Landing performance/lifestyle — revisão visual local
 
 IMPLEMENTADO localmente: landing responsiva baseada na referência fornecida, hero com anatomia corrigida, seções de plataforma/Wear/Pro/Studio/manifesto, navegação real e condições canônicas de assinatura. Wear, Studio, aplicativo e comunidade permanecem conceitos/futuros conforme indicação da página; a arte não constitui funcionalidade entregue. Evidências: `docs/engenharia/redesign-landing-2026-11.md`; assets e prompts: `docs/design/landing-assets-2026-11.md`. Sem publicação ou homologação de produção.
+
+## Papel de administrador — 08/11/2026
+
+Role `admin`: IMPLEMENTADA no schema desde001 e confirmada localmente; definição como administrador geral/dono documentada em [Administração](../modulos/administracao.md). Conta administrativa, atribuição controlada, painel e permissões globais: NÃO IMPLEMENTADOS nesta etapa. Não equivale a superusuário operacional nem remove isolamento/autorização existentes.

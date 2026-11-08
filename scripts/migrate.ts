@@ -29,7 +29,9 @@ export async function migrate(connectionString = process.env.DATABASE_URL, direc
   }
 }
 if (process.argv[1]?.endsWith('migrate.ts')) {
-  migrate().then(() => console.info('Migrations aplicadas.')).catch(() => {
+  if(process.env.TEST_DATABASE_URL&&process.env.DATABASE_URL!==process.env.TEST_DATABASE_URL){
+    console.error('MIGRATION_TARGET_MISMATCH: configure DATABASE_URL explicitly to match TEST_DATABASE_URL.');process.exitCode=1
+  }else migrate().then(() => console.info('Migrations aplicadas.')).catch(() => {
     console.error('Falha nas migrations. Confira conexão e histórico; credenciais não são registradas.')
     process.exitCode = 1
   })

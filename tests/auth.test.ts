@@ -244,7 +244,11 @@ test('Pro catalog is unique, monthly BRL 13990 cents with 30-day trial and manda
 test('checkout availability requires real confirmed professional session and never grants trial or access', async () => {
   assert.equal((await checkoutAvailability(request('/api/subscriptions/availability'))).status, 401)
   const cookie = await validCookie()
-  const response = await checkoutAvailability(request('/api/subscriptions/availability', undefined, cookie))
+  // Isolate the absent-configuration case from .env.local loaded by migrations.
+  const previousKey=process.env.STRIPE_SECRET_KEY
+  let response:Response
+  try { process.env.STRIPE_SECRET_KEY=''; response=await checkoutAvailability(request('/api/subscriptions/availability', undefined, cookie)) }
+  finally { if(previousKey===undefined)delete process.env.STRIPE_SECRET_KEY;else process.env.STRIPE_SECRET_KEY=previousKey }
   assert.equal(response.status, 200)
   assert.deepEqual(await response.json(), { status: 'unavailable', reason: 'test_configuration_missing' })
   assert.ok(response.headers.get('cache-control')?.includes('no-store'))
@@ -253,4 +257,12 @@ test('checkout availability requires real confirmed professional session and nev
   assert.equal((await checkoutAvailability(request('/api/subscriptions/availability', undefined, cookie))).status, 401)
   await db().query("UPDATE users SET email_verified_at=now(),role='student' WHERE id=$1", [userId])
   assert.equal((await checkoutAvailability(request('/api/subscriptions/availability', undefined, cookie))).status, 403)
+})
+
+test('passive session inspection throttles repeated authenticated collection without revealing identity',async()=>{
+ const cookie=await validCookie()
+ for(let i=0;i<120;i++)assert.equal((await getSession(request('/api/auth/session',undefined,cookie))).status,200)
+ const response=await getSession(request('/api/auth/session',undefined,cookie))
+ assert.equal(response.status,429);assert.equal(response.headers.get('Cache-Control'),'private, no-store');assert.ok(response.headers.get('Retry-After'))
+ assert.ok(!JSON.stringify(await response.json()).includes(email))
 })

@@ -10,3 +10,10 @@ test('016: raw webhook body has a total deadline and cancels slow input before s
  const handler=createStripeWebhookHandler(undefined,20)
  assert.equal((await handler(request)).status,400);assert.equal(cancelled,true)
 })
+
+test('migration CLI rejects implicit fallback to another database when TEST_DATABASE_URL is present',async()=>{
+ const {spawnSync}=await import('node:child_process')
+ const result=spawnSync(process.execPath,['--import','tsx','scripts/migrate.ts'],{env:{...process.env,TEST_DATABASE_URL:'postgresql://synthetic:synthetic@127.0.0.1:1/isolated_test',DATABASE_URL:'postgresql://synthetic:synthetic@127.0.0.1:1/other_test'},encoding:'utf8'})
+ assert.equal(result.status,1);assert.match(result.stderr,/MIGRATION_TARGET_MISMATCH/)
+ assert.ok(!result.stderr.includes('synthetic@'))
+})

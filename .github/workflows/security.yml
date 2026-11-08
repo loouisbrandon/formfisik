@@ -1,0 +1,48 @@
+name: Security regression
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_PASSWORD: ci_disposable_only
+          POSTGRES_DB: formfisik_security_ci_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s --health-timeout 5s --health-retries 15
+    env:
+      TEST_DATABASE_URL: postgresql://postgres:ci_disposable_only@127.0.0.1:5432/formfisik_security_ci_test
+      APP_URL: http://localhost:3107
+      ABUSE_HMAC_SECRET: CI_SYNTHETIC_HMAC_NOT_A_REAL_SECRET_XXXXXXXXXXXXXXXX
+      SMTP_HOST: 127.0.0.1
+      SMTP_PORT: '1'
+      SMTP_USER: ''
+      SMTP_PASSWORD: ''
+      STRIPE_SECRET_KEY: ''
+      STRIPE_WEBHOOK_SECRET: ''
+      R2_ACCOUNT_ID: ''
+      R2_PHOTOS_BUCKET: ''
+      STREAM_API_TOKEN: ''
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm audit --audit-level=low
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run security:build

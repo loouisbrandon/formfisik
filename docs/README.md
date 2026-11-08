@@ -67,3 +67,9 @@ Experiência compartilhada: [toasts, erros amigáveis e confirmações](engenhar
 - [Assinaturas Standard/Premium/Pro — catálogo, backend e homologação local](engenharia/assinaturas-multiplanos-2026-11.md).
 
 Refinamento de navegação e Exercícios: [diagnóstico, decisões e evidências locais](engenharia/navegacao-e-exercicios-2026-11.md).
+
+Administração: [papel admin, estado real e limites](modulos/administracao.md).
+
+Auditoria de exposição, login e DevTools em 08/11/2026: [resultados, correções e bloqueios de produção](seguranca/auditoria-2026-11-08.md).
+
+Continuação da auditoria: [remediação de dependências, permissões e prevenção de regressões](seguranca/remediacao-2026-11-08.md).

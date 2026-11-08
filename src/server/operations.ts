@@ -9,6 +9,9 @@ export async function operationalStatus(){
  const ready=await schemaReady()
  const role=await db().query(`SELECT rolsuper,rolcreatedb,rolcreaterole,rolreplication,rolbypassrls,
   has_schema_privilege(current_user,'public','CREATE') AS schema_create,
+  has_database_privilege(current_user,current_database(),'CREATE') AS database_create,
+  EXISTS(SELECT 1 FROM pg_database WHERE datname=current_database() AND datdba=(SELECT oid FROM pg_roles WHERE rolname=current_user)) AS owns_database,
+  EXISTS(SELECT 1 FROM pg_namespace WHERE nspname='public' AND nspowner=(SELECT oid FROM pg_roles WHERE rolname=current_user)) AS owns_schema,
   EXISTS(SELECT 1 FROM pg_tables WHERE schemaname='public' AND tableowner=current_user) AS owns_tables FROM pg_roles WHERE rolname=current_user`)
  const unsafe=Object.values(role.rows[0]).some(Boolean)
  let smtp=false;try{mailConfig();smtp=true}catch{}
