@@ -3,7 +3,7 @@ import Link, { useLinkStatus } from 'next/link'
 import Image from 'next/image'
 import {useSearchParams} from 'next/navigation'
 import { LogoutButton } from '@/modules/auth/logout-button'
-import { Activity, UsersRound, LayoutDashboard, CreditCard, UserRound, Dumbbell, ClipboardList, CalendarDays, BriefcaseBusiness, ListChecks, MessagesSquare, ChartNoAxesCombined, Upload, Video, Settings, Layers3, BookOpen } from 'lucide-react'
+import { Activity, UsersRound, LayoutDashboard, CreditCard, UserRound, Dumbbell, ClipboardList, CalendarDays, BriefcaseBusiness, ListChecks, MessagesSquare, ChartNoAxesCombined, Upload, Video, Settings, Layers3, BookOpen, ShieldCheck } from 'lucide-react'
 import { professionalNavigation, activeNavigation } from '@/modules/professional/navigation'
 import styles from '@/modules/professional/workspace.module.css'
 function NavigationPending() { const { pending } = useLinkStatus(); return <span aria-hidden="true" data-pending={pending} className={styles.navigationPending}/> }
@@ -14,10 +14,15 @@ const groups = [
   {title:'Operação',paths:['/consultorias','/checkins','/financeiro','/crm','/comunicacao']},
   {title:'Sistema',paths:['/indicadores','/tutoriais']},
 ]
-export function Sidebar({ pathname, professional = true, onNavigate,fullName='',avatarVersion }: { pathname: string; professional?: boolean; onNavigate?: () => void;fullName?:string;avatarVersion?:number }) {
+export function Sidebar({ pathname, admin=false, professional = true, onNavigate,fullName='',avatarVersion }: { admin?:boolean; pathname: string; professional?: boolean; onNavigate?: () => void;fullName?:string;avatarVersion?:number }) {
   const search=useSearchParams(),accountSelected=pathname==='/configuracoes'&&search.get('section')==='account'
   const isCurrent=(href:string)=>accountSelected?href==='/conta':activeNavigation(pathname,href)
   const initials=fullName.trim().split(/\s+/).slice(0,2).map(n=>n[0]).join('').toUpperCase()||'P'
+  if(admin)return <div className={styles.sidebar}>
+    <Link href="/admin" onClick={onNavigate} aria-label="FormFisik, administração" className={styles.brand}><Image src="/images/nomelogo.png" alt="FormFisik" width={2488} height={292} priority className={styles.brandImage}/></Link>
+    <div className={styles.navigation}><nav aria-label="Navegação administrativa"><section className={styles.group}><h2 className={styles.groupTitle}>Administração</h2><Link href="/admin" onClick={onNavigate} aria-current={pathname==='/admin'?'page':undefined} className={styles.navLink}><LayoutDashboard aria-hidden/><span>Dashboard</span><NavigationPending/></Link><Link href="/admin/usuarios" onClick={onNavigate} aria-current={pathname.startsWith('/admin/usuarios')?'page':undefined} className={styles.navLink}><UsersRound aria-hidden/><span>Usuários</span><NavigationPending/></Link><Link href="/admin/exercicios" onClick={onNavigate} aria-current={pathname.startsWith('/admin/exercicios')?'page':undefined} className={styles.navLink}><Layers3 aria-hidden/><span>Moderação de exercícios</span><NavigationPending/></Link><Link href="/admin/assinaturas" onClick={onNavigate} aria-current={pathname.startsWith('/admin/assinaturas')?'page':undefined} className={styles.navLink}><CreditCard aria-hidden/><span>Financeiro</span><NavigationPending/></Link><Link href="/admin/privacidade" onClick={onNavigate} aria-current={pathname.startsWith('/admin/privacidade')?'page':undefined} className={styles.navLink}><ShieldCheck aria-hidden/><span>Privacidade e segurança</span><NavigationPending/></Link></section></nav></div>
+    <div className={styles.profile}><div className={styles.identity}><span className={styles.avatar} aria-hidden>{initials}</span><span><strong>{fullName}</strong><small>Administrador</small></span></div><LogoutButton/></div>
+  </div>
   return <div className={styles.sidebar}>
     <Link href={professional ? '/dashboard' : '/conta'} onClick={onNavigate} aria-label="FormFisik, início" className={styles.brand}><Image src="/images/nomelogo.png" alt="FormFisik" width={2488} height={292} priority className={styles.brandImage}/></Link>
     <div className={styles.navigation}><nav aria-label="Navegação profissional">{groups.map(group=>{

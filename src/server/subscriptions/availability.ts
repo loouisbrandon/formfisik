@@ -11,6 +11,8 @@ export async function checkoutAvailability(request: Request) {
     if (user.role !== 'professional') return reply({ message: 'Contratação disponível apenas para contas profissionais.' }, 403)
     const selection = z.object({ plan: z.enum(['standard','premium','pro']).default('pro'), interval: z.enum(['month','year']).default('month') }).strict().safeParse(Object.fromEntries(new URL(request.url).searchParams))
     if (!selection.success) return reply({ message: 'Plano ou periodicidade inválidos.' }, 400)
+    const courtesy=await subscriptionStatus(user.id,false,undefined,false)
+    if(courtesy.state==='courtesy')return reply({status:'ineligible',reason:'complimentary_access',subscription:courtesy},200)
     if (!billingConfigured(selection.data)) return reply({ status: 'unavailable', reason: 'test_configuration_missing' }, 200)
     const state = await subscriptionStatus(user.id)
     return reply({ status: state.trialUsed ? 'ineligible' : 'ready', reason: state.trialUsed ? 'trial_already_used' : 'test_mode', subscription: state }, 200)

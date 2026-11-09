@@ -1,4 +1,5 @@
 'use client'
+import {ComplimentaryCard} from './complimentary-card'
 import {useFeedbackMessage} from '@/modules/feedback/hooks'
 import {errorFallbacks} from '@/modules/feedback/messages'
 import { useEffect, useRef, useState } from 'react'
@@ -45,6 +46,7 @@ export function CheckoutStatus({ initialSelection = defaultSelection }: { initia
       window.location.assign(url.href)
     } catch { setState('error'); setMessage('Não foi possível abrir a página de pagamento. Atualize a disponibilidade antes de tentar novamente.') }
   }
+  if(view?.state==='courtesy')return <ComplimentaryCard expiresAt={view.accessUntil}/>
   return <div aria-busy={state === 'loading' || state === 'starting'}>
     {view?.planId && <div className={s.summary}><span className={s.summaryIcon}><CreditCard size={24} aria-hidden/></span><div><p className={s.eyebrow}>Seu plano contratado</p><h2>{subscriptionPlans[view.planId].name}</h2><p>{view.contractedAmount ? formatPlanAmount(view.contractedAmount) : 'Valor em verificação'} / {view.billingInterval === 'year' ? 'ano' : 'mês'} · {view.paidAccess ? 'Acesso confirmado' : 'Confira a situação do acesso'}</p></div><Link href="/assinatura/gerenciar">Gerenciar assinatura →</Link></div>}
     <PlanCards selection={selection} onSelect={next => { setState('loading'); setMessage(''); setSelection(next) }} view={view} disabled={state === 'starting'}/>

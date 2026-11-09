@@ -42,7 +42,7 @@ export function LoginForm() {
         notifySessionChanged()
         // Server owns the destination; do not accept arbitrary returnTo URLs.
         setValues({ email: '', password: '' })
-        window.location.replace(result.destination === '/dashboard' ? '/dashboard' : '/conta')
+        window.location.replace(result.destination === '/admin' ? '/admin' : result.destination === '/dashboard' ? '/dashboard' : '/conta')
         return
       }
       setErrors(validationErrors(result.errors || {}))

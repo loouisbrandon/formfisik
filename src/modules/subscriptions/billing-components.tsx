@@ -13,7 +13,7 @@ export function BillingCard({ title, id, children, className }: { title: string;
 }
 export function SubscriptionBadge({ view }: { view: SubscriptionView }) {
   const attention = ['payment_failed', 'past_due', 'blocked'].includes(view.state)
-  const positive = view.paidAccess && ['active', 'trialing'].includes(view.state)
+  const positive = view.paidAccess && ['active', 'trialing','courtesy'].includes(view.state)
   const Icon = attention ? CircleAlert : positive ? Check : Clock3
   return <span data-testid="subscription-state" className={cn('inline-flex max-w-full items-center gap-2 rounded-lg border px-3 py-2 font-ui text-base font-semibold leading-tight', positive ? 'border-primary/30 bg-primary/10 text-primary' : attention ? 'border-destructive/30 bg-destructive/10 text-red-300' : 'border-border bg-muted/40 text-foreground')}>
     <Icon className="size-4 shrink-0" aria-hidden="true" />{subscriptionLabels[view.state]}
@@ -23,7 +23,7 @@ export function AccessStatus({ view }: { view: SubscriptionView }) {
   return <div className={cn('flex items-start gap-3 rounded-xl border p-4', view.paidAccess ? 'border-primary/20 bg-primary/5' : 'border-border bg-muted/30')}>
     <ShieldCheck className={cn('mt-0.5 size-5 shrink-0', view.paidAccess ? 'text-primary' : 'text-muted-foreground')} aria-hidden="true" />
     <div><p className="text-sm font-semibold">{view.paidAccess ? 'Acesso liberado' : view.state === 'unavailable' ? 'Acesso não confirmado' : 'Acesso aos recursos do plano não está ativo'}</p>
-      <p className="mt-1 text-xs leading-6 text-muted-foreground">{view.paidAccess ? `Disponível até ${billingDate(view.accessUntil, true)}.` : 'Sua conta e as opções disponíveis de pagamento continuam acessíveis.'}</p>
+      <p className="mt-1 text-xs leading-6 text-muted-foreground">{view.state==='courtesy'?(view.accessUntil?`Acesso gratuito até ${billingDate(view.accessUntil, true)}.`:'Acesso gratuito sem prazo de expiração.'):view.paidAccess ? `Disponível até ${billingDate(view.accessUntil, true)}.` : 'Sua conta e as opções disponíveis de pagamento continuam acessíveis.'}</p>
     </div>
   </div>
 }

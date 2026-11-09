@@ -81,4 +81,20 @@ GRANT USAGE ON SEQUENCE settings_events_id_seq TO :"runtime_role";
 -- 029: self-service closure; operator alone processes erasure.
 GRANT SELECT,INSERT ON account_closures TO :"runtime_role";
 GRANT UPDATE(disabled_at) ON users TO :"runtime_role";
+-- 031/034: server-admin audited grant management; no DELETE or audit mutation.
+GRANT SELECT ON complimentary_access_grants TO :"runtime_role";
+-- Administrative privacy monitoring: metadata only; processing stays operator-only.
+GRANT SELECT(id,owner_id,scope,state,blocker,created_at,completed_at,not_before) ON privacy_erasure_jobs TO :"runtime_role";
+GRANT SELECT(id,user_id,kind,reason,occurred_at) ON account_security_events TO :"runtime_role";
+GRANT SELECT(actor_id) ON account_security_events TO :"runtime_role";
+GRANT INSERT(user_id,kind,reason,actor_id) ON account_security_events TO :"runtime_role";
+GRANT USAGE ON SEQUENCE account_security_events_id_seq TO :"runtime_role";
+GRANT SELECT(owner_id,state) ON privacy_erasure_jobs TO :"runtime_role";
+GRANT SELECT,INSERT ON admin_privacy_decisions TO :"runtime_role";
+GRANT USAGE ON SEQUENCE admin_privacy_decisions_id_seq TO :"runtime_role";
+GRANT UPDATE(status,resolution_reference,resolved_at) ON settings_privacy_requests TO :"runtime_role";
+GRANT INSERT ON complimentary_access_grants TO :"runtime_role";
+GRANT UPDATE(revoked_at) ON complimentary_access_grants TO :"runtime_role";
+GRANT SELECT,INSERT ON complimentary_access_events TO :"runtime_role";
+GRANT USAGE ON SEQUENCE complimentary_access_events_id_seq TO :"runtime_role";
 COMMIT;

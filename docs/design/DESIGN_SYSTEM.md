@@ -756,3 +756,35 @@ Shell de contratação: profissionais sem entitlement confirmado recebem variant
 Exclusão de conta: seção de risco em Privacidade e segurança com ação vermelha, senha atual, frase EXCLUIR MINHA CONTA e diálogo compartilhado de confirmação. Após agendamento exibe data e retenções, sem continuar mostrando formulário destrutivo. Loading/falha de consulta não habilita exclusão. Não comunicar eliminação física imediata quando somente o acesso foi encerrado.
 
 Confirmação de cadastro por código (030): no e-mail, código de seis dígitos em texto selecionável, fundo verde e texto preto substitui CTA/link; validade10min. Na tela, input único com label, inputMode numeric/autocomplete one-time-code e colagem integral, botão Confirmar código, reenvio com contador60s e retorno ao cadastro/login. Reenvio e erros comunicados por regiões status/alert. Links antigos seguem apenas para compatibilidade; textos e prazo anteriores do e-mail de cadastro são substituídos por este padrão.
+
+Cortesia de staging (031): selo “Cortesia vitalícia” na topbar e painel explícito “FormFisik Pro · acesso gratuito”. Não apresentar preço mensal, fatura, data de trial ou ação Stripe fictícios. O plano de capacidade é Pro; gratuidade vem de concessão server-side separada e revogável, restrita ao staging.
+
+## Dashboard administrativo inicial
+
+Variante administrativa do `ProfessionalShell`, com os mesmos tokens, logo, tema, altura e scroll independentes. Sidebar exibe apenas Dashboard, identificação do administrador e Logout; topbar exibe contexto Administração, tema e identificação, sem pesquisa/notificações profissionais. Cards de indicadores em grade 1/2/4 colunas, ícones Lucide, bordas e superfícies existentes. Skeleton acompanha a grade; erro recuperável não mostra detalhes de infraestrutura. Não reutilizar termos de assinatura para indicar privilégios administrativos.
+
+Dashboard admin: cinco indicadores, grade responsiva 1/2/3/5 colunas; card de análises de contas futuras usa `—` e “Em breve”, nunca zero fictício. Gráfico verde de seis meses usa `RegistrationChart`, compartilhado com dashboard profissional, SVG com descrição e tabela de valores recolhível. Mantém os tokens e estilos de `dashboard-view.module.css`.
+
+Abaixo dos indicadores admin: gráfico e card “Exercícios para análise” em duas colunas no desktop (proporção 1,6:1), empilhados em telas menores. Card com contagem real, contexto e estado vazio; sem botão sem destino funcional. Análise de exercícios e futura análise de contas são indicadores distintos.
+
+Prévia de exercícios no dashboard: até cinco linhas com nome e link compacto “Detalhes”; link de rodapé para lista paginada. Página administrativa de solicitações mantém shell compartilhado, painéis existentes, estado vazio e seleção na URL. Cabeçalho contextual “Exercícios para análise”; detalhes textuais em painel e paginação discreta somente quando necessária.
+
+Módulo Usuários admin: reutiliza `portfolio.module.css` da carteira de alunos. Três indicadores globais, painel com busca por nome, filtros de perfil/situação/ordenação e alternância lista/cards; nenhuma ação fictícia de cadastrar ou exportar. Avatar por iniciais, identificação de papel e badge de bloqueio. Perfil usa painéis, ícones e tokens existentes e expõe contato sob demanda. URL preserva paginação, filtros e visualização no retorno; skeletons específicos, estados vazios e erro recuperável. Sidebar adiciona Usuários com seleção em todas as subrotas.
+
+Assinaturas admin: reutiliza carteira de alunos/Usuários com três indicadores globais, filtro por titular/plano/periodicidade/situação e lista paginada. Diferencia status registrado e aviso de cancelamento agendado. Detalhes em painéis de plano/vigência, titular, sincronização e faturas paginadas, sem botões de operação financeira nesta fase. Skeletons específicos e seleção na sidebar para subrotas.
+
+Financeiro integrado: mesma página administrativa de assinaturas, menu Financeiro, quatro cards monetários, gráfico com fatos verdes e estimativas magenta tracejadas, tabela acessível e seletor limitado a 3/6/12 meses. Gráfico distingue meses sem fatos/previsão por “—”. Próximas cobranças e movimentações ficam em painéis recolhíveis com paginação independente; estado de abertura mantido na memória privada existente do shell. Lista de assinaturas e seus indicadores continuam abaixo, sem novas telas. Estados vazios e critérios financeiros permanecem explícitos.
+
+O SVG financeiro define largura integral e altura automática explicitamente, para preservar o gráfico dentro do layout de carteira, cujas regras genéricas de SVG destinam-se aos ícones. Verificar a dimensão renderizada, além de overflow e presença de dados.
+
+Privacidade e segurança admin: quatro cards globais, navegação em abas na mesma página, painel de filtros e listagem com os estilos de carteira, 20 por página. Detalhe inline com situação, datas e impedimento legível; CTA de perfil somente quando a conta ainda existe. Diferencia acesso encerrado, limpeza concluída e retenção sem badges que prometam conformidade. Estados vazios, skeleton e erro contextual; sidebar e topbar compartilhadas. Nenhuma ação destrutiva ou botão sem implementação.
+
+Perfil Usuários admin: seção Controle de acesso com seletor obrigatório de motivo, botão destrutivo de bloqueio e botão de reativação, confirmação global, busy e status acessível. Própria conta e conta em encerramento têm explicação em lugar da ação indevida. Histórico de dez eventos recentes em painel existente, com motivo, data e responsável; sem formulário de texto livre ou ações de auditoria fictícias.
+
+Tratamento de privacidade: ação inline no detalhe com justificativa, referência operacional e confirmação compartilhada; estado pendente inicia análise, estado em análise permite concluir/indeferir, finais somente leitura. Atestado de atendimento obrigatório na conclusão; histórico até dez transições no painel. Proteção de conteúdo não salvo. Moderação admin reutiliza o editor e browser existentes, catálogo recolhido inicialmente, justificativa/confirmacão e proteção de revisão não salva; resultado preservado no filtro Todos após decisão.
+
+### Administração: largura compartilhada e cortesias (08/11/2026)
+
+Todas as rotas `/admin` usam a mesma `overviewContainer` das telas profissionais amplas: width100%, max2200px, margem automática e padding do shell. Cabeçalho permanece fora do scroll, sem scroll global ou compensações nas páginas. Cards e painéis ocupam a área disponível; formulários e gráficos podem manter limites locais de legibilidade.
+
+Cortesias integram painel recolhível do Financeiro, lista paginada10, formulário contextual em duas colunas no desktop e empilhado no celular. Identidade pré-selecionada via Usuários, vigência explícita, motivo obrigatório e confirmação compartilhada antes de gravar/revogar. Audit sob demanda, feedback por status e proteção de alterações não salvas. Cores/tokens/botões existentes, sem dependências ou tela financeira adicionais.

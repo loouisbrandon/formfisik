@@ -5,7 +5,7 @@ import type { Identity } from './sessions'
 // Server-owned entitlement from persisted provider-validated trial or paid period.
 // Subscription lifecycle is centralized; provider failure denies commercial access.
 export function destinationFor(user: Pick<Identity, 'role'>) {
-  return user.role === 'professional' ? '/dashboard' : '/conta'
+  return user.role === 'admin' ? '/admin' : user.role === 'professional' ? '/dashboard' : '/conta'
 }
 export async function accessFor(user: Pick<Identity, 'role'> & Partial<Pick<Identity, 'id'>>, fresh = false) {
   let status: Awaited<ReturnType<typeof subscriptionStatus>> | null = null

@@ -1,5 +1,5 @@
 export const subscriptionLabels = {
-  unavailable: 'Indisponível', none: 'Sem assinatura', checkout_pending: 'Contratação em andamento', trialing: 'Teste ativo', active: 'Assinatura ativa', payment_pending: 'Pagamento pendente', payment_failed: 'Pagamento recusado', past_due: 'Pagamento em atraso', cancel_scheduled: 'Cancelamento agendado', canceled: 'Cancelada', expired: 'Expirada', paused: 'Pausada', blocked: 'Acesso bloqueado',
+  courtesy: 'Cortesia', unavailable: 'Indisponível', none: 'Sem assinatura', checkout_pending: 'Contratação em andamento', trialing: 'Teste ativo', active: 'Assinatura ativa', payment_pending: 'Pagamento pendente', payment_failed: 'Pagamento recusado', past_due: 'Pagamento em atraso', cancel_scheduled: 'Cancelamento agendado', canceled: 'Cancelada', expired: 'Expirada', paused: 'Pausada', blocked: 'Acesso bloqueado',
 } as const
 export type SubscriptionState = keyof typeof subscriptionLabels
 export type SubscriptionView = {

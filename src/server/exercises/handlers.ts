@@ -1,3 +1,4 @@
+import {AdminOperationConflict} from '../admin/transaction-guard'
 import 'server-only'
 import {z} from '@/lib/validation'
 import {readSession,sessionToken} from '../sessions'
@@ -28,5 +29,5 @@ export function createExerciseHandler(operation:ExerciseOperation,gateway?:Billi
  if(operation==='edit'){const input=await body(schemas.exerciseEdit);return reply({exercise:await repo.updateExercise(user.id,id,input.version,repo.inputFields(input))},200)}
  if(operation==='status'){const input=await body(schemas.exerciseStatus);return reply({exercise:await repo.updateExercise(user.id,id,input.version,{state:input.state})},200)}
  if(operation==='request'||operation==='reviewDetail')return reply({request:await repo.getRequest(user.id,id,moderation)},200)
- return reply({request:await repo.reviewRequest(user.id,id,await body(schemas.reviewSchema))},200)
- }catch(e){if(e instanceof repo.ExerciseError)return reply({message:e.message},e.status);return failure(e,'exercise_operation_unavailable')}}}
+ return reply({request:await repo.reviewRequest(user.id,id,await body(schemas.reviewSchema),sessionToken(request.headers.get('cookie')))},200)
+ }catch(e){if(e instanceof AdminOperationConflict)return reply({message:'Sua autorização mudou. Entre novamente.'},403);if(e instanceof repo.ExerciseError)return reply({message:e.message},e.status);return failure(e,'exercise_operation_unavailable')}}}

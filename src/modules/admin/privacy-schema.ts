@@ -1,0 +1,11 @@
+import {z} from 'zod'
+export const privacyTabs={requests:'Solicitações',closures:'Encerramentos',erasures:'Eliminações e retenções',security:'Segurança'} as const
+export const privacyStates:Record<keyof typeof privacyTabs,Record<string,string>>={requests:{pending:'Pendente',processing:'Em análise',completed:'Concluída',denied:'Indeferida'},closures:{scheduled:'Agendado',closed:'Processado'},erasures:{pending:'Pendente',blocked:'Bloqueada',cleaning:'Em limpeza',waiting:'Aguardando',completed:'Concluída'},security:{disabled:'Bloqueio',enabled:'Reativação'}}
+export const privacyTypes:Record<string,string>={access:'Acesso aos dados',correction:'Correção',erasure:'Eliminação',closure:'Encerramento de conta',student:'Dados de aluno',professional:'Dados profissionais',owner_request:'Solicitação do titular',security_incident:'Incidente de segurança',administrative_review:'Revisão administrativa'}
+export const privacyBlockers:Record<string,string>={account_not_suspended:'Conta ainda habilitada',financial_retention:'Retenção financeira',shared_contribution:'Contribuição compartilhada',related_history:'Histórico relacionado',external_storage:'Armazenamento externo',quiescence:'Aguardando período de segurança',media_cleanup_required:'Limpeza de mídia pendente'}
+export const adminPrivacyQuery=z.object({tab:z.enum(['requests','closures','erasures','security']).default('requests'),q:z.string().trim().max(120).default(''),state:z.string().max(20).default('all'),period:z.enum(['all','7','30','90']).default('all'),sort:z.enum(['newest','oldest']).default('newest'),page:z.coerce.number().int().min(1).max(10000).default(1),detalhe:z.string().max(40).optional()}).strict().superRefine((q,c)=>{
+ if(q.state!=='all'&&!Object.prototype.hasOwnProperty.call(privacyStates[q.tab],q.state))c.addIssue({code:'custom',path:['state'],message:'Situação inválida para esta aba.'})
+ if(q.detalhe&&(q.tab==='security'?!/^[1-9]\d{0,18}$/.test(q.detalhe):!z.uuid().safeParse(q.detalhe).success))c.addIssue({code:'custom',path:['detalhe'],message:'Referência inválida.'})
+})
+export type AdminPrivacyQuery=z.infer<typeof adminPrivacyQuery>
+export function privacyHref(query:AdminPrivacyQuery){return '/admin/privacidade?'+new URLSearchParams(Object.entries(query).filter(([,value])=>value!==undefined).map(([key,value])=>[key,String(value)]))}

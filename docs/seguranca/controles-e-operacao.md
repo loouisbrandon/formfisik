@@ -101,3 +101,17 @@ A [auditoria local](auditoria-2026-11-08.md) acrescenta limites por conta às le
 ## Remediação complementar — 08/11/2026
 
 [Remediação](remediacao-2026-11-08.md): árvore npm sem advisories conhecidos; CSS do gerador preservado com licença, override restrito do globber, expiração pós-lock na troca de e-mail, grants027 transacionais, diagnóstico de ownership/CREATE e CI preparado com canários e PostgreSQL descartável. Trava de migration impede fallback divergente quando TEST_DATABASE_URL é informado. Validação local não materializa WAF, grants persistentes ou homologação de provedores; NO-GO externo permanece.
+
+## Consulta administrativa de privacidade — preparação local 08/11/2026
+
+Guard admin no layout e nas consultas de `/admin/privacidade`. Script de runtime preparado com SELECT de colunas mínimas de jobs de eliminação e eventos de bloqueio; sem grants de aprovação, processamento, lease, subject_id, referências operacionais ou objetos de storage. Regressão em papel restrito precisa demonstrar as quatro leituras e negação de colunas/DML operacionais. Essa preparação não aplica permissões em ambientes persistentes remotos nem homologa processamento; workers e resolução continuam em procedimento separado. O painel não constitui auditoria completa de login/infraestrutura ou comprovação de conformidade.
+
+## Controle administrativo de acesso — implementação local 08/11/2026
+
+Nova operação admin autenticada reutiliza trigger transacional de suspensão. Same-Origin/JSON/limites, guard de sessão e papel repetido dentro da transação, lock de concorrência, motivo enumerado e autoria auditada. Autossuspensão e perda do último admin disponível impedidas na interface/servidor. Impedimentos de encerramento/eliminação bloqueiam reativação. Autor e estados vêm do servidor; não expor token ou hash no cliente. Migration 032 local; grants preparados para autoria e inserção de eventos, com UPDATE/DELETE de histórico e processamento de eliminação fora do runtime. Essa evolução substitui a descrição anterior de painel estritamente de consulta apenas para bloqueio/reativação; demais ações continuam operacionais e separadas. Não homologa produção ou autoriza deploy.
+
+Decisões de privacidade admin: guard transacional de papel/sessão, lock da solicitação, estado esperado e transições explícitas. Histórico append-only pela aplicação, sem UPDATE/DELETE para runtime. Migration 033 somente local; grants preparados para status/referência/resolved_at e histórico. Aprovação de eliminação não chama worker e exige evidência persistida de job concluído. Moderação admin revalida sessão na transação e usa regras/versionamento já existentes; grants comuns de moderador continuam separados e revogáveis. Sem liberar bypass de assinatura/ownership de módulos profissionais.
+
+### Cortesias administrativas034
+
+Entitlement gratuito verificado no servidor por ambiente e relógio do banco; prazo não é claim do cliente. POST admin protegido por origem, schema estrito, sessão/role revalidadas e bloqueadas na transação, rate limit e lock canônico de Billing. Concessões não sobrepõem contratos/Checkout pendentes; revogação encerra sessões. Runtime não pode apagar grants ou modificar/apagar eventos, nem editar vencimentos. Permissões de INSERT e UPDATE(revoked_at) dependem da autorização de aplicação, assim como os demais domínios; não representam RLS por usuário final. Produção desabilitada. Migration/grants remotos e homologação externos pendentes. Evidência local não altera NO-GO015.

@@ -79,3 +79,5 @@ Staging externo: [Railway, banco restrito e Resend — configuração e evidênc
 Encerramento de conta: [regras, API, worker e retenções — 029](engenharia/exclusao-conta-2026-11.md). Implementação local, sem migração/deploy remoto implícito.
 
 Cadastro por código: [contratos, limites, compatibilidade e homologação — 030](engenharia/confirmacao-codigo-2026-11.md).
+
+Homologação convidada: [cortesia de staging, provisionamento e revogação — 031](engenharia/cortesia-staging-2026-11.md).

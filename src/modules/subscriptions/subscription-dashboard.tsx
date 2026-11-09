@@ -1,4 +1,5 @@
 'use client'
+import {ComplimentaryCard} from './complimentary-card'
 import {useFeedbackError} from '@/modules/feedback/hooks'
 import {errorFallbacks} from '@/modules/feedback/messages'
 import Link from 'next/link'
@@ -69,6 +70,7 @@ export function SubscriptionDashboard() {
   const copy = view ? stateCopy(view) : null
   const empty = view && ['none', 'checkout_pending', 'unavailable'].includes(view.state)
   const hasPaymentActions = view && (view.actions.portal || view.actions.paymentMethod || view.actions.payments || view.actions.regularize)
+  if(view?.state==='courtesy')return <ComplimentaryCard expiresAt={view.accessUntil}/>
   return <div className={`${styles.manage} space-y-5`}>
     <div className="flex flex-wrap items-center justify-between gap-3">
       <p id="billing-feedback" ref={feedbackRef} tabIndex={feedback ? -1 : undefined} role="status" className="flex min-h-6 items-center gap-2 rounded-lg text-xs leading-6 text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">

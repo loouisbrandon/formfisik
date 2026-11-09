@@ -1,11 +1,14 @@
 import 'server-only'
 import { subscriptionPlans, type PlanId } from '@/modules/subscriptions/plan'
+import { complimentaryAccess } from './complimentary'
 import { db } from '../db'
 import { billingConfigured, portalConfigurationId, stripeGateway, validPortalConfiguration, type BillingGateway } from './stripe'
 import { reconcileUser } from './service'
 import type { SubscriptionState, SubscriptionView } from '../../modules/subscriptions/status'
 
 export async function subscriptionStatus(userId: string, refresh = false, gateway?: BillingGateway, details = true): Promise<SubscriptionView> {
+  const courtesy=await complimentaryAccess(userId)
+  if(courtesy)return {state:'courtesy',planId:'pro',studentLimit:null,paidAccess:true,financialStatus:null,invoiceStatus:null,paymentIssue:null,trialStart:null,trialEnd:null,trialUsed:false,startedAt:null,periodStart:null,periodEnd:null,cancelAt:null,canceledAt:null,endedAt:null,accessUntil:courtesy.expiresAt,nextBillingAt:null,nextBillingAmount:null,cancellationPending:false,syncState:'not_applicable',verifiedAt:null,actions:{cancel:false,portal:false,paymentMethod:false,payments:false,regularize:false},invoices:[]}
   const configured = billingConfigured()
   const query = () => db().query(`SELECT a.trial_used_at,a.sync_state,a.last_sync_attempt_at,s.*,i.status AS invoice_status,i.payment_issue,
     EXISTS(SELECT 1 FROM billing_checkouts c WHERE c.account_id=a.id AND c.state IN ('creating','open')) AS checkout_pending,
