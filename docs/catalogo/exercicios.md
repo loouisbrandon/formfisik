@@ -33,3 +33,13 @@ A publicação inicial significa disponibilidade no catálogo do ambiente, **nã
 ## Disponibilização no banco local — 07/11/2026
 
 Diagnóstico por contagem no banco local configurado: `exercise_entries` e `exercise_datasets` estavam vazias. Executado o importador existente (`npm run exercises:import`), sem migration: 873 auditados, 868 publicados/inseridos, 5 excluídos pelas regras do manifesto e 106 sinalizados na auditoria. A operação não sobrescreve particulares e não inclui mídia. Disponibilidade local não substitui a revisão técnica profissional ou homologação de produção.
+
+## Disponibilização no staging — 13/11/2026
+
+Diagnóstico confirmado no PostgreSQL de staging: zero exercícios e zero datasets; deploy de código não executa importação operacional automaticamente. Responsável autorizou corrigir/publicar somente STA. Conta CLI e ambiente confirmados antes da operação; backup restrito `formfisik-before-catalog-20261113.dump` criado no volume PostgreSQL e catálogo de archive validado.
+
+Executado o auditor/importador canônico local para produzir suas próprias instruções parametrizadas em SQL, sem copiar dados do banco local. Valores serializados com prepareValue do pg e escaping SQL; o lote foi transmitido por stdin SSH ao PostgreSQL de staging, sem credenciais em arquivo/argumentos. Transação única, lock9009002 e pré-condição de catálogo ausente impedem aplicação concorrente/duplicada. Nenhuma definição/UUID particular foi sobrescrita; produção não acessada. Fonte, taxonomias, versões e eventos seguem insertExercise/snapshot existentes. Resultado:873 auditados,868 inseridos/publicados,5 excluídos,106 sinalizados na auditoria;868 versões e1 dataset persistidos. Não representa revisão técnica profissional de traduções/instruções nem homologação produtiva.
+
+Para novos ambientes, executar explicitamente a importação operacional do catálogo após migrations, antes do aceite de Exercícios/Treinos. Não inserir seed de catálogo em cada requisição, build ou startup do web; runtime mantém somente SELECT em exercise_datasets. O importador canônico continua sendo idempotente por dataset/source_id/digest. O lote excepcional de staging exige catálogo inicialmente ausente e aborta em reexecução; não é ferramenta de atualização de revisões.
+
+Verificação pela credencial runtime do web em staging: listExercises oficial retornou total868,20 itens na primeira página; busca “supino” retornou43 resultados. Manifesto/checksums e regras auditados novamente:868 aceitos/5 rejeitados. Não foi necessária mudança de frontend, backend, migrations ou permissões para resolver a ausência; a causa era carga operacional não realizada.
