@@ -788,3 +788,7 @@ Tratamento de privacidade: ação inline no detalhe com justificativa, referênc
 Todas as rotas `/admin` usam a mesma `overviewContainer` das telas profissionais amplas: width100%, max2200px, margem automática e padding do shell. Cabeçalho permanece fora do scroll, sem scroll global ou compensações nas páginas. Cards e painéis ocupam a área disponível; formulários e gráficos podem manter limites locais de legibilidade.
 
 Cortesias integram painel recolhível do Financeiro, lista paginada10, formulário contextual em duas colunas no desktop e empilhado no celular. Identidade pré-selecionada via Usuários, vigência explícita, motivo obrigatório e confirmação compartilhada antes de gravar/revogar. Audit sob demanda, feedback por status e proteção de alterações não salvas. Cores/tokens/botões existentes, sem dependências ou tela financeira adicionais.
+
+### Filtros de taxonomia pesquisáveis — 09/11/2026
+
+`SearchableSelect` reutiliza Combobox da dependência Base UI existente: trigger com valor selecionado, busca dentro do popup opaco, lista de altura limitada, check de seleção, estado sem resultados e navegação por teclado/Escape. Categoria, grupo muscular e equipamento no ExerciseBrowser compartilham o padrão, inclusive no seletor de Treinos. Digitar filtra apenas a taxonomia local; a consulta paginada de exercícios muda somente ao selecionar. “Todos” limpa o filtro. Sem nova dependência, mudança de autorização ou carregamento integral de exercícios.
