@@ -97,4 +97,16 @@ GRANT INSERT ON complimentary_access_grants TO :"runtime_role";
 GRANT UPDATE(revoked_at) ON complimentary_access_grants TO :"runtime_role";
 GRANT SELECT,INSERT ON complimentary_access_events TO :"runtime_role";
 GRANT USAGE ON SEQUENCE complimentary_access_events_id_seq TO :"runtime_role";
+-- 035: private product authoring, bounded files, immutable operational audit.
+GRANT SELECT,INSERT,UPDATE,DELETE ON professional_products,professional_product_files,professional_product_workouts TO :"runtime_role";
+GRANT SELECT,INSERT ON professional_product_events,professional_product_operations TO :"runtime_role";
+GRANT USAGE ON SEQUENCE professional_product_events_id_seq TO :"runtime_role";
+-- 036: private eCoach history, always scoped by owner in the application.
+GRANT SELECT,INSERT,UPDATE,DELETE ON ecoach_conversations,ecoach_turns TO :"runtime_role";
+GRANT SELECT,INSERT,DELETE ON ecoach_deleted_conversations TO :"runtime_role";
+GRANT SELECT,INSERT,UPDATE,DELETE ON ecoach_ai_requests,ecoach_proposals TO :"runtime_role";
+-- 039: owned inbox, drafts and authorized AI preparation; no channel secrets or delivery writer.
+GRANT SELECT,INSERT,UPDATE ON communication_assistance_settings,communication_inbox_threads,communication_inbox_messages,communication_inbox_rules,communication_inbox_jobs,communication_inbox_operations TO :"runtime_role";
+GRANT DELETE ON communication_inbox_threads TO :"runtime_role";
+GRANT SELECT,INSERT ON communication_inbox_events TO :"runtime_role";
 COMMIT;

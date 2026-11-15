@@ -81,3 +81,18 @@ Encerramento de conta: [regras, API, worker e retenções — 029](engenharia/ex
 Cadastro por código: [contratos, limites, compatibilidade e homologação — 030](engenharia/confirmacao-codigo-2026-11.md).
 
 Homologação convidada: [cortesia de staging, provisionamento e revogação — 031](engenharia/cortesia-staging-2026-11.md).
+
+Produtos do personal: [autoria privada, regras e contratos035](modulos/produtos.md). Catálogo/conteúdo/oferta local; comercialização e comprador futuros.
+
+- [eCoach — interface demonstrativa](modulos/ecoach.md)
+- [Visão do eCoach — o cérebro da FormFisik](produto/ecoach.md)
+
+- [Atendimento assistido do eCoach](modulos/atendimento-assistido.md): Central de Comunicação, conversas/leads, regras autorizadas de rascunho e requisitos dos canais externos (local, sem transporte homologado).
+
+## Store — vitrine pública
+
+[FormFisik Store](modulos/store.md):frontend editorial autorizado com placeholders para imagens futuras, sem operação de comércio eletrônico ou deploy.
+
+- [Escopo, abuso e consumo do eCoach](seguranca/ecoach-escopo-e-abuso.md).
+
+- [Plano de liberação web para produção — 14/11/2026](planejamento/plano-release-producao-2026-11-14.md).

@@ -16,7 +16,7 @@ import styles from './subscriptions.module.css'
 import { SubscriptionPeriod } from './subscription-period'
 
 type Action = 'cancel' | 'manage' | 'payment_method' | 'payments' | 'regularize'
-export function SubscriptionDashboard() {
+export function SubscriptionDashboard({billingMode='disabled'}:{billingMode?:'test'|'live'|'disabled'}) {
   const [attempt, setAttempt] = useState(0)
   const [comparison,setComparison]=useState<PlanSelection>(defaultSelection)
   const [view, setView] = useState<SubscriptionView | null>(null)
@@ -103,7 +103,7 @@ export function SubscriptionDashboard() {
             {view.actions.payments && <Button variant="outline" disabled={busy} className="h-auto min-h-12 w-full justify-start gap-3 whitespace-normal px-4 py-3 font-ui text-base" onClick={() => void action('payments')}><FileText className="size-4" aria-hidden="true" />Consultar faturas</Button>}
           </div>
           {!hasPaymentActions && <div className="mt-5 rounded-xl border border-border bg-muted/30 p-4"><p className="text-sm font-medium">Opções de pagamento indisponíveis</p><p className="mt-2 text-xs leading-6 text-muted-foreground">As ações aparecerão aqui quando estiverem disponíveis para sua assinatura.</p>{view.state === 'unavailable' && <Button variant="link" className="mt-2 h-auto min-h-11 whitespace-normal p-0 text-left" disabled={busy} onClick={refresh}>Tentar novamente</Button>}</div>}
-          {hasPaymentActions && <p className="mt-4 flex items-start gap-2 text-xs leading-6 text-muted-foreground"><ShieldCheck className="mt-1 size-4 shrink-0" aria-hidden="true" />Seus dados de pagamento são gerenciados com segurança pela Stripe. Use apenas cartões de teste neste ambiente.</p>}
+          {hasPaymentActions && <p className="mt-4 flex items-start gap-2 text-xs leading-6 text-muted-foreground"><ShieldCheck className="mt-1 size-4 shrink-0" aria-hidden="true" />Seus dados de pagamento são gerenciados com segurança pela Stripe. {billingMode==='test'?'Use apenas cartões de teste neste ambiente.':'Atualize seu cartão e consulte suas faturas na área segura de pagamento.'}</p>}
           {view.actions.cancel && <div className="mt-6 border-t border-border pt-4"><Button variant="ghost" disabled={busy} className="h-auto min-h-11 justify-start gap-2 whitespace-normal px-0 font-ui text-base text-muted-foreground hover:bg-transparent hover:text-foreground" onClick={() => dialog.current?.showModal()}><X className="size-4" aria-hidden="true" />Cancelar renovação</Button><p className="mt-1 text-xs leading-6 text-muted-foreground">Você mantém o acesso até o fim do período, se o teste ou pagamento estiver regular.</p></div>}
           {view.cancellationPending && <p role="status" className="mt-5 rounded-xl border border-border p-4 text-sm leading-7 text-muted-foreground">Seu pedido de cancelamento ainda não foi confirmado. Atualize a assinatura para conferir a situação.</p>}
         </BillingCard>

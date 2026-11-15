@@ -2,6 +2,12 @@
 
 Estado: produto alvo em consolidação; não homologado. A [estratégia](../estrategia/ecossistema-e-especialidades.md) define musculação e gestão de personal trainers como primeira especialidade completa, dentro de uma empresa multiesporte independente. O [inventário](inventario-funcional.md) registra o que existe hoje; o [roadmap](../planejamento/roadmap.md), o que falta.
 
+## Recorte autorizado para o lançamento web — 14/11/2026
+
+Decisão expressa do fundador: o primeiro lançamento atende o personal criando treinos e exportando PDF. O aluno não acessará/executará treino pela plataforma nesta fase; execução, séries/cargas e experiência do aluno ficam para o aplicativo futuro. Portanto, as linhas Execução e Acesso mobile da matriz abaixo pertencem ao resultado futuro completo e não são bloqueadores do recorte web autorizado. Não implementar portal/aplicativo nesta entrega. Permanecem os critérios aplicáveis de autorização, pagamentos SaaS, documentos, privacidade, operação e homologação do escopo exposto; esta decisão não declara todos os gates aprovados.
+
+O fundador relatou que um personal utilizou staging e os fluxos funcionaram normalmente. Registrar como evidência de teste profissional relatada, sem inferir cenários de cobrança, volume, segurança ou dispositivos não informados. Próxima sequência autorizada: planos/pagamento SaaS → financeiro do personal → revisão de produção controlada. Ver [entrega de pagamentos](../engenharia/assinaturas-ambientes-2026-11.md).
+
 ## Resultado para o profissional
 
 Permitir administrar alunos, serviços, treinos, avaliações, cobranças, agenda, acompanhamentos e relacionamento na FormFisik. A oferta vigente é o [Pro](../estrategia/modelo-de-negocio.md), sem novos preços ou planos nesta definição. Acesso mobile do aluno é parte do resultado alvo; web permanece prioridade de execução atual.

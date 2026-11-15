@@ -39,8 +39,9 @@ test('financial facts and forecasts remain distinct, bounded and read-only',{ski
   assert.equal(BigInt(result.estimateCents)-BigInt(before.estimateCents),BigInt(160488))
   assert.equal(result.chargeTotal-before.chargeTotal,7)
   assert.equal(result.movementTotal-before.movementTotal,13)
-  assert.equal(result.charges.length,5);assert.equal((await adminFinance(actor,{cobrancas:2})).charges.length,2)
-  assert.equal(result.movements.length,10);assert.equal((await adminFinance(actor,{movimentos:2})).movements.length,3)
+  // Other suites may lawfully retain financial records; pagination covers the full persisted ledger.
+  assert.equal(result.charges.length,Math.min(5,result.chargeTotal));assert.equal((await adminFinance(actor,{cobrancas:2})).charges.length,Math.min(5,Math.max(0,result.chargeTotal-5)))
+  assert.equal(result.movements.length,Math.min(10,result.movementTotal));assert.equal((await adminFinance(actor,{movimentos:2})).movements.length,Math.min(10,Math.max(0,result.movementTotal-10)))
   assert.equal(result.months.length,6)
   assert.equal(result.months.filter(m=>m.paidCents===null).length,2)
   assert.equal(result.months.filter(m=>m.estimateCents===null).length,3)

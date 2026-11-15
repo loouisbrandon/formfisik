@@ -1,4 +1,5 @@
 import 'server-only'
+import {billingEnvironment} from './environment'
 import {hasComplimentaryAccess} from './complimentary'
 import { randomUUID } from 'node:crypto'
 import type { PoolClient } from 'pg'
@@ -10,7 +11,7 @@ import { loadSnapshot, persistSnapshot, externalId, invoiceSubscription } from '
 import { assertPrice, BillingConflict, BillingUnavailable, checkoutUrl, type BillingGateway, stripeGateway, stripeSettings } from './stripe'
 
 function assertSession(session: Stripe.Checkout.Session, account: Account, attempt: Attempt) {
-  if (session.livemode || !session.id.startsWith('cs_test_') || session.customer !== account.stripe_customer_id || session.mode !== 'subscription' || session.metadata?.formfisik_account_id !== account.id || session.metadata?.formfisik_checkout_id !== attempt.id || session.client_reference_id !== account.id || (attempt.stripe_session_id && session.id !== attempt.stripe_session_id)) throw new BillingUnavailable()
+  if (session.livemode !== billingEnvironment().live || !session.id.startsWith(billingEnvironment().live?'cs_live_':'cs_test_') || session.customer !== account.stripe_customer_id || session.mode !== 'subscription' || session.metadata?.formfisik_account_id !== account.id || session.metadata?.formfisik_checkout_id !== attempt.id || session.client_reference_id !== account.id || (attempt.stripe_session_id && session.id !== attempt.stripe_session_id)) throw new BillingUnavailable()
 }
 async function applySession(client: PoolClient, account: Account, attempt: Attempt, session: Stripe.Checkout.Session, gateway: BillingGateway, event?: Stripe.Event, invoice?: Stripe.Invoice) {
   assertSession(session, account, attempt)
@@ -52,12 +53,12 @@ export async function startCheckout(userId: string, gateway: BillingGateway = st
     if (!account.stripe_customer_id) {
       if (Date.now() - account.created_at.getTime() > 23 * 3600000) throw new BillingConflict()
       const customer = await gateway.customer(account.id, user.rows[0].email)
-      if (customer.livemode || customer.metadata.formfisik_account_id !== account.id) throw new BillingUnavailable()
+      if (customer.livemode !== billingEnvironment().live || customer.metadata.formfisik_account_id !== account.id) throw new BillingUnavailable()
       await client.query('UPDATE billing_accounts SET stripe_customer_id=$2 WHERE id=$1', [account.id, customer.id])
       account.stripe_customer_id = customer.id
     }
     if (!attempt) {
-      // Verify configured TEST price/product, never take amount/trial/customer from browser.
+      // Verify configured environment, price/product, never take amount/trial/customer from browser.
       assertPrice(await gateway.price(settings.priceId), settings.priceId, settings.productId, true, selection)
       attempt = (await client.query(`INSERT INTO billing_checkouts(id,account_id,price_id,product_id,app_origin,expires_at,plan_id,billing_interval,amount)
         VALUES($1,$2,$3,$4,$5,to_timestamp($6),$7,$8,$9) RETURNING *`, [randomUUID(), account.id, settings.priceId, settings.productId, settings.origin, Math.floor(Date.now()/1000)+2100,selection.plan,selection.interval,planAmount(selection)])).rows[0] as Attempt
@@ -113,7 +114,7 @@ export async function reconcileUser(userId: string, gateway: BillingGateway = st
   })
 }
 export async function processBillingEvent(event: Stripe.Event, gateway: BillingGateway = stripeGateway()) {
-  if (event.livemode || event.account) throw new BillingUnavailable() // No Connect accounts in this product.
+  if (event.livemode !== billingEnvironment().live || event.account) throw new BillingUnavailable() // No Connect accounts in this product.
   const supported = ['checkout.session.completed','checkout.session.expired','customer.subscription.created','customer.subscription.updated','customer.subscription.deleted','customer.subscription.trial_will_end','customer.subscription.paused','customer.subscription.resumed','invoice.paid','invoice.payment_failed','invoice.payment_action_required','invoice.updated','invoice.finalized','invoice.voided','invoice.marked_uncollectible','customer.updated','payment_method.updated','payment_method.attached','payment_method.detached']
   const ignored = () => db().query("INSERT INTO billing_events(stripe_event_id,event_type,provider_created_at,outcome) VALUES($1,$2,to_timestamp($3),'ignored') ON CONFLICT DO NOTHING", [event.id,event.type,event.created])
   if (!supported.includes(event.type)) { await ignored(); return }

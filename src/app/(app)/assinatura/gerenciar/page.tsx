@@ -1,3 +1,4 @@
+import {billingDisplayMode} from '@/server/subscriptions/environment'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { redirect } from 'next/navigation'
@@ -10,5 +11,5 @@ export const metadata = { title: 'Minha assinatura | FormFisik', robots: { index
 export default async function ManageSubscription() {
   const user = await requireUser()
   if (user.role !== 'professional') redirect('/conta')
-  return <div className={styles.page}><SubscriptionHeader title="Minha assinatura" description="Seu plano, próximos vencimentos e faturas em um só lugar." active="manage"/><SubscriptionDashboard/><footer className="mt-6 border-t border-border pt-4"><Link href="/dashboard" className={billingLink}><ArrowLeft size={16} aria-hidden/>Retornar ao dashboard</Link></footer></div>
+  return <div className={styles.page}><SubscriptionHeader title="Minha assinatura" description="Seu plano, próximos vencimentos e faturas em um só lugar." active="manage"/><SubscriptionDashboard billingMode={billingDisplayMode()}/><footer className="mt-6 border-t border-border pt-4"><Link href="/dashboard" className={billingLink}><ArrowLeft size={16} aria-hidden/>Retornar ao dashboard</Link></footer></div>
 }

@@ -1,0 +1,22 @@
+import {z} from '@/lib/validation'
+import {text,youtubeId} from '../media/schema'
+export const formatLabels={ebook:'E-book / PDF',course:'Curso',workout:'Treino pronto',program:'Programa / método',physical:'Produto físico'} as const
+export const productStateLabels={draft:'Rascunho',ready:'Pronto para venda',archived:'Arquivado'} as const
+export const lessonSchema=z.object({id:z.uuid(),module:text(100).min(1),title:text(160).min(1),notes:text(3000),youtube:text(2048).refine(v=>!v||!!youtubeId(v),'Use um link HTTPS válido do YouTube.')}).strict()
+export const productFields=z.object({name:text(160).min(2),description:text(5000),kind:z.enum(['digital','physical']),format:z.enum(['ebook','course','workout','program','physical']),category:text(80),priceCents:z.int().min(0).max(100000000).nullable(),billing:z.enum(['once','monthly']),accessDays:z.int().min(1).max(3650).nullable(),sku:text(80),rightsConfirmed:z.boolean(),lessons:z.array(lessonSchema).max(40)}).strict().superRefine((v,c)=>{if((v.kind==='physical')!==(v.format==='physical'))c.addIssue({code:'custom',message:'Confira o tipo e o formato.'});if(v.kind==='physical'&&(v.lessons.length||v.billing!=='once'||v.accessDays!==null))c.addIssue({code:'custom',message:'Produto físico usa pagamento único e não contém aulas.'});if(new Set(v.lessons.map(x=>x.id)).size!==v.lessons.length)c.addIssue({code:'custom',message:'Aulas repetidas.'});if(v.format==='ebook'&&v.lessons.length)c.addIssue({code:'custom',message:'Use os arquivos PDF para o e-book.'})})
+export type ProductFields=z.infer<typeof productFields>
+export const emptyProduct=():ProductFields=>({name:'',description:'',kind:'digital',format:'ebook',category:'',priceCents:null,billing:'once',accessDays:null,sku:'',rightsConfirmed:false,lessons:[]})
+export const productQuery=z.object({q:text(120).default(''),kind:z.enum(['all','digital','physical']).default('all'),state:z.enum(['all','draft','ready','archived']).default('all'),page:z.coerce.number().int().min(1).max(10000).default(1),id:z.uuid().optional()}).strict()
+const base={id:z.uuid(),version:z.int().positive(),operationKey:z.uuid()}
+export const productCommand=z.discriminatedUnion('action',[
+ z.object({action:z.literal('save'),id:z.uuid().optional(),version:z.int().positive().optional(),operationKey:z.uuid(),fields:productFields}).strict(),
+ z.object({action:z.literal('state'),...base,state:z.enum(['draft','ready','archived']),confirmed:z.literal(true)}).strict(),
+ z.object({action:z.literal('file_remove'),...base,fileId:z.uuid(),confirmed:z.literal(true)}).strict(),
+ z.object({action:z.literal('workout_add'),...base,planId:z.uuid(),planVersion:z.int().positive()}).strict(),
+ z.object({action:z.literal('workout_remove'),...base,planId:z.uuid(),confirmed:z.literal(true)}).strict(),
+])
+export type ProductCommand=z.infer<typeof productCommand>
+export type ProductSummary={id:string;name:string;kind:'digital'|'physical';format:keyof typeof formatLabels;state:keyof typeof productStateLabels;version:number;priceCents:number|null;billing:'once'|'monthly';coverId:string|null;updatedAt:string}
+export type ProductDetail=ProductSummary&{fields:ProductFields;files:{id:string;name:string;kind:'cover'|'pdf';bytes:number}[];workouts:{planId:string;version:number;name:string;divisions:number;exercises:number}[];events:{version:number;kind:string;at:string}[];issues:string[]}
+export type ProductList={items:ProductSummary[];total:number;pages:number;page:number;summary:{total:number;draft:number;ready:number;archived:number}}
+export function readiness(f:ProductFields,files:{kind:string}[],workouts:number){const issues:string[]=[];if(f.description.trim().length<20)issues.push('Descreva o produto com pelo menos 20 caracteres.');if(!files.some(x=>x.kind==='cover'))issues.push('Adicione uma capa.');if(f.priceCents===null||f.priceCents<=0)issues.push('Informe um preço maior que zero.');if(!f.rightsConfirmed)issues.push('Confirme os direitos sobre os conteúdos.');if(f.format==='ebook'&&!files.some(x=>x.kind==='pdf'))issues.push('Adicione o PDF do e-book.');if(f.format==='workout'&&!workouts)issues.push('Associe um modelo de treino completo.');if(f.format==='course'&&!f.lessons.some(l=>l.youtube||l.notes.trim()))issues.push('Adicione pelo menos uma aula com conteúdo.');if(f.format==='program'&&!workouts&&!files.some(x=>x.kind==='pdf')&&!f.lessons.some(l=>l.youtube||l.notes.trim()))issues.push('Adicione um treino, PDF ou aula ao programa.');return issues}

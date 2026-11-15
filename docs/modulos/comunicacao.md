@@ -39,3 +39,7 @@ Mensageria bidirecional, identidade do aluno/Connect, anexos, e-mail profissiona
 ## Evolução visual e operacional — 06/11/2026
 
 [Relatório e manifesto](../engenharia/redesign-comunicacao-2026-11.md). Visão geral alinhada à referência do fundador: seis abas principais (Visão geral, Contatos, Comunicados, Modelos, Automações, Histórico), com Caixa de entrada, Notificações, Pendências e Indicadores acessíveis em Mais áreas e no seletor mobile. Toda a largura do shell, métricas compactas e coluna lateral de prioridades/modelos. Chat exclusivamente visual e desativado. Comunicados são textos individuais preparados, sem envio. Agendamento e automações externas indisponíveis até canal profissional homologado. Modelos podem ser duplicados e usados na preparação. Variáveis novas: aluno.primeiroNome e compromisso.data/hora, estas exigem contexto Agenda autorizado e versão exata. Histórico geral paginado, detalhes privados por aluno. Limites e evidências no relatório; produção segue NO-GO.
+
+## Evolução 039 — atendimento do eCoach, local
+
+As prévias Caixa de entrada/Automações foram substituídas pelo [atendimento assistido](atendimento-assistido.md): conversas privadas, registro manual de recebimentos, respostas revisáveis e regras que preparam rascunhos mediante autorização. Registro024, modelos, tarefas e notificações continuam canônicos. Não há conexão ou envio externo. Migration039, retenção/exclusão e contratos estão no documento vinculado; não equivale à homologação de canais.

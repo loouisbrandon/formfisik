@@ -611,3 +611,7 @@ details[open]>summary>.minus { display: block; }
 .catalogAccount:hover { text-decoration: underline; text-underline-offset: 4px; }
 @media(max-width:1000px) { .pricingCards { gap: 16px; } .pricingCard { padding: 22px; } .pricingCardTop { align-items: start; flex-direction: column; } }
 @media(max-width:760px) { .pricingCards { grid-template-columns: 1fr; max-width: 480px; margin-inline: auto; } .pricingCardTop { flex-direction: row; align-items: center; } .catalogPeriod { min-height: 0; } .catalogPrice { font-size: 40px; } .pricingHeader>p:not(.kicker) { font-size: 15px; } }
+
+/* Optional product identifier; the default marketing header is unchanged. */
+.productBadge{background:#cf005e;color:white;font-family:var(--font-campaign),Arial,sans-serif;font-weight:900;font-style:italic;font-size:15px;line-height:1;padding:9px 12px;border-radius:5px;transform:skew(-9deg);margin-left:-20px;flex-shrink:0}
+@media(max-width:700px){.productBadge{font-size:12px;padding:7px 9px;margin-left:-12px}}

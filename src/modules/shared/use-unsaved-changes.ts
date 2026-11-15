@@ -9,3 +9,6 @@ const navigate=(e:MouseEvent)=>{if(e.defaultPrevented||!drafts.size||e.ctrlKey||
 type Navigation=EventTarget&{traverseTo:(key:string)=>unknown}
 const historyNavigate=(e:Event)=>{const n=e as Event&{navigationType?:string;destination?:{key:string}};if(n.navigationType!=='traverse'||!drafts.size)return;if(traversing===n.destination?.key){traversing=undefined;return}if(!n.cancelable||!n.destination)return;n.preventDefault();if(pending)return;pending=true;const key=n.destination.key;void confirmAction(text()).then(accepted=>{if(accepted){traversing=key;(window as Window&{navigation?:Navigation}).navigation?.traverseTo(key)}}).finally(()=>{pending=false})}
 export function useUnsavedChanges(dirty:boolean,message:string){useEffect(()=>{if(!dirty)return;const key=Symbol('draft');if(!drafts.size){document.addEventListener('click',navigate,true);(window as Window&{navigation?:Navigation}).navigation?.addEventListener('navigate',historyNavigate)}drafts.set(key,message);return()=>{drafts.delete(key);if(!drafts.size){document.removeEventListener('click',navigate,true);(window as Window&{navigation?:Navigation}).navigation?.removeEventListener('navigate',historyNavigate)}}},[dirty,message])}
+
+// Reuse the same draft registry for in-page tabs and progressive panels.
+export async function confirmDiscardUnsavedChanges(){return !drafts.size||await confirmAction(text())}

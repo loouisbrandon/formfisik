@@ -88,3 +88,7 @@ Reauditados e revalidados localmente os fluxos SaaS, sem credenciais externas di
 ## Financeiro profissional020
 
 O webhook /api/stripe/connect/webhook é distinto do SaaS e usa STRIPE_CONNECT_WEBHOOK_SECRET próprio. A verificação criptográfica está implementada, mas transporte financeiro/Accounts v2 externo permanece bloqueado; apenas inserir segredo não habilita checkout ou onboarding. Não alterar credenciais nesta entrega. [Runbook e roteiro futuro](financeiro-profissional.md).
+
+## Atualização de ambientes — 14/11/2026
+
+As restrições históricas test/local acima foram substituídas pela [política explícita de modo, conta e domínio](../engenharia/assinaturas-ambientes-2026-11.md). Local permanece test por padrão; staging pode testar em HTTPS com configuração explícita. Produção live foi preparada no código, mas a conta real consultada não está habilitada e o catálogo live está vazio. Não basta trocar chaves; seguir a homologação documentada. Mantêm-se seis ofertas múltiplos planos, assinatura de webhook, reconciliação e separação do financeiro profissional.

@@ -1,4 +1,5 @@
 import 'server-only'
+import {billingEnvironment} from './environment'
 import { randomUUID } from 'node:crypto'
 import { locked, type Account } from './store'
 import { syncAccount, syncFailed } from './service'
@@ -59,7 +60,7 @@ export async function openPortal(userId: string, action: PortalAction, gateway: 
     }
     const returnUrl = `${origin}/assinatura/gerenciar?retorno=portal`
     const session = await gateway.portal({ customer: account.stripe_customer_id, configuration, return_url: returnUrl })
-    if (externalId(session.configuration) !== configuration || session.livemode || session.customer !== account.stripe_customer_id || session.return_url !== returnUrl) throw new BillingUnavailable()
+    if (externalId(session.configuration) !== configuration || session.livemode !== billingEnvironment().live || session.customer !== account.stripe_customer_id || session.return_url !== returnUrl) throw new BillingUnavailable()
     return { url: portalUrl(session.url) }
   })
 }

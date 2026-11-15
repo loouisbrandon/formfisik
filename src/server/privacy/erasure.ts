@@ -83,6 +83,10 @@ async function finalize(j:Job,lease:string){return transaction(async c=>{
  await c.query("UPDATE professional_import_rows SET result_id=NULL,student_link_id=NULL,state='erased',error_code='privacy' WHERE professional_id=$1 AND ($2::text='professional' OR student_link_id=$3)",[j.owner_id,j.scope,j.subject_id])
  if(j.scope==='professional'){await c.query('DELETE FROM professional_import_events WHERE professional_id=$1',[j.owner_id]);await c.query('DELETE FROM professional_import_rows WHERE professional_id=$1',[j.owner_id]);await c.query('DELETE FROM professional_imports WHERE professional_id=$1',[j.owner_id])}
  // Communication024 precedes its canonical references; no external delivery claims survive erasure.
+ const supportArgs=[j.owner_id,j.scope,j.subject_id]
+ await c.query("DELETE FROM communication_inbox_operations WHERE owner_id=$1 AND ($2::text='professional' OR thread_id IN(SELECT id FROM communication_inbox_threads WHERE owner_id=$1 AND student_link_id=$3))",supportArgs)
+ await c.query("DELETE FROM communication_inbox_threads WHERE owner_id=$1 AND ($2::text='professional' OR student_link_id=$3)",supportArgs)
+ if(j.scope==='professional'){await c.query('DELETE FROM communication_assistance_settings WHERE owner_id=$1',[j.owner_id]);await c.query('DELETE FROM communication_inbox_rules WHERE owner_id=$1',[j.owner_id])}
  const communicationArgs=[j.owner_id,j.scope,j.subject_id]
  await c.query("UPDATE communication_operations SET student_link_id=NULL,result='{}',digest=repeat('0',64),invalidated_at=clock_timestamp() WHERE professional_id=$1 AND ($2::text='professional' OR student_link_id=$3)",communicationArgs)
  for(const table of ['communication_reads','communication_events','communication_records'])await c.query("DELETE FROM "+table+" WHERE professional_id=$1 AND ($2::text='professional' OR student_link_id=$3)",communicationArgs)
@@ -128,10 +132,19 @@ async function finalize(j:Job,lease:string){return transaction(async c=>{
   const filter=table==='physical_assessment_events'?'assessment_id IN (SELECT id FROM physical_assessments WHERE professional_id=$1 AND student_link_id=$3)':table==='photo_record_events'||table==='photo_removal_operations'?'record_id IN (SELECT id FROM photo_records WHERE professional_id=$1 AND student_link_id=$3)':table==='student_administrative_events'?'link_id=$3':'student_link_id=$3'
   await c.query(`DELETE FROM ${table} WHERE professional_id=$1 AND ($2::text='professional' OR ${filter})`,args)
  }
+ if(j.scope==='student'){
+  await c.query("DELETE FROM ecoach_ai_requests WHERE owner_id=$1 AND result->'action'->'fields'->>'studentId'=$2",[j.owner_id,j.subject_id]);
+  const chats=await c.query("SELECT DISTINCT conversation_id FROM ecoach_turns WHERE owner_id=$1 AND context->'record'->>'kind'='student' AND context->'record'->>'id'=$2 UNION SELECT conversation_id FROM ecoach_proposals WHERE owner_id=$1 AND action->'fields'->>'studentId'=$2",[j.owner_id,j.subject_id]);
+  for(const chat of chats.rows){await c.query('INSERT INTO ecoach_deleted_conversations(id,owner_id) VALUES($1,$2) ON CONFLICT DO NOTHING',[chat.conversation_id,j.owner_id]);await c.query('DELETE FROM ecoach_ai_requests WHERE owner_id=$1 AND conversation_id=$2',[j.owner_id,chat.conversation_id]);await c.query('DELETE FROM ecoach_conversations WHERE owner_id=$1 AND id=$2',[j.owner_id,chat.conversation_id])}
+ }
  const records=await c.query("DELETE FROM student_links WHERE professional_id=$1 AND ($2::text='professional' OR id=$3) RETURNING student_id",args)
  if(records.rowCount)await c.query('DELETE FROM student_records WHERE professional_id=$1 AND id=ANY($2::uuid[])',[j.owner_id,records.rows.map(r=>r.student_id)])
  }
  if(j.scope==='professional'){
+  await c.query('DELETE FROM ecoach_ai_requests WHERE owner_id=$1',[j.owner_id])
+  await c.query('DELETE FROM ecoach_conversations WHERE owner_id=$1',[j.owner_id])
+  await c.query('DELETE FROM ecoach_deleted_conversations WHERE owner_id=$1',[j.owner_id])
+  await c.query('DELETE FROM professional_products WHERE owner_id=$1',[j.owner_id])
   await c.query('DELETE FROM exercise_video_sets WHERE owner_id=$1',[j.owner_id])
   await c.query('DELETE FROM media_events WHERE owner_id=$1',[j.owner_id])
   await c.query('DELETE FROM media_operations WHERE owner_id=$1',[j.owner_id])

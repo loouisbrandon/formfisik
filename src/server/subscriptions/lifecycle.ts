@@ -1,4 +1,5 @@
 import 'server-only'
+import {billingEnvironment} from './environment'
 import type Stripe from 'stripe'
 import type { PoolClient } from 'pg'
 import { assertPrice, BillingUnavailable, BillingConflict, type BillingGateway } from './stripe'
@@ -8,12 +9,12 @@ import { proPlan, subscriptionPlans, type PlanSelection } from '../../modules/su
 export const externalId = (value: string | { id: string } | null | undefined) => typeof value === 'string' ? value : value?.id
 export function invoiceSubscription(invoice: Stripe.Invoice) { return externalId(invoice.parent?.subscription_details?.subscription) }
 function assertInvoice(invoice: Stripe.Invoice, account: Account, sub: Stripe.Subscription) {
-  if (invoice.livemode || externalId(invoice.customer) !== account.stripe_customer_id || invoiceSubscription(invoice) !== sub.id || invoice.currency !== 'brl') throw new BillingUnavailable()
+  if (invoice.livemode !== billingEnvironment().live || externalId(invoice.customer) !== account.stripe_customer_id || invoiceSubscription(invoice) !== sub.id || invoice.currency !== 'brl') throw new BillingUnavailable()
 }
 export async function loadSnapshot(account: Account, attempt: Attempt, sub: Stripe.Subscription, gateway: BillingGateway, eventInvoice?: Stripe.Invoice) {
   const item = sub.items.data[0]
   const selection: PlanSelection = { plan: attempt.plan_id, interval: attempt.billing_interval }
-  if (sub.livemode || sub.customer !== account.stripe_customer_id || sub.metadata.formfisik_account_id !== account.id || sub.metadata.formfisik_checkout_id !== attempt.id || sub.items.data.length !== 1 || item.quantity !== 1 || !sub.trial_start || !sub.trial_end || sub.trial_end-sub.trial_start !== proPlan.trialDays*86400 || !item.current_period_start || !item.current_period_end || item.current_period_end <= item.current_period_start || !sub.start_date || sub.collection_method !== 'charge_automatically') throw new BillingUnavailable()
+  if (sub.livemode !== billingEnvironment().live || sub.customer !== account.stripe_customer_id || sub.metadata.formfisik_account_id !== account.id || sub.metadata.formfisik_checkout_id !== attempt.id || sub.items.data.length !== 1 || item.quantity !== 1 || !sub.trial_start || !sub.trial_end || sub.trial_end-sub.trial_start !== proPlan.trialDays*86400 || !item.current_period_start || !item.current_period_end || item.current_period_end <= item.current_period_start || !sub.start_date || sub.collection_method !== 'charge_automatically') throw new BillingUnavailable()
   // Archiving a price must not revoke an already contracted subscription.
   assertPrice(item.price, attempt.price_id, attempt.product_id, false, selection)
   const invoiceId = externalId(sub.latest_invoice)

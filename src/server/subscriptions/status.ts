@@ -6,7 +6,7 @@ import { billingConfigured, portalConfigurationId, stripeGateway, validPortalCon
 import { reconcileUser } from './service'
 import type { SubscriptionState, SubscriptionView } from '../../modules/subscriptions/status'
 
-export async function subscriptionStatus(userId: string, refresh = false, gateway?: BillingGateway, details = true): Promise<SubscriptionView> {
+export async function subscriptionStatus(userId: string, refresh = false, gateway?: BillingGateway, details = true, reconcile = true): Promise<SubscriptionView> {
   const courtesy=await complimentaryAccess(userId)
   if(courtesy)return {state:'courtesy',planId:'pro',studentLimit:null,paidAccess:true,financialStatus:null,invoiceStatus:null,paymentIssue:null,trialStart:null,trialEnd:null,trialUsed:false,startedAt:null,periodStart:null,periodEnd:null,cancelAt:null,canceledAt:null,endedAt:null,accessUntil:courtesy.expiresAt,nextBillingAt:null,nextBillingAmount:null,cancellationPending:false,syncState:'not_applicable',verifiedAt:null,actions:{cancel:false,portal:false,paymentMethod:false,payments:false,regularize:false},invoices:[]}
   const configured = billingConfigured()
@@ -15,7 +15,7 @@ export async function subscriptionStatus(userId: string, refresh = false, gatewa
     EXISTS(SELECT 1 FROM billing_cancellations x WHERE x.account_id=a.id AND x.state='pending') AS cancellation_pending
     FROM billing_accounts a LEFT JOIN billing_subscriptions s ON s.account_id=a.id LEFT JOIN billing_invoices i ON i.stripe_invoice_id=s.latest_invoice_id WHERE a.user_id=$1`, [userId])
   let row = (await query()).rows[0]
-  if (configured && (refresh || (row?.sync_state === 'error' ? !row.last_sync_attempt_at || Date.now()-row.last_sync_attempt_at.getTime()>60000 : row?.verified_at && Date.now()-row.verified_at.getTime()>300000))) {
+  if (reconcile && configured && (refresh || (row?.sync_state === 'error' ? !row.last_sync_attempt_at || Date.now()-row.last_sync_attempt_at.getTime()>60000 : row?.verified_at && Date.now()-row.verified_at.getTime()>300000))) {
     await reconcileUser(userId, gateway)
     row = (await query()).rows[0]
   }

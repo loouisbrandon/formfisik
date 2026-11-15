@@ -6,7 +6,7 @@ loadEnvConfig(process.cwd())
 async function main() {
   let connected=false
   try {
-    stripeSettings() // Reject absent/live/non-local configuration before reading or modifying billing data.
+    stripeSettings() // Reject mode/key/deployment mismatches before reading or modifying billing data.
     const pool=db(); connected=true
     const users=await pool.query('SELECT user_id FROM billing_accounts WHERE stripe_customer_id IS NOT NULL ORDER BY created_at')
     let failed=0

@@ -215,3 +215,50 @@ Refinamento autorizado durante a entrega: logos oficiais sem recoloração; verd
 ### Refinamento local — navegação e Exercícios (novembro/2026)
 
 IMPLEMENTADO: boundaries por módulo, navegação pendente e remoção da reconciliação Stripe redundante na navegação com snapshot canônico recente, preservando a validade de cinco minutos já existente. Refinamento delimitado de criação particular, contribuição oficial e acompanhamento de solicitações, sem refazer o catálogo ou mudar contratos. Evidências e limitações em [navegação e Exercícios](../engenharia/navegacao-e-exercicios-2026-11.md). Benchmark de produção e homologação Personal 1.0 continuam pendentes; prioridade de desempenho antes do lançamento, sem alterar o NO-GO015.
+
+### Produtos do personal035 — 13/11/2026
+
+Exceção estratégica expressa do fundador: iniciar autoria privada do catálogo de produtos do personal antes do fechamento Personal1.0. Reutilizar visual, shell, editor/modelos de treino e controles existentes. Escopo: digital/físico, capa/PDF, aulas textuais/linksYouTube, snapshot de modelos, oferta configurada e estados privados. Não inclui venda, pagamento, consumidor, estoque/frete ou hospedagem de cursos. [Módulo/contratos e limitações](../modulos/produtos.md). Integração comercial/Stream e marketplace exigem autorização/entrega posteriores. NO-GO015 permanece. Não refaz domínios019/020 nem trata planos SaaS como produto do personal.
+
+### eCoach — prévia autorizada
+
+PREPARADO localmente: interface de conversa para personal, sem IA conectada. Integração real, ferramentas, anexos privados e comunicação externa permanecem NÃO IMPLEMENTADOS e exigem escopo e validações próprios; não alteram o foco Personal 1.0 nem o NO-GO vigente.
+
+Entrega 1 eCoach/Finder: interface contextual e memória de conversa compartilhada, demonstrativa e local. Próxima proposta: IA com consultas somente leitura, iniciando pelo Financeiro após definição de provedor, custo e tratamento de dados. Ações e mensagens externas permanecem futuras e não autorizadas por esta entrega.
+
+Preparação local de permissões eCoach: modal no primeiro envio e Configurações → eCoach, persistência nas preferências existentes, níveis leitura/criação/criação e edição. Próxima entrega pode incluir ferramentas de escrita autorizadas e propostas revisáveis; a preferência não é autorização para implementar integrações financeiras, exclusão ou mensagens externas nesta etapa.
+
+Etapa 1 eCoach (local): histórico e contexto implementados com contratos e privacidade em docs/modulos/ecoach.md. Antes da etapa 2: definir provedor, custos/retenção, políticas de ferramentas e confirmações. Não implica autorização para integração externa, operação financeira ou deploy.
+
+
+### eCoach — etapa 2 local (2026-11-13)
+
+PREPARADO para integração configurável OpenAI/Anthropic, com adaptadores e ferramentas limitadas implementados e testes controlados; inferência externa NÃO HOMOLOGADA. IA desativada por padrão. Pro/cortesia, permissões, consentimento, isolamento e confirmação de propostas de rascunho no servidor. Sem pagamento, exclusão ou comunicação automáticos. Solicitações/propostas com prazo de 24h e limpeza operacional necessária. Contratos, finalidade, retenção, configuração e pendências em [eCoach](../modulos/ecoach.md#etapa-2--integração-configurável-e-ferramentas-limitadas). Sem deploy; NO-GO 015 preservado.
+
+### eCoach — gestão interna autorizada (14/11/2026)
+
+OpenAI escolhido. Conectar os domínios existentes de treino, modelos de anamnese e agenda ao motor de propostas, com confirmação transacional e autorização atual, sem tabelas/dependências novas. Consultas sem respostas clínicas; rascunhos de anamnese sem publicação/envio; agenda com prévia canônica, compromissos pessoais/bloqueios/atendimentos e remarcação de uma ocorrência. [Contratos e limites](../modulos/ecoach.md#gestão-interna--14112026). Inferência externa e qualidade do modelo dependem de configuração/homologação; demais módulos e canais externos são entregas posteriores. Não altera NO-GO015 ou autoriza deploy.
+
+- 14/11/2026 — eCoach/Finder: compositor compartilhado com stop, menu de anexos, drop verde e ditado temporário (IMPLEMENTADO local). Sem dependência/migration nova; leitura externa e transcrição reais dependem de resolver insufficient_quota e homologar o provedor. Testes controlados de UI/backend não substituem homologação. Detalhes e limites em `docs/modulos/ecoach.md`; NO-GO015 permanece.
+
+- 14/11/2026 — etapa2 do eCoach: atendimento assistido IMPLEMENTADO localmente na Comunicação com inbox privado, alunos/leads, revisão de respostas e regras de preparação autorizada. Migration039 somente local; sem transporte real ou envio autônomo, pois nenhum canal foi preparado pelo responsável. Conexões/recepção externa/outbox aguardam configuração e homologação próprias. Estudo posterior de contexto/segurança da IA não dispensa guards atuais. Fonte: `docs/modulos/atendimento-assistido.md`; NO-GO015 inalterado.
+
+### Store — vitrine pública autorizada, 14/11/2026
+
+Frontend editorial em`/store`, conforme referência do fundador:badgeSTORE, hero, categorias, vitrines, campanhas, kit e rodapé com15 placeholdersEm breve. ReutilizaHeader/marca/fonte da landing principal, sem checkout, estoque, conta de comprador, newsletter funcional ou serviços externos. Escopo não altera homologaçãoPersonal1.0 nem antecipa marketplace multiesporte. Ver[Store](../modulos/store.md). Próxima etapa depende das imagens fornecidas; operação comercial exige catálogo/preços/condições e autorização próprios.
+
+### eCoach — escopo e custo
+
+IMPLEMENTADO localmente: política de esporte, saúde informativa e gestão do personal, recusas locais, ferramentas por intenção e cotas compartilhadas. Pendente homologação com provedor real e avaliação recorrente de ataques semânticos; não habilita alunos ou canais externos. Evidências e limites em [política de escopo](../seguranca/ecoach-escopo-e-abuso.md).
+
+### Store — listagens por departamento,14/11/2026
+
+Escopo autorizado de frontend:três listagensRoupa/Acessórios/Suplementação no mesmo renderer,com tipos por filtro,links da vitrine,busca e ordenação editorial. Sem nova operação comercial,estoque,checkout ou backend. Reutiliza8 prévias eStoreShell; suplementação aguarda produtos reais. Ver[móduloStore](../modulos/store.md). Catálogo comercial e contratos produtivos seguem entregas posteriores,sem alterar gatesPersonal1.0.
+
+### Plano de liberação — 14/11/2026
+
+Avaliação atual do candidato, distinção SaaS/financeiro profissional/produtos, estado Railway e proposta em três entregas no [plano de produção](plano-release-producao-2026-11-14.md). NO-GO mantido; plano não autoriza deploy/operação financeira nem declara Personal 1.0 homologada.
+
+### Recorte e pagamentos — decisão do fundador em 14/11/2026
+
+Lançamento web com criação/prescrição e PDF, sem acesso/execução do aluno (aplicativo futuro). Relato de teste profissional em staging registrado. Sequência: SaaS planos/pagamento → financeiro profissional → produção controlada. [Implementação e impedimentos externos](../engenharia/assinaturas-ambientes-2026-11.md). Não confundir suporte de modo live no código com conta Stripe habilitada ou produção homologada.

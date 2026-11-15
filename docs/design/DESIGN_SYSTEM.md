@@ -792,3 +792,146 @@ Cortesias integram painel recolhível do Financeiro, lista paginada10, formulár
 ### Filtros de taxonomia pesquisáveis — 09/11/2026
 
 `SearchableSelect` reutiliza Combobox da dependência Base UI existente: trigger com valor selecionado, busca dentro do popup opaco, lista de altura limitada, check de seleção, estado sem resultados e navegação por teclado/Escape. Categoria, grupo muscular e equipamento no ExerciseBrowser compartilham o padrão, inclusive no seletor de Treinos. Digitar filtra apenas a taxonomia local; a consulta paginada de exercícios muda somente ao selecionar. “Todos” limpa o filtro. Sem nova dependência, mudança de autorização ou carregamento integral de exercícios.
+
+### Produtos do personal — 035 (13/11/2026)
+
+Operação → Produtos usa o shell e a largura ampla existentes, cards/painéis e filtros de portfolio.module.css, Button/action/control, fontes, cores, skeleton e feedback compartilhados. Catálogo12/página, capa16:9 privada, formato/situação/preço, CTA Gerenciar; vazio com Criar primeiro produto. Cadastro em quatro seções (Informações, Conteúdo, Oferta, Prévia), metadados/capa em duas colunas desktop e empilhados mobile. Aulas em details ordenados, no máximo40, e conteúdo de treino sob demanda com WorkoutView. Sem CSS global ou rolagem externa própria. Confirmações antes de estados/remoção e guard de rascunho preservados. Prévia privada explicita ausência de checkout; preço e mensalidade nunca representam cobrança iniciada. Direitos, limites de upload, situação e pendências sempre textuais além das cores.
+
+### eCoach — chat demonstrativo
+
+Interface local em `/ecoach`: cabeçalho com identidade e badge Prévia, grade de seis sugestões (3/2/1 colunas), conversa em balões e compositor com controles de formatos previstos. Reutiliza tokens de superfície, borda, verde primário, tipografia e Button existentes; ícones Lucide. Texto explícito diferencia demonstração de funcionalidades reais. Foco visível, redução de movimento, Enter/Shift+Enter e rolagem exclusiva do shell. Não utiliza chat flutuante nem shell próprio.
+
+O eCoach ocupa toda a área principal do shell, sem card externo, borda ou largura máxima de página. Cabeçalho livre, apresentação centralizada e compositor com largura de leitura limitada. O shell mantém sidebar/topbar e rolagem em `#app-content`; em alturas reduzidas o conteúdo cresce dentro dessa área.
+
+Na navegação, eCoach aparece primeiro em Gestão com ícone Brain. O estado inativo mantém fundo verde suave e texto verde, inspirado no selo de plano; seleção mantém o destaque verde sólido padrão e `aria-current`.
+
+### Finder com eCoach
+
+O painel existente recebe alternância Buscar/eCoach com `aria-pressed`, ação explícita Perguntar ao eCoach e indicador de contexto do módulo. Reutiliza ECoachChat em variante compacta, tokens, ícones e compositor; cabeçalho com nova conversa, expandir e fechar. Busca e chat permanecem modos explícitos, sem inferência automática da intenção. Clique fora exige pointerdown e pointerup no backdrop para não fechar ao arrastar de dentro para fora. Conteúdo tem rolagem local limitada à viewport; Esc/Ctrl+K devolvem foco e a tela permanece aberta. Conversa e rascunho são compartilhados com a página completa em memória privada.
+
+### Permissões eCoach
+
+Dialog de primeiro envio e seção de configurações reutilizam o mesmo grupo de radios (`PermissionControls`). Três cartões com borda, descrição e destaque verde na escolha: somente leitura, criação, criação e edição. Padrão inicial restritivo; confirmação explícita para salvar. Dialog com título acessível, Esc/cancelamento sem perda do rascunho, foco devolvido e área rolável limitada à viewport. Mensagem permanente identifica a natureza demonstrativa e separa permissões do eCoach da role admin.
+
+### Rolagem de conversa eCoach
+
+A área eCoach utiliza a altura disponível no ProfessionalShell. Cabeçalho e compositor ficam fora da rolagem do histórico; somente a transcrição rola dentro do conteúdo controlado do shell, sem rolagem do documento. No Finder, o mesmo componente respeita a altura do painel. Ao enviar uma mensagem, acompanha o fim; ao subir para ler, mantém a posição e oferece “Ir para as últimas mensagens”. ResizeObserver mantém o fim visível em redimensionamentos quando o acompanhamento está ativo. Sem animação obrigatória. Em altura reduzida/texto ampliado, cabeçalho e compositor têm limites locais de altura e rolagem para preservar acesso aos controles.
+
+### Respostas e efeitos eCoach
+
+Apenas mensagens do personal usam balão; respostas do eCoach ficam diretamente sobre o canvas, sem borda ou fundo. Entrada breve por opacidade/deslocamento, indicador de três pontos e cursor discreto acompanham uma revelação progressiva do texto demonstrativo. Estados Pensando, Estruturando e Escrevendo são simulações explícitas, sem sugerir consulta real a registros. `prefers-reduced-motion` elimina animações e revela a resposta integral após uma indicação curta. `aria-busy` no log evita anunciar cada fragmento; status separado anuncia as etapas. Timer único da conversa compartilhada, cancelado ao limpar ou desmontar o shell.
+
+Filtros de Contratações em andamento (Consultorias): busca e situação compactos de 38 px no desktop, fonte de 12 px, espaçamento de 8 px e texto da situação sem quebra. Em celular, largura total e altura de 44 px preservam alvo de toque. Regra local, sem reduzir controles de formulários ou alterar filtros/paginação.
+
+### eCoach — histórico e contexto persistentes
+
+Ação Conversas no cabeçalho da página e do Finder abre lista limitada à altura disponível, com skeleton compartilhado, título/data, renomear/excluir e paginação discreta somente quando necessária. Renomear usa dialog curto com Button e tokens existentes; exclusão reutiliza confirmação global. Histórico não cria uma segunda sidebar permanente. Nova conversa preserva as anteriores; rascunho exige aviso antes de descarte. Barra de contexto apresenta módulo, período/filtros suportados e registro de referência; permite remover/reativar e mostra snapshot na mensagem do usuário. Nenhuma informação financeira é simulada como dado real.
+
+
+### eCoach — revisão de proposta
+
+Dialog nativo com tokens existentes, Button e LoadingSkeleton, largura máxima 760px e altura 85dvh, rolagem local. Mostra identificação do aluno/modelo, objetivo, datas, observações, divisões, exercícios, séries e grupos; conteúdo técnico completo em seção recolhível. Confirmação explícita salva somente rascunho; estados aplicada/recusada/expirada e erros permanecem no painel. Links de fontes discretos abaixo da resposta. A prévia continua identificada; integração configurada usa selo IA e aviso de revisão.
+
+### Revisão eCoach por domínio — gestão interna
+
+O mesmo dialog de proposta serve treino, anamnese e agenda, preservando largura, tokens, foco, teclado, scroll local e botões existentes. Anamnese organiza perguntas em seções recolhíveis e mostra tipos/alternativas/regras; agenda usa resumo em lista de definição com data, fuso, duração e recorrência. Campos técnicos continuam sob demanda; confirmação e erros ficam no mesmo painel. Sem novas páginas ou sistema visual paralelo.
+
+### Compositor eCoach/Finder — mídia
+
+Reutilizar `ECoachChat` e `useCoachMedia`, sem composer paralelo: ação principal 38 px alterna seta/stop; gravação mostra onda real, tempo, X e pausa com rótulos acessíveis. Anexo único abre painel opaco ancorado acima do botão, fecha fora/Escape; imagens e PDFs entram como texto revisável. Drop usa overlay local à workspace, borda primary e blur radial verde, pointer-events:none e contador de drag para evitar piscar entre filhos. Nunca ocupar o scroll global. Controles têm foco visível; animações respeitam reduced-motion. Onda silenciosa permanece baixa, sem animação aleatória simulando voz.
+
+### Atendimento assistido na Central de Comunicação
+
+Reutilizar a área, tokens, Button, campos, Skeleton, Feedback e Pagination já existentes. Caixa com lista lateral e transcript limitado (20 mensagens/página); abaixo de 900px alternar lista/conversa mantendo voltar e filtros. Estados textuais obrigatórios: recebida manual, rascunho não enviado, texto aprovado não enviado, descartado. Bordas primary discretas para saída, superfície neutra para recebida; nenhuma cor ou ícone isolado declara entrega. Regras/consentimento/conexões na aba Automações, instruções e revisões sob demanda. Cards de conexão nunca mostram “conectado” sem transporte homologado. Botões de envio indisponíveis têm explicação; servidor também bloqueia. Diálogos e proteção de rascunhos usam o serviço compartilhado, inclusive navegação entre painéis da mesma página. Usar o ProfessionalShell sem overflow global.
+
+### Store — vitrine pública de lançamento
+
+`/store` usa marca oficial, fonte de campanhaExo2 compartilhada eHeader com variação opcional de navegação/ações. BadgeSTORE magenta#CF005E com texto branco itálico, cantos discretos e inclinação, separado do asset original. Pretos/brancos alternados, linhas de seção eCTAs magenta locais; não redefinir tokens operacionais. Branco sobre magenta recebe contraste AA. Hero/campanhas possuem textoHTML independente de futura imagem.15 mídias recebem placeholders estáticosEm breve, sem skeleton que sugira carregamento. Vitrines4 colunas no desktop/2 no celular; imagens e banners preparados para recortes próprios. Recursos futuros são explicitamente indisponíveis; links sempre possuem destino real. Menu/foco/Escape reutilizados da landing. Preservar a rota principal sem inserir loginSaaS como conta de comprador.
+
+### Orientação de escopo do eCoach
+
+Respostas locais de política usam a mesma tipografia e superfície de resposta do assistente, com identificação “orientação de escopo”, sem simular pensamento ou digitação. O menu de anexos indica PDF com texto selecionável; mantém os componentes e foco existentes.
+
+Store — escala ampliada: vitrines com largura externa até1920px e recuos fluidos20–60px; hero com conteúdo até1800px e altura fluida580–900px. Títulos de seção36–64px e campanhas até88px; nomes de produtos18px desktop/14px mobile, texto auxiliar15px e rodapé15px. Banners340–500px, CTA com respiro55px e footer64px no desktop. Cards e espaçamentos crescem conjuntamente; preservar2 colunas mobile, quebra de texto e ausência de overflow. Alteração restrita aoCSSModule daStore, sem ampliar tokens globais ou fontes da área profissional.
+
+### Histórico lateral do eCoach
+
+Na tela completa, “Conversas” alterna um painel à esquerda dentro do workspace. O painel participa do layout flex e reduz a largura útil do chat, sem backdrop ou sobreposição. Usa superfície `card`, borda lateral, seleção em `primary`, rolagem independente e animação curta de entrada (desativada com redução de movimento). Em larguras reduzidas mantém duas áreas sem expandir a rolagem externa; o conteúdo do chat adapta-se por container query. O Finder conserva seu histórico compacto. O botão informa `aria-expanded`/`aria-controls`; painel fechado sai da navegação por teclado.
+
+### Store — listagens compartilhadas por departamento
+
+Roupas/Acessórios/Suplementação reutilizam shell e cards daStore. Cabeçalho editorial escuro com título de campanha, breadcrumb, seletor de departamento, filtros porradio emfieldset e busca/ordenação acima do grid. Magenta nas ações e seleção; campanha de suplementação admite acento verde-lima sem alterar tokens globais. Contagem descreveprévia de produto, não estoque. Cards3 colunas desktop,2 tablet/mobile; sidebar vira disclosure nativo mobile. Estado vazio oferece recuperação concreta e não anuncia vendas inexistentes. Filtros naURL, foco visível e contagem anunciada; sem preço/cor/tamanho fictício. Slot de imagem da listagem mais vertical reutiliza o placeholder estático, mantendo conteúdo textual fora da mídia.
+
+Store —hero com foto fornecida: mídia1916×821 centralizada,largura máxima igual à original,altura automática e redução proporcional. Duas máscaraslinear-gradient commask-composite:intersect integram as quatro bordas ao fundo#111113,semblur; camada escura lateral mantém legibilidade do texto. Em celular,a mídia se posiciona no fluxo abaixo da chamada para preservar os dois modelos sem recorte. Não aplicar filtros à estampa nem ampliar a imagem para preencher monitores maiores. Texto não é incorporado à fotografia.
+
+
+Store — refinamento da hero: altura desktop reduzida para440–720px, fotografia preenchendo a altura sem máscara vertical e deslocada3% à direita. Máscara apenas nas laterais, sobre fundo radial vinho/rosa escuro inspirado no neon. Proporção preservada; mobile mantém foto integral no fluxo.
+
+
+Store — tipografia da hero: título condensado em Bebas Neue já carregada no layout, peso visual forte e inclinação CSS de9graus; frase integral branca e risco magenta irregular com clip-path sob MENTALIDADE. Subtítulo Montserrat semibold itálico. Texto continua HTML selecionável/acessível, sem imagem de texto ou nova dependência. Botões mantêm o padrão existente.
+
+
+Store — imagens das vitrines: quatro categorias e três produtos utilizam assets fornecidos pelo fundador em next/image, compartilhados com as listagens. Categorias usam cover com contraste inferior reforçado; produtos usam contain para preservar a peça. Sete placeholders permanecem (straps, quatro itens do kit e dois banners). Foto da camiseta branca não substitui o produto Black; reservada até definição editorial. Arte de suplementos é conceitual, sem confirmar fórmula, benefício ou disponibilidade comercial.
+
+
+Store — vitrine Mais desejados com5 colunas desktop,3 tablet e2 mobile. Quinta prévia Compression FK Black reutiliza a imagem existente. Fotografias de produto usam dimensões naturais, largura100% e altura automática: sem faixas laterais nem recorte; alturas variam conforme a proporção original. Categoria Oversized recebe camiseta branca; produto Black preserva sua fotografia. Catálogo compartilhado passa a9 prévias (3 roupas,6 acessórios).
+
+
+Store — padronização final de Mais desejados: cinco cards de mesma altura por linha, mídia quadrada (referência do menor card anterior), object-fit:cover e foco vertical30%; placeholder também quadrado. Informações com altura mínima100px e expansão uniforme para nomes com quebra. Recorte proporcional das fotos verticais aceito nesta revisão; sem faixas laterais. Regra limitada à vitrine, sem mudar imagens das categorias ou listagens.
+
+
+Store — hover da landing: categorias e cards das vitrines ampliam1,025×, com sombra suave e foto1,04× dentro da mídia recortada. Transform não altera o grid; foco por teclado nas categorias recebe o mesmo destaque. Hover limitado a ponteiro fino; movimento reduzido desativa zoom e transição. Cards de produto continuam prévias, sem simular ação de compra.
+
+
+Store — primeiro banner com foto do casal fornecida pelo fundador em next/image. Desktop preserva proporção de campanha3:1, chamada à direita e gradiente escuro para contraste. Mobile exibe foto integral antes do texto para manter os dois modelos visíveis e leitura. Mídia decorativa; frase permanece HTML. Cinco placeholders restantes (kit e segundo banner). Origem e hash no manifesto de mídias.
+
+
+Store — primeiro banner refinado: altura280–480px, imagem proporcional em contain, sem zoom/recorte, deslocada3% à esquerda e transição para fundo preto à direita. Título em Bebas Neue com inclinação9graus, ambas as linhas brancas; risco magenta irregular mais espesso sob É IDENTIDADE. Mobile conserva foto integral e texto no fluxo.
+
+
+Store — quatro fotos do kit fornecidas pelo fundador: bolsa,toalha,garrafa,munhequeira. Componentes compartilhados com acessórios; dimensões intrínsecas, largura100% e altura automática, sem recorte/estiramento. Cards acompanham a foto e alinham base das informações com flex. Hover mantém zoom do card, mas desativa zoom interno da imagem no kit para preservar todas as bordas. Apenas o segundo banner continua com placeholder. Assets e SHA-256 no manifesto.
+
+
+Store — segundo banner com arte zumbi fornecida pelo fundador, integral em contain, limitada à dimensão original e posicionada à esquerda. Fundo preto/rosa escuro e transição gradual da borda direita. Reutiliza tipografia Bebas Neue inclinada e risco irregular do primeiro banner; segunda linha e risco verde-lima. Desktop com texto à direita; mobile empilha foto integral e chamada. Todas as16 mídias da landing agora têm imagens; sem placeholders. Estado comercial permanece lançamento em breve.
+
+
+Store — correção da fusão do segundo banner: máscara aplicada à caixa real da imagem proporcional, e não ao espaço vazio de contain, com fade amplo45–100% até fundo uniforme#080608. Frase completa em uma linha, sem br explícito, tipografia fluida e risco verde; mobile reduz texto para preservar a linha sem overflow.
+
+
+Store — frase do segundo banner ampliada para38–100px (4,8vw), ocupando57% da largura e começando junto à transição da imagem. Uma linha desktop; escala mobile preservada para evitar overflow.
+
+
+Store — footer reutiliza badgeSTORE do header junto à logo, com link para/store. Faixa Entre para o movimento compacta: conteúdo centralizado,14px de padding vertical desktop, título22–32px em linha e texto auxiliar12px; botão40px. Mobile reorganiza com espaçamento8px, mantendo leitura e sem coleta ativa.
+
+
+Store Roupas — listagem compacta com5 colunas desktop (>1100px),3 tablet e2 mobile, gap14/10px, informações12px e nomes14px; fotos proporcionais.
+
+Store — detalhe público: galeria proporcional sem recorte à esquerda e informações à direita; uma coluna abaixo de800px. Bebas Neue inclinada no título, magenta nas ações e rótulos, superfícies claras; preço ausente descrito textualmente. Descrição/entrega/avaliações em3 painéis desktop e fluxo mobile. Galeria com botões de miniaturas apenas quando houver múltiplas imagens, aria-pressed e foco visível. Cards com link estendido, hover de elevação e redução de movimento. Reutiliza StoreShell sem recursos operacionais do shell profissional.
+
+O histórico completo do eCoach acompanha a largura de 18rem da navegação principal no desktop e começa imediatamente abaixo da topbar do sistema. Cabeçalho, contexto, mensagens e compositor compõem a coluna à direita, deslocada integralmente. Título de 16px, itens e estado vazio de 14px, texto auxiliar de 12px e controles com alvo mínimo de 36px tornam a lista legível. Em mobile, a largura do histórico passa a 40% para preservar espaço de conversa, com cabeçalho adaptável e rolagem interna.
+
+Store — ampliação de fotos em dialog nativo escuro com backdrop, botão fechar44px, indicador de imagem e controles anterior/próxima44px. Miniaturas80px, seleção magenta; acionador com lupa e foco visível. Zoom1,8× por ponteiro/clique, movimento reduzido sem animação. Foto principal até620px e92% da coluna.
+
+### Card flutuante de anexos do eCoach
+
+O menu do compositor oferece “Ver anexos do chat”, abaixo de imagem e PDF. Ao adicionar um arquivo autorizado, um card não modal entra pela direita no canto superior direito do canvas. Usa superfície card opaca, borda, sombra, ícones existentes, contador, nome com quebra segura, tipo/tamanho e estado de leitura. Permanece aberto durante interação com o chat; X fecha e devolve foco ao botão de anexar. Não há backdrop, bloqueio de foco ou navegação automática. A lista rola dentro de altura limitada; largura limitada ao canvas e animação respeita movimento reduzido. Estado vazio e aviso de lista temporária são explícitos.
+
+Store — ações da navbar: busca expansível para a esquerda desktop, painel abaixo no mobile; resultados até5 e foco visível. Dialog de curtidas compacto no topo direito, lista rolável com miniaturas52×60, remover por coração e Esc nativo. Curtir com aria-pressed, contador textual e magenta; botão sobre link estendido tem z-index próprio. Sacola usa lista e resumo desktop/uma coluna mobile; checkout desativado com motivo explícito. Não ocultar ferramentas da Store em celular.
+
+
+Store — painel de curtidas ancorado ao retângulo real do coração,12px abaixo, com ponta ligada ao centro do ícone e limites16px da viewport; reposiciona em resize/scroll. Lista interna rolável mantém ponta visível. Entrada suave180ms; busca expande da direita220ms. Movimento reduzido desativa animações.
+
+### Assinatura — identificação do ambiente financeiro
+
+O badge compartilhado de assinatura usa enum seguro definido no servidor: “Ambiente de testes” em sandbox, “Pagamento seguro” em live e “Contratação indisponível” sem configuração válida. Instrução de cartões de teste aparece somente no sandbox. Componentes/tokens existentes são preservados; nenhum segredo é enviado ao frontend.
+
+Store — checkout demonstrativo: aviso persistente de simulação, etapas identificação/entrega-pagamento/revisão, painel principal e resumo lateral, uma coluna abaixo800px. Magenta nas ações, fonteBebasNeue de campanha no título, campos rotulados e erros anunciados. CEP compacto no resumo. Google/Apple desativados com motivo; nenhuma entrada de senha/cartão na prévia. Totais e endereço fictícios explicitamente identificados.
+
+
+Store — refinamento do login de checkout: painel claro com filete magenta e símbolo de acesso, tabs em superfície neutra, Google com símbolo multicolorido e Apple monocromático sobre preto, botões48px. Separador de e-mail com linha, campo com ícone, hierarquia de título e rótulo editorial. Mantém aviso demonstrativo e provedores desativados; não altera autenticação. Sem dependência ou requisição externa para íconesSVG.
+
+
+Store — conclusão do checkout demonstrativo: ações separadas em botões com espaçamento e banner de agradecimento abaixo do comprovante de simulação, antes do footer. Campanha300px, fonteBebasNeue inclinada, risco magenta e CTAContinuar explorando. Slot editorial à esquerda com placeholderImagem em breve, fundo preto/rosa e máscara lateral; preparado para imagem futura fornecida pelo fundador. Não apresenta confirmação de compra real nem novo asset fictício. Mobile integra o placeholder ao fundo mantendo texto legível.
+
+
+Store — banner de agradecimento recebe Energia Atlética em Neon fornecida pelo fundador,2172×724, sem edição. Imagem integral em contain, fundo escuro e máscara lateral para fusão; mobile mantém arte3:1 acima do texto. Substitui placeholder, conserva fraseHTML e CTA.

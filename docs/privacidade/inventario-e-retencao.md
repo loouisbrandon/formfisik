@@ -134,3 +134,50 @@ Decisões administrativas de privacidade (migration 033, local): autor, solicita
 Finalidade: conceder acesso gratuito controlado a profissionais de teste e comprovar concessão/revogação. Dados mínimos: ID do titular, ambiente, prazo, responsável admin, motivo operacional e timestamps; sem saúde, credenciais ou cartão. Listagem admin contém nome e estado; justificativa/autor sob demanda. UI orienta a não inserir dados sensíveis. Metadados anteriores preservam autor desconhecido; nenhuma atribuição retroativa.
 
 Registro não elimina contas/alunos e não contorna retenções. Grants e eventos existentes031 sem FK de usuário permanecem no encerramento; retenção operacional desses registros exige revisão periódica e definição competente, sem presumir retenção perpétua autorizada. A expiração encerra o entitlement, não apaga o histórico. Não amplia tratamento para produção.
+
+### Produtos do personal035 — autoria privada
+
+Finalidade: organizar conteúdo e oferta comercial do próprio profissional. Dados: nome/descrição/categoria/preço do produto, materiaisPDF/imagens, aulas/links, declaração de direitos, snapshot do modelo de treino sem aluno, responsável/versão/timestamps. Somente proprietário com entitlement acessa; não há comprador/página pública. Não inserir dados de saúde ou identificar alunos nos materiais. Arquivos nunca em public/bundles/props de lista; endpoint reautoriza e revoga no arquivamento/remoção. Downloads já realizados não são revogáveis. Nome de arquivo não integra URL de upload nem logs adicionais.
+
+No encerramento, acesso é revogado pela regra existente; eliminação profissional operacional remove produtos e cascatas (arquivos, snapshots, eventos e chaves) quando os bloqueios prévios permitem finalizar. Não cria retenção financeira. Cópias de backup continuam sujeitas ao ciclo operacional de retenção/restore existente. Volumes limitados, sem novas integrações externas. Conteúdo de YouTube é externo e aberto só por ação explícita; sem alegação de hospedagem privada ou DRM. [Contrato035](../modulos/produtos.md).
+
+### eCoach (prévia local)
+
+Texto digitado e respostas fixas mantidos apenas em memória do componente durante a visita, sem transmissão pelo módulo, persistência ou logs. Não consulta alunos ou dados de saúde. Formatos de arquivo e áudio são demonstrativos, sem coleta. Integração futura exige nova avaliação de finalidade, retenção e acesso antes da ativação.
+
+Atualização da prévia eCoach: rascunho e conversa agora permanecem apenas na memória do shell autenticado para continuidade entre Finder e página completa. Até 20 envios, 2.000 caracteres por envio; descarte ao limpar, logout/desmontagem do shell ou reload. Identificação do módulo sem query strings, IDs ou registros. Nenhum texto do chat é transmitido ou registrado pelo módulo. Substitui o descarte anterior ao sair da página.
+
+Preferência de permissão eCoach: finalidade de registrar controle explícito do profissional sobre futura assistência; enum read/create/manage em configurações existentes, acesso somente do titular profissional e versionamento otimista. Retenção e exclusão seguem `professional_settings`; evento genérico `preferences_saved` sem conteúdo da conversa. Não habilita processamento por fornecedor de IA ou criação/edição real. Sem novas tabelas ou migrations.
+
+### eCoach — conversas e contexto persistentes (036/037, local)
+
+Esta seção substitui a retenção apenas em memória da prévia. Finalidade: continuidade de conversas solicitadas pelo personal. Dados: título, texto do usuário, resposta fixa do servidor, snapshot de módulo/período/filtros e IDs de aluno/cobrança quando explicitamente selecionados. Sem coleta de DOM, campos de formulário, valores ou envio a fornecedor de IA. Texto livre pode conter dados pessoais/sensíveis voluntários e exige minimização pelo titular.
+
+Acesso somente do profissional autorizado; PostgreSQL com FKs de proprietário, DTO mínimo, rate limit e cache privado. Máximo 200 conversas por conta, 20 turnos por conversa; histórico paginado no servidor. Retenção até excluir conversa ou encerramento elegível da conta, sem prazo jurídico inventado. Exclusão remove conteúdo em cascade; marcador sem título/texto impede recriação por retry e é removido na eliminação profissional. Exclusão de aluno remove conversas explicitamente vinculadas por contexto; menções em texto livre exigem revisão operacional do pedido. Processo de backup/restore e retenções obrigatórias anteriores permanecem aplicáveis. Sem logs de conteúdo ou uso para treinamento implementado. Publicação externa e revisão do tratamento por provedor são pendentes.
+
+
+### eCoach — etapa 2 local (2026-11-13)
+
+PREPARADO para integração configurável OpenAI/Anthropic, com adaptadores e ferramentas limitadas implementados e testes controlados; inferência externa NÃO HOMOLOGADA. IA desativada por padrão. Pro/cortesia, permissões, consentimento, isolamento e confirmação de propostas de rascunho no servidor. Sem pagamento, exclusão ou comunicação automáticos. Solicitações/propostas com prazo de 24h e limpeza operacional necessária. Contratos, finalidade, retenção, configuração e pendências em [eCoach](../modulos/ecoach.md#etapa-2--integração-configurável-e-ferramentas-limitadas). Sem deploy; NO-GO 015 preservado.
+
+### eCoach — escopo interno ampliado (14/11/2026)
+
+Consulta explícita de agenda e modelos de anamnese, sem respostas clínicas. Detalhe de compromisso pode compartilhar título privado, notas e local com OpenAI somente após consentimento v2 e solicitação, para propor agendamento/remarcação. Modelos compartilham perguntas/condições, sem respostas de alunos. Mesma retenção da 038, limpeza operacional e isolamento; vínculo estruturado de aluno em proposta de agendamento participa do fluxo de eliminação existente. Menções livres e retenção do fornecedor exigem processo próprio. [Finalidade e contratos](../modulos/ecoach.md#gestão-interna--14112026). Não homologado externamente.
+
+### eCoach: captura e leitura temporárias (local, 14/11/2026)
+
+Finalidade: ditar mensagem ou obter texto revisável de imagem/PDF escolhido pelo profissional. Acesso: sessão profissional Pro/cortesia e consentimento externo v3, revalidação após inferência. Áudio/bytes são temporários na memória de navegador/servidor e enviados à OpenAI somente após ação autorizada; não são gravados em banco/object storage/log. Transcrição/leitura fica no rascunho até envio voluntário; mensagem enviada segue retenção/exclusão de conversas. O provedor possui política própria; `store:false` em Responses não significa ausência de retenção operacional externa. Revogar consentimento bloqueia novas leituras e entrega tardia no servidor, sem desfazer uma transmissão já iniciada. Não enviar dados sensíveis desnecessários. Real dependente de cota e homologação; NO-GO015 mantido.
+
+### Atendimento assistido039 — alunos e leads
+
+Dados privados por profissional: identificação de contato (nome/canal/endereço opcional), mensagens declaradas manualmente, rascunhos/textos aprovados, regras e tarefas de preparação. Finalidade exclusiva de relacionamento/atendimento; vínculo de aluno é explícito, sem dedução por e-mail/telefone. Nenhuma recepção externa existe nesta entrega. IA requer consentimento próprio de atendimento, permissão canônica do eCoach e autorização por conversa; responsável deve informar o contato sobre esse tratamento, especialmente antes de compartilhar informações pessoais. Limitar às últimas 10 mensagens e instruções necessárias, sem prontuários, financeiro ou outras conversas.
+
+Retenção: conversas sem atualização há 180 dias são eliminadas por cleanup; usuário pode eliminar antes. Cascade remove mensagens, eventos e tarefas. Trabalhadores concluídos/cancelados eliminam instruções temporárias; failed preserva para retry limitado. Operações com IDs/digests mínimos e tombstones são retidas até exclusão de conta para impedir replay. Eventos globais de autorização/regras usam a auditoria canônica024, sem mensagens/contatos. Eliminação de aluno remove somente conversas vinculadas; leads e menções livres exigem localização/revisão manual. Eliminação do profissional remove leads, regras, permissões e eventos do proprietário. Direitos financeiros e retenções obrigatórias seguem worker existente; nenhum transporte real ou prova de entrega é criado. Tratamento/retenção externos da OpenAI permanecem sujeitos à revisão/homologação. Ver `docs/modulos/atendimento-assistido.md`.
+
+### eCoach — controle de finalidade
+
+A [política de escopo](../seguranca/ecoach-escopo-e-abuso.md) limita geração e ferramentas à finalidade profissional. Recusas podem ser salvas na conversa como modo `policy`, seguindo a mesma retenção/exclusão. Log de recusa não contém prompt, identidade ou conteúdo clínico. Nome do contato foi removido do contexto de atendimento entregue ao provedor; PDF utiliza somente texto previamente validado, sem o binário. Áudio/imagem ainda exigem leitura externa inicial autorizada.
+
+Store — preferências locais de navegação: IDs públicos de curtidas e sacola armazenados no navegador (localStorage), sem identidade, rastreamento, envio a servidor ou vínculo com conta profissional. Finalidade: preservar seleção entre páginas/reloads; até50 IDs conhecidos por lista. Retenção até remoção individual ou limpeza do armazenamento pelo usuário. Sem operação comercial ou reserva decorrente desses IDs.
+
+Store checkout de demonstração: não coleta credenciais ou identidade de comprador; usa e-mail/endereço fictícios fixos. CEP digitado apenas no estado em memória, finalidade de validação visual, sem envio/log/persistência e descartado ao sair/recarregar. Interface orienta uso de CEP fictício. Nenhum dado de pagamento solicitado. OAuth e cadastro real permanecem não implementados e exigem avaliação própria antes de ativação.

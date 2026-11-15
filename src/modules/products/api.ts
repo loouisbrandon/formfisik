@@ -1,0 +1,1 @@
+export async function productApi<T>(query='',body?:unknown,signal?:AbortSignal):Promise<T>{const r=await fetch('/api/products'+query,{cache:'no-store',signal,...(body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})});const d=await r.json();if(!r.ok)throw Error(d.message??'Não foi possível consultar os produtos.');return d}

@@ -13,7 +13,7 @@ export async function checkoutAvailability(request: Request) {
     if (!selection.success) return reply({ message: 'Plano ou periodicidade inválidos.' }, 400)
     const courtesy=await subscriptionStatus(user.id,false,undefined,false)
     if(courtesy.state==='courtesy')return reply({status:'ineligible',reason:'complimentary_access',subscription:courtesy},200)
-    if (!billingConfigured(selection.data)) return reply({ status: 'unavailable', reason: 'test_configuration_missing' }, 200)
+    if (!billingConfigured(selection.data)) return reply({ status: 'unavailable', reason: 'billing_configuration_missing' }, 200)
     const state = await subscriptionStatus(user.id)
     return reply({ status: state.trialUsed ? 'ineligible' : 'ready', reason: state.trialUsed ? 'trial_already_used' : 'test_mode', subscription: state }, 200)
   } catch (error) { return failure(error, 'subscription_availability_unavailable') }

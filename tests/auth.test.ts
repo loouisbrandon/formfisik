@@ -250,7 +250,7 @@ test('checkout availability requires real confirmed professional session and nev
   try { process.env.STRIPE_SECRET_KEY=''; response=await checkoutAvailability(request('/api/subscriptions/availability', undefined, cookie)) }
   finally { if(previousKey===undefined)delete process.env.STRIPE_SECRET_KEY;else process.env.STRIPE_SECRET_KEY=previousKey }
   assert.equal(response.status, 200)
-  assert.deepEqual(await response.json(), { status: 'unavailable', reason: 'test_configuration_missing' })
+  assert.deepEqual(await response.json(), { status: 'unavailable', reason: 'billing_configuration_missing' })
   assert.ok(response.headers.get('cache-control')?.includes('no-store'))
   assert.equal((await paidAccess(request('/api/access', undefined, cookie))).status, 403)
   await db().query('UPDATE users SET email_verified_at=NULL WHERE id=$1', [userId])

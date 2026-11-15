@@ -81,3 +81,20 @@ Projeção empresarial privada sobre fontes008/018/019/020/021/022, sem persist�
 ## Importação026
 
 Prévia/entrada temporária e estado de execução próprios, com writers008/009/010 e validação de referências023. Não é cadastro paralelo nem novo modelo de identidade. [ADR027](ADR-027-importacao-transacional.md), [formatos/política](../modulos/importacao.md), [relatório026](../engenharia/entrega-026.md). Migration025 segue numeração real; retenção/eliminação/replay016 e grants mínimos integrados. Sem adapter/API externa, scheduler de criação, ativação automática ou novo provedor.
+
+## eCoach — conversas e contexto (local)
+
+Uma conversa compartilhada no shell atende Finder e página completa. Estado visual/rascunho permanece React; histórico fica no PostgreSQL com acesso via handlers servidor, versionamento e idempotência. Contexto é publicado de forma explícita pelo módulo (Financeiro) ou inferido de rotas conhecidas, sem coleta de DOM. IDs são revalidados por propriedade. Resposta demonstrativa é produzida pelo servidor e animada no cliente; não há provedor ou ferramenta operacional. Migrations 036/037 e contrato em [eCoach](../modulos/ecoach.md). Não altera a separação de Billing SaaS/profissional ou o NO-GO existente.
+
+
+### eCoach — etapa 2 local (2026-11-13)
+
+PREPARADO para integração configurável OpenAI/Anthropic, com adaptadores e ferramentas limitadas implementados e testes controlados; inferência externa NÃO HOMOLOGADA. IA desativada por padrão. Pro/cortesia, permissões, consentimento, isolamento e confirmação de propostas de rascunho no servidor. Sem pagamento, exclusão ou comunicação automáticos. Solicitações/propostas com prazo de 24h e limpeza operacional necessária. Contratos, finalidade, retenção, configuração e pendências em [eCoach](../modulos/ecoach.md#etapa-2--integração-configurável-e-ferramentas-limitadas). Sem deploy; NO-GO 015 preservado.
+
+### eCoach — reutilização na gestão interna (14/11/2026)
+
+Mesmo motor de conversas, consultas e propostas 038; sem tabelas ou dependências novas. Treinos preservam escritores canônicos. `saveFormInTransaction` compartilha o escritor017 com o fluxo manual; `executeAgenda`/`mutation` aceitam uma transação existente para compartilhar prévia, idempotência, locks e eventos021. Domínio e confirmação da proposta são atômicos. Não há um segundo CRUD de anamnese/agenda nem execução irrestrita por IA. OpenAI é o provedor escolhido; modelo/chave e homologação real pendentes. [Contratos](../modulos/ecoach.md#gestão-interna--14112026).
+
+### Atendimento039, evolução local
+
+A Central de Comunicação reutiliza seu shell/queries/mutações UI e recebe endpoint privado delimitado `/api/communication/assistance`. Escritor inbox separado do registro declarativo024, com FKs de proprietário, versões/idempotência e filas de preparação. Adaptador `configuredProvider` do eCoach é reutilizado; motor aceita somente texto e não delega ferramentas internas a contatos externos. Auditoria global de autorização/regra reutiliza024; tarefas/mensagens/eventos privados compõem039. Sem abstração de transporte especulativa: capacidades de canais retornam não conectado, envio é recusado até futura integração homologada. Ver `docs/modulos/atendimento-assistido.md`.

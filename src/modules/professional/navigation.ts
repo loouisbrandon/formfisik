@@ -1,9 +1,11 @@
 export const professionalNavigation = [
+  { label: 'eCoach', href: '/ecoach', icon: 'workouts' },
   { label: 'Dashboard', href: '/dashboard', icon: 'dashboard' },
   { label: 'Indicadores', href: '/indicadores', icon: 'dashboard' },
   { label: 'Tutoriais', href: '/tutoriais', icon: 'account' },
   { label: 'Alunos', href: '/alunos', icon: 'students' },
   { label: 'Agenda', href: '/agenda', icon: 'dashboard' },
+  { label: 'Produtos', href: '/produtos', icon: 'workouts' },
   { label: 'Consultorias', href: '/consultorias', icon: 'workouts' },
   { label: 'Financeiro', href: '/financeiro', icon: 'subscription' },
   { label: 'CRM', href: '/crm', icon: 'students' },

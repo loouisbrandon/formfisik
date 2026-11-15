@@ -1,3 +1,4 @@
+import {billingDisplayMode} from '@/server/subscriptions/environment'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { requireUser } from '@/server/current-user'
@@ -11,5 +12,5 @@ export default async function SubscriptionPage({ searchParams }: { searchParams:
   if (user.role !== 'professional') redirect('/conta')
   const query = await searchParams
   const selection = z.object({ plan: z.enum(['standard','premium','pro']).default('pro'), interval: z.enum(['month','year']).default('month') }).safeParse(query)
-  return <div className={styles.page}><SubscriptionHeader title="Seu plano, seu ritmo." description="Compare os planos e escolha a capacidade para sua carteira de alunos." active="plans"/><CheckoutStatus initialSelection={selection.success ? selection.data : undefined}/><Link className="inline-block py-3 text-sm text-muted-foreground underline underline-offset-4" href="/assinatura/gerenciar">Consultar pagamentos e faturas</Link></div>
+  return <div className={styles.page}><SubscriptionHeader title="Seu plano, seu ritmo." description="Compare os planos e escolha a capacidade para sua carteira de alunos." active="plans"/><CheckoutStatus billingMode={billingDisplayMode()} initialSelection={selection.success ? selection.data : undefined}/><Link className="inline-block py-3 text-sm text-muted-foreground underline underline-offset-4" href="/assinatura/gerenciar">Consultar pagamentos e faturas</Link></div>
 }

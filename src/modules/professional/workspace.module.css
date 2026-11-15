@@ -177,3 +177,7 @@
 .sidebar .brand { margin-bottom:40px; }
 
 .sidebar:has(.accountNavigation) { padding-bottom:32px; }
+
+/* eCoach remains visible as the first management entry. */
+.coachLink:not([aria-current='page']){background:#a9e60114;color:#b9ec37;border:1px solid #a9e60020}
+.coachLink:not([aria-current='page']):hover{background:#a9e60024;color:#ccfa58;border-color:#a9e60045}

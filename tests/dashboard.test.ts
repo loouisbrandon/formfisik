@@ -31,7 +31,7 @@ async function enroll() {
   return sub
 }
 test('navigation has only existing links, one active subscription group and unavailable future modules',()=>{
-  assert.deepEqual(professionalNavigation.map(x=>x.href),['/dashboard','/indicadores','/tutoriais','/alunos','/agenda','/consultorias','/financeiro','/crm','/comunicacao','/checkins','/anamneses','/videos','/exercicios','/treinos','/acompanhamento','/assinatura/gerenciar','/conta','/configuracoes'])
+  assert.deepEqual(professionalNavigation.map(x=>x.href),['/ecoach','/dashboard','/indicadores','/tutoriais','/alunos','/agenda','/produtos','/consultorias','/financeiro','/crm','/comunicacao','/checkins','/anamneses','/videos','/exercicios','/treinos','/acompanhamento','/assinatura/gerenciar','/conta','/configuracoes'])
   assert.equal(futureModules.length,0)
   assert.equal(pageTitle('/assinatura/retorno'),'Minha assinatura')
   assert.equal(pageTitle('/importar'),'Importar dados')

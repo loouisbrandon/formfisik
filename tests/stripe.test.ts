@@ -21,7 +21,7 @@ let provider: ControlledGateway
 function request(path: string, data?: unknown, cookie?: string, origin = process.env.APP_URL!) {
   return new Request(process.env.APP_URL + path, { method: data === undefined ? 'GET' : 'POST', headers: { ...(data === undefined ? {} : { 'content-type': 'application/json', origin }), ...(cookie ? { cookie } : {}) }, body: data === undefined ? undefined : JSON.stringify(data) })
 }
-function event(session: Stripe.Checkout.Session, id = 'evt_' + randomUUID(), type = 'checkout.session.completed', created = Math.floor(Date.now()/1000)) {
+function event(session: Stripe.Checkout.Session | Stripe.Invoice, id = 'evt_' + randomUUID(), type = 'checkout.session.completed', created = Math.floor(Date.now()/1000)) {
   return fixture<Stripe.Event>({ id, type, livemode: false, created, object: 'event', data: { object: session } })
 }
 before(async () => { await migrate(connection); await migrate(connection) })
@@ -32,7 +32,7 @@ beforeEach(async () => {
 })
 after(async () => { await db().end() })
 
-test('test-only configuration rejects live keys and remote origins without contacting Stripe', () => {
+test('default local configuration rejects live keys and unapproved remote origins without contacting Stripe', () => {
   const key = process.env.STRIPE_SECRET_KEY
   process.env.STRIPE_SECRET_KEY = 'sk_live_rejected_fixture'
   assert.throws(stripeSettings, BillingUnavailable)
@@ -183,4 +183,24 @@ test('checkout and status refresh rate limits stop abusive calls before provider
   assert.equal((await billingStatus(request('/api/subscriptions/status?refresh=1', undefined, cookie))).status, 429)
   assert.equal(provider.sessions.size, 0)
   assert.equal((await db().query('SELECT * FROM billing_accounts')).rowCount, 0)
+})
+
+test('hosted staging accepts six test offers; production lifecycle accepts only matching live canonical objects (synthetic)',async()=>{
+ const names=['APP_URL','RAILWAY_ENVIRONMENT_NAME','STRIPE_BILLING_MODE','STRIPE_SECRET_KEY','STRIPE_ACCOUNT_ID','STRIPE_PORTAL_CONFIGURATION_ID'],before=Object.fromEntries(names.map(n=>[n,process.env[n]]))
+ try{
+  Object.assign(process.env,{APP_URL:'https://sta.formfisik.com.br',RAILWAY_ENVIRONMENT_NAME:'staging',STRIPE_BILLING_MODE:'test',STRIPE_ACCOUNT_ID:'acct_synthetic'})
+  for(const plan of ['standard','premium','pro'] as const)for(const interval of ['month','year'] as const){
+   const owner=randomUUID();await db().query("INSERT INTO users(id,email,full_name,role,email_verified_at) VALUES($1,$2,'Synthetic hosted','professional',now())",[owner,owner+'@example.test']);const g=new ControlledGateway(),amount=({standard:4990,premium:8990,pro:13990})[plan]*(interval==='year'?9.6:1),suffix=plan.toUpperCase()+'_'+(interval==='year'?'ANNUAL':'MONTHLY');process.env['STRIPE_PRODUCT_'+plan.toUpperCase()]='prod_fixture';process.env['STRIPE_PRICE_'+suffix]='price_fixture';g.fixturePrice.unit_amount=Math.round(amount);g.fixturePrice.recurring!.interval=interval
+   await startCheckout(owner,g,{plan,interval});assert.equal(g.createCalls[0].input.success_url,'https://sta.formfisik.com.br/assinatura/retorno');const {session}=g.complete();await processBillingEvent(event(session),g);const view=await subscriptionStatus(owner,false,g);assert.equal(view.paidAccess,true);assert.equal(view.planId,plan);assert.equal(view.billingInterval,interval);assert.equal(view.contractedAmount,Math.round(amount))
+  }
+  Object.assign(process.env,{APP_URL:'https://formfisik.com.br',RAILWAY_ENVIRONMENT_NAME:'production',STRIPE_BILLING_MODE:'live',STRIPE_SECRET_KEY:'sk_live_synthetic',STRIPE_PORTAL_CONFIGURATION_ID:'bpc_fixture'})
+  const g=new ControlledGateway();g.fixturePrice.livemode=true;(g.fixturePrice.product as Stripe.Product).livemode=true;g.portalConfig.livemode=true
+  const customer=g.customer.bind(g);g.customer=async id=>({...await customer(id),livemode:true})
+  const create=g.createCheckout.bind(g);g.createCheckout=async(input,key)=>{const s=await create(input,key);s.id=s.id.replace('cs_test_','cs_live_');s.livemode=true;return s}
+  const upcoming=g.upcoming.bind(g);g.upcoming=async(c,s)=>({...await upcoming(c,s),livemode:true})
+  await startCheckout(userId,g);const {session,sub}=g.complete();sub.livemode=true;const liveEvent={...event(session),livemode:true};await processBillingEvent(liveEvent,g);await processBillingEvent(liveEvent,g);assert.equal((await subscriptionStatus(userId,false,g)).state,'trialing')
+  await assert.rejects(processBillingEvent(event(session),g),BillingUnavailable)
+  const invoice=g.paid(sub);invoice.livemode=true;await processBillingEvent({...event(invoice,undefined,'invoice.paid'),livemode:true},g);assert.equal((await subscriptionStatus(userId,false,g)).paidAccess,true)
+  const {cancelSubscription}=await import('../src/server/subscriptions/management');await cancelSubscription(userId,g);assert.equal((await subscriptionStatus(userId,false,g)).state,'cancel_scheduled')
+ }finally{for(const[n,v]of Object.entries(before)){if(v===undefined)delete process.env[n];else process.env[n]=v}}
 })

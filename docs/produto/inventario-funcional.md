@@ -105,3 +105,32 @@ IMPLEMENTADO localmente: landing responsiva baseada na referência fornecida, he
 ## Papel de administrador — 08/11/2026
 
 Role `admin`: IMPLEMENTADA no schema desde001 e confirmada localmente; definição como administrador geral/dono documentada em [Administração](../modulos/administracao.md). Conta administrativa, atribuição controlada, painel e permissões globais: NÃO IMPLEMENTADOS nesta etapa. Não equivale a superusuário operacional nem remove isolamento/autorização existentes.
+
+## Produtos do personal035 — 13/11/2026
+
+Autoria privada IMPLEMENTADA LOCALMENTE, validação descrita em [Produtos](../modulos/produtos.md): catálogo12/página, criação/edição digital/físico, capa/PDF privados, módulos/aulas textuais/linksYouTube, versões de modelos de treino e oferta configurada. Comercialização/entrega ao comprador/mensalidade automática, estoque/frete e hospedagem privada de aulas NÃO IMPLEMENTADOS. Esta evolução atualiza parcialmente a linha histórica028; não significa lançamento comercial, nova modalidade ou homologação Personal1.0. Migration local, sem deploy implícito.
+
+## eCoach — prévia local
+
+PREPARADO: `/ecoach` em Gestão, somente profissionais autorizados. Chat fictício com sugestões de capacidades e respostas fixas, sem IA, acesso a dados, anexos reais ou integrações. Detalhes em [eCoach](../modulos/ecoach.md). Não homologado externamente.
+
+Atualização eCoach/Finder (local): modos explícitos Buscar/eCoach, contexto somente do módulo, conversa/rascunho compartilhados em memória e expansão para página completa; fechamento por backdrop, Esc e Ctrl+K. PREPARADO como demonstração, sem IA real. [Visão completa](ecoach.md).
+
+Permissões eCoach, IMPLEMENTADO local: dialog antes do primeiro envio e seção Configurações → eCoach; preferência persistente somente leitura/criação/criação e edição, com isolamento e versão. IA/ferramentas permanecem NÃO IMPLEMENTADAS; não equivale a homologação externa.
+
+Etapa 1 eCoach — IMPLEMENTADO local: histórico PostgreSQL paginado, abrir/renomear/excluir, idempotência/versionamento e contexto removível com snapshot por turno. Contexto detalhado no Financeiro e detalhe de aluno; demais módulos somente identificação. Rascunhos temporários; respostas ainda fixas. Migrations 036/037 locais, sem homologação externa.
+
+
+### eCoach — etapa 2 local (2026-11-13)
+
+PREPARADO para integração configurável OpenAI/Anthropic, com adaptadores e ferramentas limitadas implementados e testes controlados; inferência externa NÃO HOMOLOGADA. IA desativada por padrão. Pro/cortesia, permissões, consentimento, isolamento e confirmação de propostas de rascunho no servidor. Sem pagamento, exclusão ou comunicação automáticos. Solicitações/propostas com prazo de 24h e limpeza operacional necessária. Contratos, finalidade, retenção, configuração e pendências em [eCoach](../modulos/ecoach.md#etapa-2--integração-configurável-e-ferramentas-limitadas). Sem deploy; NO-GO 015 preservado.
+
+### eCoach — gestão interna (14/11/2026)
+
+IMPLEMENTADO localmente: propostas confirmáveis de treinos, criação/edição de modelos de anamnese em rascunho e agendamento/remarcação de uma ocorrência; consultas de agenda, tipos/disponibilidade e modelos. Reutiliza 017/021 e motor de propostas, sem novo banco ou framework. OpenAI escolhido, modelo/chave ainda pendentes; IA desativada e NÃO HOMOLOGADA com API real. Sem publicação/envio, automação externa ou escrita financeira. [Contratos](../modulos/ecoach.md#gestão-interna--14112026).
+
+- eCoach/Finder, 14/11/2026: IMPLEMENTADO localmente o compositor com interrupção, anexos imagem/PDF lidos para rascunho, captura/onda e transcrição de áudio, arrastar arquivos com destaque local. Arquivos sem persistência; consentimento v3, Pro e origem/sessão/limites no servidor. PARCIAL na homologação externa: conta OpenAI com insufficient_quota, testes feitos com respostas controladas e microfone sintético. Ver `docs/modulos/ecoach.md`.
+
+- Comunicação/eCoach039 (14/11/2026): IMPLEMENTADO localmente inbox de recebimentos declarados, rascunhos manuais/IA, revisão/aprovação, regras por palavras/canal, consentimento independente, pausa/revogação, retries, exclusão/retenção. Limites: 500 conversas, 1.000 mensagens/conversa,20 por página,20 regras; inferência real não homologada. PREPARADO o estado/requisitos de conexão; NÃO IMPLEMENTADOS Meta/e-mail de atendimento, webhook, entrega e envio autônomo. Não contar rascunhos aprovados como mensagens enviadas. Ver `docs/modulos/atendimento-assistido.md`.
+
+- eCoach / segurança de escopo: IMPLEMENTADO localmente — filtro de entrada, intenção de ferramentas, saída, propostas e mídia, com cota compartilhada de chamadas. Homologação real do provedor e acesso de alunos NÃO IMPLEMENTADOS por esta entrega. Ver [política e evidências](../seguranca/ecoach-escopo-e-abuso.md).

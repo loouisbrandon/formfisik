@@ -37,6 +37,12 @@ test('016: financial retention blocks whole-account erasure without deleting dat
 })
 test('016: student erasure survives absent storage, failed DELETE and interruption; opaque tombstones repeat late DELETE',async()=>{
  const f=await fixture(),foreignBefore=(await db().query('SELECT row_to_json(s) AS value FROM student_records s WHERE professional_id=$1',[f.other])).rows
+ const chatId=randomUUID();await db().query("INSERT INTO ecoach_conversations(id,owner_id,title) VALUES($1,$2,'Synthetic student context')",[chatId,f.owner]);await db().query('INSERT INTO ecoach_turns(conversation_id,owner_id,operation_id,position,user_text,assistant_text,context) VALUES($1,$2,$3,1,$4,$5,$6)',[chatId,f.owner,randomUUID(),'Synthetic request','Fixed preview',{module:'Alunos',record:{kind:'student',id:f.student.id}}])
+ const supportThread=randomUUID(),supportMessage=randomUUID(),supportJob=randomUUID()
+ await db().query("INSERT INTO communication_inbox_threads(id,owner_id,student_link_id,name,channel) VALUES($1,$2,$3,'Synthetic support','email')",[supportThread,f.owner,f.student.id])
+ await db().query("INSERT INTO communication_inbox_messages(id,owner_id,thread_id,body,direction,state,source) VALUES($1,$2,$3,'Synthetic private message','inbound','received','manual')",[supportMessage,f.owner,supportThread])
+ await db().query("INSERT INTO communication_inbox_jobs(id,owner_id,thread_id,input_id,thread_version,instructions) VALUES($1,$2,$3,$4,1,'Synthetic private directions')",[supportJob,f.owner,supportThread,supportMessage])
+ await db().query("INSERT INTO communication_inbox_operations(owner_id,operation_key,digest,thread_id,result) VALUES($1,$2,repeat('a',64),$3,'{}')",[f.owner,randomUUID(),supportThread])
  const plan=await createPlan(f.owner,{...emptyWorkout('individual',f.student.id),name:'Treino privado sintético'},randomUUID())
  await setAccountDisabled(f.owner,true,'owner_request');const input={id:randomUUID(),ownerId:f.owner,scope:'student' as const,subjectId:f.student.id,approvalReference:randomUUID()}
  const id=await requestErasure(input);assert.equal(await requestErasure({...input,id:randomUUID()}),id);assert.equal(await requestErasure({...input,ownerId:input.ownerId.toUpperCase(),subjectId:input.subjectId.toUpperCase(),approvalReference:input.approvalReference.toUpperCase()}),id);await assert.rejects(requestErasure({...input,approvalReference:randomUUID()}),/ERASURE_CONFLICT/)
@@ -50,7 +56,10 @@ test('016: student erasure survives absent storage, failed DELETE and interrupti
  await db().query("UPDATE privacy_erasure_jobs SET lease_until=clock_timestamp()-interval '1 second' WHERE id=$1",[id])
  const keys=[...f.store.objects.keys()];assert.equal((await processErasure(id,f.store)).state,'completed')
  for(const table of ['student_links','physical_assessments','photo_records','progress_photo_images'])assert.equal((await db().query(`SELECT 1 FROM ${table} WHERE ${table==='student_links'?'id':'student_link_id'}=$1`,[f.student.id])).rowCount,0)
+ for(const table of ['communication_inbox_threads','communication_inbox_messages','communication_inbox_jobs'])assert.equal((await db().query('SELECT 1 FROM '+table+' WHERE id=$1',[table==='communication_inbox_threads'?supportThread:table==='communication_inbox_messages'?supportMessage:supportJob])).rowCount,0)
+ assert.equal((await db().query('SELECT 1 FROM communication_inbox_operations WHERE owner_id=$1 AND thread_id=$2',[f.owner,supportThread])).rowCount,0)
  assert.equal((await db().query('SELECT 1 FROM workout_versions WHERE plan_id=$1',[plan.id])).rowCount,0)
+ assert.equal((await db().query('SELECT 1 FROM ecoach_conversations WHERE id=$1',[chatId])).rowCount,0);assert.equal((await db().query('SELECT 1 FROM ecoach_deleted_conversations WHERE id=$1',[chatId])).rowCount,1)
  assert.deepEqual((await db().query('SELECT row_to_json(s) AS value FROM student_records s WHERE professional_id=$1',[f.other])).rows,foreignBefore)
  assert.equal((await db().query('SELECT 1 FROM student_links WHERE id=$1',[f.empty.id])).rowCount,1)
  await f.store.put(keys[0],Buffer.from('late uncertain synthetic PUT'));await due(id);assert.equal((await processErasure(id,f.store)).state,'completed');assert.equal(f.store.objects.size,0)

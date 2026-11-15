@@ -115,3 +115,22 @@ Decisões de privacidade admin: guard transacional de papel/sessão, lock da sol
 ### Cortesias administrativas034
 
 Entitlement gratuito verificado no servidor por ambiente e relógio do banco; prazo não é claim do cliente. POST admin protegido por origem, schema estrito, sessão/role revalidadas e bloqueadas na transação, rate limit e lock canônico de Billing. Concessões não sobrepõem contratos/Checkout pendentes; revogação encerra sessões. Runtime não pode apagar grants ou modificar/apagar eventos, nem editar vencimentos. Permissões de INSERT e UPDATE(revoked_at) dependem da autorização de aplicação, assim como os demais domínios; não representam RLS por usuário final. Produção desabilitada. Migration/grants remotos e homologação externos pendentes. Evidência local não altera NO-GO015.
+
+### Produtos035 — controles de aceite
+
+Autoria isolada por owner em consultas/arquivos/snapshots; FKs compostas, sessão/papel/entitlement canônicos, origem e rate limit, DTO mínimo/páginas SQL. Escritas transacionais com lock do proprietário, revalidação de conta/sessão e versão otimista; idempotência por digest e chave. Arquivos binários boundedBody, tipos/signaturas verificadas, JPEG normalizado sem EXIF e PDF interpretado com timeout/limites, sem senha/scripts/anexos; downloads attachment/sandbox e cache no-store. Sem promessa de antivírus/anticópia. PDF.js fica somente no servidor com worker original, sem nova dependência. Não ativar uploads de vídeo, bucket clínico compartilhado, links arbitrários, checkout ou comprador. Modelos de treino com snapshots não propagam edição posterior; vedados modelos individuais com aluno. Eliminação operacional profissional inclui conteúdo de produtos. Produção e NO-GO015 preservados; evidência local não certifica conformidade ou operação externa.
+
+
+### eCoach — etapa 2 local (2026-11-13)
+
+PREPARADO para integração configurável OpenAI/Anthropic, com adaptadores e ferramentas limitadas implementados e testes controlados; inferência externa NÃO HOMOLOGADA. IA desativada por padrão. Pro/cortesia, permissões, consentimento, isolamento e confirmação de propostas de rascunho no servidor. Sem pagamento, exclusão ou comunicação automáticos. Solicitações/propostas com prazo de 24h e limpeza operacional necessária. Contratos, finalidade, retenção, configuração e pendências em [eCoach](../modulos/ecoach.md#etapa-2--integração-configurável-e-ferramentas-limitadas). Sem deploy; NO-GO 015 preservado.
+
+## Atendimento assistido039 — local
+
+Não confundir autorização de rascunhos com envio autônomo. Canais WhatsApp/Instagram/e-mail sem conexão e sem transporte implementado, envio bloqueado também no servidor. O contato externo não recebe acesso ao motor de ferramentas internas. Consentimento próprio e por conversa, guarda canônica de eCoach, rechecagem após I/O e descarte de respostas desatualizadas. Falha do provedor preserva recebimento e não gera resposta fictícia. Migração039 é aditiva e requer concessões runtime atualizadas para qualquer ambiente futuro; não aplicar implicitamente em staging/produção. Operar cleanup para leases e retenção180dias; mensagens livres de leads precisam de processo de direitos do titular. Guardrails aprofundados/qualidade do modelo e integrações reais continuam pendentes; NO-GO015 permanece.
+
+### eCoach: restrição de finalidade
+
+Consultar [escopo, abuso e consumo](ecoach-escopo-e-abuso.md) para pré-validação local, ferramentas por intenção, inspeção de saída, cotas compartilhadas e limites da mitigação. Implementado localmente; não equivale a homologação do provedor ou eliminação de todo prompt injection.
+
+SaaS: a [entrega de ambientes de assinatura](../engenharia/assinaturas-ambientes-2026-11.md) substitui a restrição histórica somente local por modos explícitos, domínio/deployment, chave/conta e verificação consistente de livemode. Mantidos autenticação/isolamento/assinatura de evento e recusa de Connect neste domínio. Não autoriza uso real sem homologação operacional.
