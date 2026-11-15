@@ -1,0 +1,14 @@
+'use client'
+import { ArrowRight, Check, CheckCircle2, Layers, Sparkles, UsersRound } from 'lucide-react'
+import { subscriptionPlans, planAmount, formatPlanAmount, type PlanSelection, type BillingInterval } from './plan'
+import type { SubscriptionView } from './status'
+import s from './subscriptions.module.css'
+export function PlanCards({ selection, onSelect, view, disabled = false }: { selection: PlanSelection; onSelect: (selection: PlanSelection) => void; view?: SubscriptionView | null; disabled?: boolean }) {
+  return <>
+    <div className={s.toolbar}><div><h2>Um plano para cada fase</h2><p>Todos os módulos atuais, com a capacidade que você precisa.</p></div><div className={s.toggle} role="group" aria-label="Periodicidade dos planos">{(['month','year'] as BillingInterval[]).map(interval=><button key={interval} type="button" disabled={disabled} aria-pressed={selection.interval===interval} onClick={()=>onSelect({...selection,interval})}>{interval==='month'?'Mensal':<>Anual <small>−20%</small></>}</button>)}</div></div>
+    <div className={s.cards}>{Object.values(subscriptionPlans).map(plan=>{
+      const current=view?.planId===plan.id,selected=view?.planId ? current : selection.plan===plan.id,amount=planAmount({plan:plan.id,interval:selection.interval})
+      return <article className={`${s.planCard} ${selected?s.selected:''}`} key={plan.id} aria-labelledby={`offer-${plan.id}`}><div className={s.cardTop}><h3 id={`offer-${plan.id}`}>{plan.name.replace('FormFisik ','')}</h3>{current?<span className={s.tag}><CheckCircle2 size={13} aria-hidden/>Seu plano</span>:plan.id==='pro'?<span className={s.tag}>Mais completo</span>:null}</div><p className={s.amount}>{formatPlanAmount(selection.interval==='year'?amount/12:amount)}<small>/mês</small></p><p className={s.period}>{selection.interval==='year'?<>Equivalente mensal. Cobrança única de <strong>{formatPlanAmount(amount)}/ano</strong>.</>:'Cobrança mensal, após o período de teste.'}</p><p className={s.allowance}><UsersRound size={18} aria-hidden/>{plan.studentLimit===null?'Alunos ativos ilimitados':`Até ${plan.studentLimit} alunos ativos`}</p><ul className={s.features}><li><Check size={17} aria-hidden/>App completo para gestão profissional</li><li><Layers size={17} aria-hidden/>Treinos, agenda e acompanhamento</li>{plan.id==='pro'&&<li><Sparkles size={17} aria-hidden/><span>Recursos com IA<small>Em desenvolvimento</small></span></li>}<li><Sparkles size={17} aria-hidden/><span>Parceria de comissionamento<small>Em desenvolvimento nos três planos</small></span></li></ul><button type="button" aria-pressed={selected} disabled={disabled} className={s.select} onClick={()=>onSelect({...selection,plan:plan.id})}>{current?'Seu plano contratado':selected?'Plano selecionado':`Ver ${plan.name.replace('FormFisik ','')}`}<ArrowRight size={17} aria-hidden/></button></article>
+    })}</div>
+  </>
+}

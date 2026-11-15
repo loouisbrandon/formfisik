@@ -1,0 +1,17 @@
+import 'server-only'
+import {createHmac,timingSafeEqual} from 'node:crypto'
+export class MediaUnavailable extends Error{constructor(){super('Vídeo hospedado indisponível. Nenhuma operação externa foi confirmada.')}}
+export type RemoteVideo={id:string;ready:boolean;failed:boolean;seconds:number;bytes:number;private:boolean}
+export interface VideoProvider{reserve(key:string,seconds:number):Promise<{id:string;url:string;expiresAt:string}>;inspect(id:string):Promise<RemoteVideo>;play(id:string):Promise<{url:string;expiresAt:string}>;remove(id:string):Promise<void>}
+const uid=(id:string)=>{if(!/^[a-f0-9]{32}$/.test(id))throw new MediaUnavailable();return id}
+/** No credentials means unavailable; controlled provider can only be injected by tests. */
+export function streamProvider():VideoProvider|null{const account=process.env.STREAM_ACCOUNT_ID,token=process.env.STREAM_API_TOKEN,customer=process.env.STREAM_CUSTOMER_CODE;if(!account||!token||!customer||!/^[a-f0-9]{32}$/.test(account)||!/^customer-[a-z0-9]+$/.test(customer))return null;return new StreamProvider(account,token,customer)}
+export class StreamProvider implements VideoProvider{
+ constructor(private account:string,private token:string,private customer:string){}
+ async call(path:string,method='GET',body?:object){const r=await fetch(`https://api.cloudflare.com/client/v4/accounts/${this.account}/stream${path}`,{method,headers:{Authorization:'Bearer '+this.token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(20000),redirect:'error',cache:'no-store'});if(method==='DELETE'&&r.status===404)return null;if(!r.ok)throw new MediaUnavailable();const data=await r.json();if(!data.success)throw new MediaUnavailable();return data.result}
+ async reserve(key:string,seconds:number){const expiresAt=new Date(Date.now()+15*60000).toISOString();const r=await this.call('/direct_upload','POST',{maxDurationSeconds:seconds,expiry:expiresAt,requireSignedURLs:true,allowedOrigins:[new URL(process.env.APP_URL!).host],meta:{reservation:key}});uid(r.uid);const u=new URL(r.uploadURL);if(u.protocol!=='https:'||u.hostname!=='upload.videodelivery.net')throw new MediaUnavailable();return {id:r.uid,url:u.href,expiresAt}}
+ async inspect(id:string):Promise<RemoteVideo>{const r=await this.call('/'+uid(id));return {id:uid(r.uid),ready:r.readyToStream===true,failed:r.status?.state==='error',seconds:Number(r.duration??0),bytes:Number(r.size??0),private:r.requireSignedURLs===true}}
+ async play(id:string){const expires=Math.floor(Date.now()/1000)+300,r=await this.call('/'+uid(id)+'/token','POST',{exp:expires});if(typeof r.token!=='string'||!/^[A-Za-z0-9_.-]+$/.test(r.token))throw new MediaUnavailable();return {url:`https://${this.customer}.cloudflarestream.com/${r.token}/iframe`,expiresAt:new Date(expires*1000).toISOString()}}
+ async remove(id:string){await this.call('/'+uid(id),'DELETE')}
+}
+export function verifyStreamWebhook(body:Buffer,header:string|null,secret=process.env.STREAM_WEBHOOK_SECRET,now=Date.now()){if(!secret||!header||body.length>65536)return false;const time=header.match(/(?:^|,)\s*time=(\d+)/)?.[1],signatures=[...header.matchAll(/(?:^|,)\s*sig1=([a-f0-9]{64})/g)].map(m=>m[1]);if(!time||Math.abs(now/1000-Number(time))>300)return false;const expected=createHmac('sha256',secret).update(time+'.').update(body).digest();return signatures.some(s=>timingSafeEqual(expected,Buffer.from(s,'hex')))}

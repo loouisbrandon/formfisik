@@ -1,0 +1,48 @@
+.area { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(0,1fr); gap: 18px; font-size: 14px; font-weight: 500; overflow-wrap: anywhere; }
+.area > header,.area > nav,.area > form,.area > p,.area > details,.kpis,.metrics { grid-column: 1/-1; }
+.area > header > p:first-child { text-transform: uppercase; font-size: 12px; font-weight: 700; color: #b3bec9; }
+.area h1 { font: 700 34px/1.3 var(--font-montserrat),sans-serif; margin-top: 3px; }
+.area h2 { font: 700 19px/1.4 var(--font-montserrat),sans-serif; }
+.area p { color: var(--muted-foreground); line-height: 1.6; }
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid var(--border); padding-bottom: 9px; }
+.tabs button { min-height: 40px; padding: 8px 22px; border-radius: 24px; font-weight: 600; }
+.tabs button[aria-pressed=true] { background: #a9e600; color: #152000; }
+.area > form { border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+.kpis { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 16px; }
+.kpis > section { padding: 0; border: 0; }
+.kpis > section > div:first-child { display: none; }
+.kpis dl { display: block; }
+.kpis dl > div,.metrics dl > div,.chart,.distribution,.stages,.attention { background: var(--workspace-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; min-width: 0; }
+.kpis dt { font-size: 15px; font-weight: 700; }
+.kpis dd:nth-child(2),.metrics dd:nth-child(2) { font: 700 30px/1.3 var(--font-montserrat),sans-serif; color: var(--foreground); }
+.kpis dd { font-size: 12px; }
+.kpis summary { min-height: 32px; padding-block: 6px; }
+.chart svg { max-width: none; height: 180px; color: #a9e600; }
+.chart p,.distribution > p,.stages > p,.attention > p { font-size: 13px; margin-top: 4px; }
+.distribution { grid-column: 2; grid-row: 6; }
+.barLabel { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin: 22px 0 8px; }
+.distribution meter { width: 100%; height: 20px; accent-color: #a9e600; }
+.distribution meter::-webkit-meter-optimum-value { background: #a9e600; }
+.attention { grid-column: 2; }
+.attention a { display: flex; gap: 14px; align-items: center; padding-block: 16px; border-bottom: 1px solid var(--border); }
+.attention a strong { padding: 4px 12px; background: #a9e60020; color: #c5ea73; border-radius: 7px; font-size: 20px; }
+.attention a span:nth-child(2) { flex: 1; }
+.stages { grid-column: 1; grid-row: 7; }
+.area > details { border-top: 1px solid var(--border); }
+.area button:focus-visible,.area a:focus-visible,.area summary:focus-visible { outline: 2px solid #a9e600; outline-offset: 3px; }
+@media(max-width:1350px) { .kpis { grid-template-columns: repeat(2,minmax(0,1fr)); } .area { grid-template-columns: minmax(0,1fr); } .distribution,.stages,.attention { grid-column: 1; grid-row: auto; } }
+@media(max-width:600px) { .kpis { grid-template-columns: minmax(0,1fr); } .tabs button { padding-inline: 14px; } .area h1 { font-size: 28px; } }
+.chart { order: 1; }
+.distribution { order: 1; grid-row: auto; }
+.stages { order: 2; grid-row: auto; }
+.attention { order: 2; }
+.area > details { order: 3; }
+.attention { order: 3; }
+.area > details { order: 4; }
+.area { gap: 14px; }
+.area > form label { font-size: 12px; }
+.area > form input { min-height: 38px; padding-block: 6px; color-scheme: dark; }
+.area > form button { min-height: 38px; padding-block: 6px; }
+.area > p { font-size: 12px; }
+.kpis dl > div { padding: 16px; }
+.kpis > section dl { margin-top: 0; }

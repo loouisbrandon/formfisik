@@ -1,0 +1,13 @@
+# ADR-011 — PDFs privados de snapshots e marca em PostgreSQL
+
+Status: adotada na 011. A FormFisik é empresa independente, fundada por Brandon Louis.
+
+Reutilizar PDFKit, fontes licenciadas locais, PostgreSQL/migrator, snapshots da 010, sessões/guard comercial/CSRF/limitação e shell/controles existentes. Dois layouts no mesmo gerador e mesma fonte de dados: Compacta tabular para impressão, Premium editorial com blocos de séries para leitura digital. Nenhuma prescrição paralela ou reconstrução pelo catálogo atual. Identidade histórica e apresentação atual têm rótulos separados.
+
+Prévia real e download usam um artefato privado imutável por 15 minutos, com bytes no PostgreSQL, até três por proprietário, FK composta para revisão e reautorização a cada acesso. Isso evita gerar novamente para baixar, além de não depender de memória de uma instância ou disco efêmero Railway. Não são documentos públicos/assinados ou arquivo permanente de emissões. Expiração na leitura e rotina de limpeza existente; armazenamento/backup contêm dados pessoais e precisam da mesma proteção operacional do banco. Futura escala pode justificar storage privado e fila, sem mudar prescrição/contrato de autorização.
+
+Auditoria não encontrou upload persistente. Logo pequeno por profissional usa bytea no mesmo PostgreSQL, com tamanho/dimensões limitados e validação real PNG/JPEG seguida de reencode Sharp sem metadata; SVG/URLs/animações não admitidos. Sharp já instalado pelo Next torna-se dependência direta explícita. Substituir/excluir exige Origin, propriedade, limite e revisão otimista. Não cria serviços externos, infraestrutura paga ou credenciais. A escolha evita inventar disponibilidade de bucket e impede confiar no MIME do navegador.
+
+Limites de páginas/bytes/estrutura e tentativas reduzem abuso. Geração síncrona Node é suficiente para este escopo limitado, sem generalizar mecanismo de relatórios. Medição/reserva de blocos antes de página e renderização Poppler com inspeção direta fazem parte da validação. Não prometemos todos os alfabetos, certificação PDF/UA, validade jurídica ou homologação técnica do conteúdo prescrito.
+
+O iframe nativo retornou bytes corretos, mas mostrou área vazia nas capturas Chrome. Adotado PDF.js como visualizador local, com worker empacotado, canvas fit-width, navegação de páginas, texto auxiliar e erro/retry. Reutiliza o mesmo PDF do endpoint autenticado; não introduz um segundo gerador, HTML divergente ou serviço remoto. As capturas finais devem mostrar o documento efetivamente renderizado. [Exemplo oficial de renderização](https://mozilla.github.io/pdf.js/examples/); [limites de decodificação Sharp](https://sharp.pixelplumbing.com/api-constructor/).

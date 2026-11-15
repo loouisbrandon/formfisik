@@ -1,0 +1,6 @@
+import {localParts,minuteOfDay} from './time'
+export type TimedItem={id:string;starts_at:string;ends_at:string}
+/** Civil-day clipping is presentation only. Reservation conflicts remain server-owned. */
+export function calendarSegment(item:TimedItem,date:string,timezone:string){const a=localParts(item.starts_at,timezone),b=localParts(item.ends_at,timezone);if(a.date>date||b.date<date||b.date===date&&b.time==='00:00')return null;const start=a.date<date?0:minuteOfDay(a.time),end=b.date>date?1440:minuteOfDay(b.time);return {start,end:Math.max(start+1,end)}}
+/** Keep canceled/concurrent visual records separately reachable; no event obscures another. */
+export function calendarLanes(items:TimedItem[],date:string,timezone:string){const sorted=items.flatMap(item=>{const s=calendarSegment(item,date,timezone);return s?[{id:item.id,...s,lane:0,lanes:1}]:[]}).sort((a,b)=>a.start-b.start||a.end-b.end||a.id.localeCompare(b.id));let group:typeof sorted=[],ends:number[]=[],groupEnd=-1;const finish=()=>{for(const item of group)item.lanes=ends.length;group=[];ends=[]};for(const item of sorted){if(item.start>=groupEnd){finish();groupEnd=-1}let lane=ends.findIndex(end=>end<=item.start);if(lane<0)lane=ends.length;item.lane=lane;ends[lane]=item.end;group.push(item);groupEnd=Math.max(groupEnd,item.end)}finish();return new Map(sorted.map(item=>[item.id,item]))}

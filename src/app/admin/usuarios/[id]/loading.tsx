@@ -1,0 +1,1 @@
+export default function Loading(){return <div role="status" aria-label="Carregando perfil do usuário" className="space-y-6">{[1,2,3].map(n=><div key={n} className="h-44 animate-pulse rounded-xl bg-muted"/>)}</div>}

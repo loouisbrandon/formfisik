@@ -1,0 +1,17 @@
+# Operação e privacidade da importação026
+
+Somente local controlado; produção/dados reais NO-GO. Sem deploy, scheduler, serviço externo, credencial real ou migration em banco persistente.
+
+Migration025_professional_imports.sql segue a sequência real: professional_imports (job/chave/HMAC/tipo/estado/prazo), professional_import_rows (linha/chave/decisão/input temporário/resultado/referência), professional_import_events (ator/instante/ação/quantidade, sem conteúdo). Índices por owner/data/job/prazo e contatos canônicos para candidatos limitados. Trigger impede trocar input normalizado por outro conteúdo e regressão de estados terminais. Runtime não tem DELETE/auditUPDATE nem pode mudar owner/tipo/chaves; operador de privacidade é separado. Grants somente preparados no template, ensaiados em banco descartável.
+
+`npm run imports:cleanup`: comando preparado, usa DATABASE_URL do operador, remove entradas expiradas de até20 jobs por rodada e registra somente contagem ou código estático de falha. Repetir/agendar em ambiente autorizado com monitoramento de backlog; **nenhuma agenda real provisionada**. Não executar contra banco persistente nesta missão. Requisições autenticadas também limpam expirados do proprietário. Prazo de exposição sempre verificado no servidor, independente do scheduler.
+
+24h é limite técnico de entrada temporária, não prazo jurídico de retenção. Normalizados somente para registros válidos; inválidos guardam código sem valor. Processados/cancelados/expirados têm input descartado. Não guardar original/filename, logs de linhas ou conteúdo no histórico. Estado/UUIDs/HMAC/datas e IDs resultantes são dados pessoais pseudonimizados, não anonimização. Política final de histórico/auditoria, canais/bases/menores/operadores depende de aprovação, preservando inventário015–024.
+
+Falha de lote: consultar job; lotes anteriores confirmados não devem ser refeitos por outro arquivo. Retomar processa pendentes, com as mesmas linhas/chaves. Falha de auditoria reverte o lote. Pausa é ao fim da transação em curso. Cancelar preserva importados, rejeita pendentes; não é rollback de cadastros nem reembolso/alteração de serviços. Relatório operacional não contém PII cadastral e tem autorização/auditoria própria.
+
+Eliminação de aluno: procedimento016 aprovado/operador, account quiescente, preflight financeiro preservado. Todos os inputs pendentes do proprietário são descartados/cancelados e digests invalidados; referências ao aluno eliminado são removidas. Isso é necessário porque não se presume identidade em um arquivo ainda não vinculado. Outros cadastros canônicos permanecem. Conta profissional elegível elimina dados026 antes de users. Restauração deve ser feita isolada, com replay do ledger e verificações antes de reabrir tráfego; backup/restore testado com importado real, preview pendente, dados de outro proprietário e runtime restrito.
+
+Sem portabilidade genérica de sistemas externos. Adaptadores dependem de amostras reais e autorização; não usar scraping ou credenciais de concorrentes. [Formatos/política](../modulos/importacao.md), [API](../engenharia/api-importacao.md), [relatório026](../engenharia/entrega-026.md).
+
+Auditoria de retenção: em eventos kind=expired, actor_id identifica o profissional responsável pelo dataset; o kind distingue a expiração automática, sem alegar clique humano. Execução do CLI é operação do ambiente, sujeita aos controles de operador015/016. Eliminação e seu aprovador permanecem no ledger016, sem duplicar dados de titulares no histórico de importação.

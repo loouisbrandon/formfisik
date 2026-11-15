@@ -1,0 +1,4 @@
+import {loadEnvConfig} from '@next/env'
+loadEnvConfig(process.cwd())
+async function main(){const{db}=await import('../src/server/db');try{if(process.argv[2]!=='--database-confirmed='+new URL(process.env.DATABASE_URL||'').pathname.slice(1)||!['--retention-reviewed','--apply','--maintenance-verified'].every(flag=>process.argv.includes(flag)))throw Error('TARGET_CONFIRMATION_REQUIRED');const{processAccountClosures,processClosureErasures}=await import('../src/server/privacy/account-closure-worker');const{r2PhotoStore}=await import('../src/server/progress-photos/storage');const closures=await processAccountClosures(),erasure=await processClosureErasures(r2PhotoStore());console.info(JSON.stringify({closures,erasure}));if(closures.blocked||erasure.failed)process.exitCode=1}catch{console.error('account_closure_worker_failed');process.exitCode=1}finally{await db().end()}}
+void main()

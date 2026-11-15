@@ -1,0 +1,7 @@
+import {test} from 'node:test'
+import assert from 'node:assert/strict'
+import {calendarSegment,calendarLanes} from '../src/modules/agenda/calendar-layout'
+const event=(id:string,a:string,b:string)=>({id,starts_at:a,ends_at:b})
+test('calendar clips overnight records and excludes exclusive midnight endpoint',()=>{const e=event('a','2026-11-05T23:00:00Z','2026-11-07T03:00:00Z');assert.deepEqual(calendarSegment(e,'2026-11-05','America/Sao_Paulo'),{start:1200,end:1440});assert.deepEqual(calendarSegment(e,'2026-11-06','America/Sao_Paulo'),{start:0,end:1440});assert.equal(calendarSegment(e,'2026-11-07','America/Sao_Paulo'),null);assert.equal(calendarSegment(e,'2026-11-04','America/Sao_Paulo'),null)})
+test('overlapping visual events have separate lanes, adjacent events share a lane',()=>{const rows=[event('a','2026-11-05T12:00:00Z','2026-11-05T14:00:00Z'),event('b','2026-11-05T13:00:00Z','2026-11-05T15:00:00Z'),event('c','2026-11-05T15:00:00Z','2026-11-05T16:00:00Z')];const lanes=calendarLanes(rows,'2026-11-05','America/Sao_Paulo');assert.equal(lanes.get('a')?.lanes,2);assert.notEqual(lanes.get('a')?.lane,lanes.get('b')?.lane);assert.equal(lanes.get('c')?.lanes,1)})
+test('civil labels use configured timezone rather than browser timezone',()=>{const e=event('a','2026-11-06T01:00:00Z','2026-11-06T02:00:00Z');assert.deepEqual(calendarSegment(e,'2026-11-05','America/Sao_Paulo'),{start:1320,end:1380});assert.deepEqual(calendarSegment(e,'2026-11-06','UTC'),{start:60,end:120})})

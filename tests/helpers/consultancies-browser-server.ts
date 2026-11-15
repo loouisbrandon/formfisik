@@ -1,0 +1,72 @@
+import {saveService,savePlan} from '../../src/server/consultancies/catalog'
+import {saveContract} from '../../src/server/consultancies/contracts'
+import {consultancyHandler} from '../../src/server/consultancies/handlers'
+import {createPhysicalAssessment} from '../../src/server/assessments/repository'
+import {blankAssessment,today} from '../../src/modules/assessments/schema'
+import {openPublic,submitPublic,changeRequest} from '../../src/server/intake/repository'
+// Test process only: real PostgreSQL, real opaque sessions, explicit controlled provider.
+// Never imported or provisioned by the production application.
+import {crmHandler} from '../../src/server/crm/handlers'
+import {initializeCrm,configuration} from '../../src/server/crm/core'
+import {intakeHandler,publicIntakeHandler} from '../../src/server/intake/handlers'
+import {invite} from '../../src/server/intake/repository'
+import {STANDARD_ID} from '../../src/modules/intake/standard'
+import {createServer} from 'node:http'
+import {randomUUID,randomBytes} from 'node:crypto'
+import Stripe from 'stripe'
+import {migrate} from '../../scripts/migrate'
+import {db} from '../../src/server/db'
+import {createSession,readSession,sessionToken} from '../../src/server/sessions'
+import {startCheckout,processBillingEvent} from '../../src/server/subscriptions/service'
+import {createWorkoutHandler} from '../../src/server/workouts/handlers'
+import {createStudentHandler} from '../../src/server/students/handlers'
+import {createStudent} from '../../src/server/students/repository'
+import {createDashboardHandler} from '../../src/server/professional-dashboard'
+import {reply} from '../../src/server/http'
+import {logout} from '../../src/server/auth'
+import {ControlledGateway,fixture} from './controlled-billing'
+async function main(){
+ const connection=process.env.TEST_DATABASE_URL
+ if(!connection||!new URL(connection).pathname.endsWith('_test'))throw new Error('Isolated test database required')
+ Object.assign(process.env,{DATABASE_URL:connection,APP_URL:'http://localhost:3109',ABUSE_HMAC_SECRET:randomBytes(32).toString('hex'),STRIPE_SECRET_KEY:'sk_test_controlled_not_real',STRIPE_PRICE_ID:'price_fixture',STRIPE_PRODUCT_ID:'prod_fixture',STRIPE_WEBHOOK_SECRET:'whsec_not_real',STRIPE_PORTAL_CONFIGURATION_ID:''})
+ await migrate(connection);await db().query('TRUNCATE users,billing_events,abuse_limits CASCADE')
+ const owner=randomUUID(),provider=new ControlledGateway(),other=randomUUID()
+ for(const id of [owner,other])await db().query("INSERT INTO users(id,email,full_name,role,email_verified_at) VALUES($1,$2,'Profissional de teste','professional',now())",[id,id+'@example.test'])
+ const session=await createSession(owner)
+ await startCheckout(owner,provider);const completed=provider.complete()
+ await processBillingEvent(fixture<Stripe.Event>({id:'evt_'+randomUUID(),livemode:false,type:'checkout.session.completed',created:Math.floor(Date.now()/1000),data:{object:completed.session}}),provider)
+ const foreign=await createStudent(other,{fullName:'Confidencial de outro profissional',email:'',phone:'',birthDate:'',adminNotes:'',creationKey:randomUUID()})
+ await initializeCrm(owner)
+ const students=[];for(let i=0;i<23;i++)students.push(await createStudent(owner,{fullName:'Aluno CRM '+String(i).padStart(2,'0'),email:'',phone:'',birthDate:'',adminNotes:'',creationKey:randomUUID()}))
+ const config=await configuration(owner)
+ await createPhysicalAssessment(owner,students[0].id,{...blankAssessment(),date:today(),weight:'80'},randomUUID())
+ const intake=await invite(owner,STANDARD_ID,students[0].id),opened=await openPublic(intake.token);await submitPublic(intake.token,{answers:{[opened.definition.sections[0].questions[0].id]:'Objetivo sintético'},acknowledged:true});await changeRequest(owner,intake.id,'reviewed')
+ const fs=await saveService(other,{operationKey:randomUUID(),fields:{name:'Serviço de outra carteira',description:'',category:'custom',channel:'online',commercialNotes:''}}),fp=await savePlan(other,{operationKey:randomUUID(),fields:{serviceId:fs.id,name:'Plano confidencial de outra carteira',description:'',priceCents:10000,duration:1,unit:'months',sessions:null,conditions:'',available:true,billingIntent:'unspecified',deliveries:[]}}),fc=await saveContract(other,{operationKey:randomUUID(),fields:{studentId:foreign.id,planId:fp.id,planVersion:1,start:today(),agreedPriceCents:10000,sessions:null,administrativeNotes:'FOREIGN_COMMERCIAL_NOT_FOR_OWNER'},allowOverlap:false,confirmed:true})
+ const invalid=await invite(owner,STANDARD_ID);await db().query("UPDATE intake_requests SET expires_at=clock_timestamp()-interval '1 second' WHERE id=$1",[invalid.id])
+ const revoked=await invite(owner,STANDARD_ID);await db().query('UPDATE intake_requests SET revoked_at=clock_timestamp() WHERE id=$1',[revoked.id])
+ const server=createServer(async(incoming,outgoing)=>{
+  try{
+   const chunks:Buffer[]=[];for await(const chunk of incoming)chunks.push(Buffer.from(chunk))
+   const request=new Request(process.env.APP_URL+incoming.url!,{method:incoming.method,headers:incoming.headers as Record<string,string>,body:['GET','HEAD'].includes(incoming.method!)?undefined:Buffer.concat(chunks).toString()})
+   const url=new URL(request.url),match=url.pathname.match(/^\/api\/students\/([\w-]+)(?:\/(status|pdf))?$/)
+   let response:Response
+   if(url.pathname==='/api/consultancies')response=await consultancyHandler(provider)(request)
+   else if(url.pathname==='/api/crm')response=await crmHandler(provider)(request)
+   else if(url.pathname==='/api/intake/public')response=await publicIntakeHandler(request)
+   else if(url.pathname==='/api/intake')response=await intakeHandler(provider)(request)
+   else if(url.pathname==='/api/auth/session'){const user=await readSession(sessionToken(request.headers.get('cookie')));response=reply(user?{user}:{message:'Sessão inválida.'},user?200:401)}
+   else if(url.pathname==='/api/auth/logout')response=await logout(request)
+   else if(url.pathname==='/api/professional/dashboard')response=await createDashboardHandler(provider)(request)
+   else if(url.pathname==='/api/workouts')response=await createWorkoutHandler('list',provider)(request)
+   else if(url.pathname==='/api/students/export')response=await createStudentHandler('export',provider)(request)
+   else if(url.pathname==='/api/students')response=await createStudentHandler(incoming.method==='POST'?'create':'list',provider)(request)
+   else if(match)response=await createStudentHandler(match[2]==='status'?'status':match[2]==='pdf'?'pdf':incoming.method==='PUT'?'edit':'get',provider)(request,match[1])
+   else response=reply({message:'Não encontrado.'},404)
+   outgoing.writeHead(response.status,Object.fromEntries(response.headers));outgoing.end(Buffer.from(await response.arrayBuffer()))
+  }catch{outgoing.writeHead(503);outgoing.end('{"message":"Indisponível no teste."}')}
+ })
+ await new Promise<void>(resolve=>server.listen(3111,'127.0.0.1',resolve))
+ process.send?.({type:'ready',token:session.token,foreignContractId:fc.id,students:students.map(s=>s.id),stages:config.stages,foreignId:foreign.id,expiredToken:invalid.token,revokedToken:revoked.token})
+ process.on('SIGTERM',()=>{server.close(()=>{void db().end().then(()=>process.exit(0))})})
+}
+main().catch(()=>{console.error('students_browser_fixture_unavailable');process.exitCode=1})
