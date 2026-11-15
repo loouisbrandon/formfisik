@@ -96,3 +96,5 @@ Produtos do personal: [autoria privada, regras e contratos035](modulos/produtos.
 - [Escopo, abuso e consumo do eCoach](seguranca/ecoach-escopo-e-abuso.md).
 
 - [Plano de liberação web para produção — 14/11/2026](planejamento/plano-release-producao-2026-11-14.md).
+
+Preparação atual de produção: [execução controlada de 15/11/2026](operacao/producao-controlada-2026-11-15.md), com manutenção fechada e bloqueios explícitos.

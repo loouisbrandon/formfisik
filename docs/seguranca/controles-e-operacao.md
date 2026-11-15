@@ -134,3 +134,7 @@ Não confundir autorização de rascunhos com envio autônomo. Canais WhatsApp/I
 Consultar [escopo, abuso e consumo](ecoach-escopo-e-abuso.md) para pré-validação local, ferramentas por intenção, inspeção de saída, cotas compartilhadas e limites da mitigação. Implementado localmente; não equivale a homologação do provedor ou eliminação de todo prompt injection.
 
 SaaS: a [entrega de ambientes de assinatura](../engenharia/assinaturas-ambientes-2026-11.md) substitui a restrição histórica somente local por modos explícitos, domínio/deployment, chave/conta e verificação consistente de livemode. Mantidos autenticação/isolamento/assinatura de evento e recusa de Connect neste domínio. Não autoriza uso real sem homologação operacional.
+
+## Produção em manutenção — 15/11/2026
+
+[Execução e evidências](../operacao/producao-controlada-2026-11-15.md): schema040, runtime TLS/grants e restore remoto do catálogo verificados; implantação produtiva fechada com health200 e páginas/APIs503. Cadastro, IA e cobranças permanecem fechados. Backup automático nativo bloqueado pelo plano; fundador optou manter plano atual temporariamente. Não levantar NO-GO de dados reais/abertura nem marcar checkboxes históricos como aprovados sem a respectiva evidência.

@@ -10,7 +10,7 @@
     "db:migrate": "tsx scripts/migrate.ts",
     "test": "node --conditions=react-server --import tsx --test --test-concurrency=1 tests/*.test.ts",
     "test:e2e": "tsx tests/e2e.ts",
-    "typecheck": "tsc --noEmit --incremental false",
+    "typecheck": "next typegen && tsc --noEmit --incremental false",
     "db:cleanup": "tsx scripts/cleanup.ts",
     "billing:reconcile": "node --conditions=react-server --import tsx scripts/reconcile-billing.ts",
     "test:dashboard:e2e": "tsx tests/dashboard-e2e.ts",
