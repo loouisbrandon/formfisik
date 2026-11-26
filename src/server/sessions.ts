@@ -3,9 +3,11 @@ import { createHash,createHmac, randomBytes } from 'node:crypto'
 import { parseCookie, stringifySetCookie } from 'cookie'
 import { db } from './db'
 import { config } from './config'
+import {logicalSessions,SessionLimit} from './core/logical-sessions'
 
-export const IDLE_SECONDS = 30 * 60
-export const ABSOLUTE_SECONDS = 12 * 60 * 60
+// Persistent Web login; explicit logout and security revocation remain authoritative.
+export const IDLE_SECONDS = 365 * 24 * 60 * 60
+export const ABSOLUTE_SECONDS = IDLE_SECONDS
 export const sessionDigest = (token: string) => createHash('sha256').update(token).digest('hex')
 export const cookieName = () => process.env.NODE_ENV === 'production' ? '__Host-formfisik-session' : 'formfisik-session'
 export function sessionToken(cookieHeader: string | null): string | undefined {
@@ -27,7 +29,7 @@ export const sessionContext=(userId:string)=>createHmac('sha256',config().abuseS
 export async function readSession(token: string | undefined, touch = false): Promise<Identity | null> {
   if (!token || !/^[\w-]{43}$/.test(token)) return null
   const predicate = `s.token_hash=$1 AND s.revoked_at IS NULL AND s.expires_at>clock_timestamp()
-    AND s.last_seen_at>clock_timestamp()-$2*interval '1 second' AND u.email_verified_at IS NOT NULL AND u.disabled_at IS NULL AND NOT EXISTS(SELECT 1 FROM account_closures x WHERE x.user_id=u.id AND x.effective_at<=clock_timestamp())`
+    AND s.last_seen_at>clock_timestamp()-$2*interval '1 second' AND u.email_verified_at IS NOT NULL AND u.disabled_at IS NULL AND NOT EXISTS(SELECT 1 FROM mobile_session_families m WHERE m.id=s.logical_id) AND NOT EXISTS(SELECT 1 FROM account_closures x WHERE x.user_id=u.id AND x.effective_at<=clock_timestamp())`
   const result = touch
     ? await db().query(`UPDATE sessions s SET last_seen_at=clock_timestamp() FROM users u
         WHERE u.id=s.user_id AND ${predicate} RETURNING u.id,u.email,u.full_name,u.role`, [sessionDigest(token), IDLE_SECONDS])
@@ -44,12 +46,13 @@ export async function createSession(userId: string, previous?: string, expectedP
   try {
     await client.query('BEGIN')
     // Recheck user state under lock before issuing the new bearer cookie.
-    const user = await client.query('SELECT id FROM users u WHERE id=$1 AND email_verified_at IS NOT NULL AND disabled_at IS NULL AND NOT EXISTS(SELECT 1 FROM account_closures x WHERE x.user_id=u.id AND x.effective_at<=clock_timestamp()) FOR SHARE', [userId])
+    const user = await client.query('SELECT id FROM users u WHERE id=$1 AND email_verified_at IS NOT NULL AND disabled_at IS NULL AND NOT EXISTS(SELECT 1 FROM account_closures x WHERE x.user_id=u.id AND x.effective_at<=clock_timestamp()) FOR UPDATE', [userId])
     if (expectedPasswordHash) {
       const credential = await client.query('SELECT user_id FROM credentials WHERE user_id=$1 AND password_hash=$2', [userId, expectedPasswordHash])
       if (!credential.rowCount) throw new CredentialsChanged()
     }
     if (!user.rowCount) throw new CredentialsChanged()
+    if((await logicalSessions(client,userId,previous?sessionDigest(previous):undefined)).length>=5)throw new SessionLimit()
     if (previous) await client.query('UPDATE sessions SET revoked_at=clock_timestamp() WHERE token_hash=$1 AND revoked_at IS NULL', [sessionDigest(previous)])
     const result = await client.query(`INSERT INTO sessions(token_hash,user_id,expires_at) VALUES($1,$2,now()+$3*interval '1 second') RETURNING expires_at`, [sessionDigest(token), userId, ABSOLUTE_SECONDS])
     await client.query('COMMIT')

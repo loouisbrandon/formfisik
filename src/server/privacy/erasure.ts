@@ -164,6 +164,9 @@ async function finalize(j:Job,lease:string){return transaction(async c=>{
   await c.query('DELETE FROM workout_operation_keys WHERE owner_id=$1',[j.owner_id])
   await c.query('DELETE FROM account_security_events WHERE user_id=$1',[j.owner_id])
   await c.query('DELETE FROM pending_registrations WHERE email=(SELECT email FROM users WHERE id=$1)',[j.owner_id])
+  // Only this explicit approved professional erasure removes its account receipts.
+  // No runtime DELETE grant or implicit cascade from ordinary account changes.
+  await c.query('DELETE FROM account_legal_acceptances WHERE user_id=$1',[j.owner_id])
   await c.query('DELETE FROM users WHERE id=$1',[j.owner_id]) // credentials/sessions/reset/presentation cascade; finance/contributions preflight blocked.
  }
  await c.query("UPDATE privacy_erasure_jobs SET state='completed',blocker=NULL,completed_at=clock_timestamp() WHERE id=$1",[j.id])

@@ -1,5 +1,7 @@
 # ADR-002 — Login e sessões opacas persistentes
 
+> Atualização local — 25/11/2026: por solicitação do fundador, o login Web agora persiste por 365 dias desde a emissão, sem os antigos cortes de 30 minutos/12 horas. Cookie persistente HttpOnly/Secure/SameSite, autorização por operação, logout, revogação, suspensão, encerramento e troca de senha permanecem. Inspeções passivas não renovam o prazo. Cleanup e contagem de sessões lógicas seguem o mesmo prazo Web. Sessões antigas não são reativadas nem têm seus cookies prorrogados: novo login emite o prazo novo. Política Mobile inalterada. Descrições de 30min/12h abaixo são históricas. Sem deploy ou homologação de produção.
+
 Estado: implementado; resultados de validação em [Entrega 002](../engenharia/entrega-002.md). Substitui somente a previsão de sessões futuras da ADR-001, preservando cadastro e credenciais.
 
 ## Decisão e limites

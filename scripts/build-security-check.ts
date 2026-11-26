@@ -11,7 +11,8 @@ const env:NodeJS.ProcessEnv={...process.env,NODE_ENV:'production',NEXT_TELEMETRY
  R2_SECRET_ACCESS_KEY:'FF_BUILD_CANARY_R2_SECRET_ONLY',R2_ACCESS_KEY_ID:'FF_BUILD_CANARY_R2_ACCESS_ONLY',
  STREAM_API_TOKEN:'FF_BUILD_CANARY_STREAM_TOKEN_ONLY',STREAM_WEBHOOK_SECRET:'FF_BUILD_CANARY_STREAM_WEBHOOK_ONLY',
  ECOACH_AI_ENABLED:'false',ECOACH_OPENAI_API_KEY:'FF_BUILD_CANARY_ECOACH_OPENAI_ONLY',ECOACH_ANTHROPIC_API_KEY:'FF_BUILD_CANARY_ECOACH_ANTHROPIC_ONLY',
- SETTINGS_ENCRYPTION_KEY:'ab'.repeat(32)}
+ SETTINGS_ENCRYPTION_KEY:'ab'.repeat(32),CORE_SERVICE_ENVIRONMENT:'production',CORE_SERVICE_AUDIENCE:'urn:formfisik:core:production',CORE_SERVICE_CLIENTS_JSON:'[]',
+ CORE_MOBILE_RETRY_KEYS_JSON:JSON.stringify({activeKid:'synthetic',keys:{synthetic:'cd'.repeat(32)}})}
 async function run(args:string[]){return new Promise<number>(resolveExit=>{const child=spawn(process.execPath,args,{env,stdio:'inherit'});child.once('error',()=>resolveExit(1));child.once('exit',code=>resolveExit(code??1))})}
 async function main(){const built=await run([resolve('node_modules/next/dist/bin/next'),'build','--webpack']);if(built){process.exitCode=built;return}process.exitCode=await run(['--import','tsx','scripts/audit-browser-exposure.ts','--public-only'])}
 main().catch(()=>{console.error('SECURITY_BUILD_FAILED');process.exitCode=1})

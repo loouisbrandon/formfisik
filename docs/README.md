@@ -1,5 +1,11 @@
 # Documentação oficial da FormFisik
 
+## Autenticação integrada Mobile — local, 25/11/2026
+
+- [Contrato AUTH-01](engenharia/auth-01-core-contract.md) e [OpenAPI](engenharia/auth-01-core.openapi.yaml): asserção de serviço direta ES256, sem acesso irrestrito de usuário.
+- [Contrato AUTH-02](engenharia/auth-02-core-contract-proposal.md) e [OpenAPI](engenharia/auth-02-core.openapi.json): sessões opacas canônicas, Web preservado, validação integrada em andamento. [DEVLOG](../DEVLOG.md).
+- Nenhuma destas alterações autoriza produção; NO-GO015 mantido, sem homologação iOS.
+
 Referência da consolidação: 01/11/2026. A empresa é independente, fundada por Brandon Louis; não se presume constituição jurídica formalizada. Personal 1.0 é a primeira especialidade operacional alvo, não todo o ecossistema futuro.
 
 | Assunto / fonte canônica | Uso |
@@ -98,3 +104,6 @@ Produtos do personal: [autoria privada, regras e contratos035](modulos/produtos.
 - [Plano de liberação web para produção — 14/11/2026](planejamento/plano-release-producao-2026-11-14.md).
 
 Preparação atual de produção: [execução controlada de 15/11/2026](operacao/producao-controlada-2026-11-15.md), com manutenção fechada e bloqueios explícitos.
+
+- AUTH03 local: [contrato Core cadastro pessoal e evidências legais](engenharia/auth-03-core-contract.md) e [OpenAPI](engenharia/auth-03-core.openapi.json). Documentos sintéticos não são termos/política oficiais nem autorização de publicação.
+- AUTH04 local: [recuperação e reset Core](engenharia/auth-04-core-contract.md) e [OpenAPI](engenharia/auth-04-core.openapi.json), mesmos serviços e revogação Web, handoff exclusivo de desenvolvimento.

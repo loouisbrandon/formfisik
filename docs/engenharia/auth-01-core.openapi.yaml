@@ -1,0 +1,69 @@
+openapi: 3.1.0
+info:
+  title: FormFisik Core service authentication
+  version: 1.0.0
+  description: Direct ES256 service assertion. No user authentication or delegation. Local only; NO-GO015 preserved.
+paths:
+  /api/core/v1/service-check:
+    get:
+      operationId: coreServiceCheck
+      security:
+        - serviceAssertion: []
+      parameters:
+        - in: header
+          name: X-Correlation-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Authorized service and consumed assertion
+          headers:
+            X-Request-Id:
+              schema: {type: string, format: uuid}
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [ok, contractVersion]
+                properties:
+                  ok: {const: true}
+                  contractVersion: {const: '1'}
+        '400':
+          $ref: '#/components/responses/Failure'
+        '401':
+          $ref: '#/components/responses/Failure'
+        '403':
+          $ref: '#/components/responses/Failure'
+        '429':
+          $ref: '#/components/responses/Failure'
+        '503':
+          $ref: '#/components/responses/Failure'
+components:
+  securitySchemes:
+    serviceAssertion:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: ES256 direct service assertion, typ JWT, registered kid, exact issuer/subject/audience/environment, scope core:service-check, UUID jti, iat/exp at most 60s. Fresh assertion per request. Not a user token or OAuth flow.
+  responses:
+    Failure:
+      description: Controlled failure; no credentials or user information
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [error, requestId]
+            properties:
+              requestId: {type: string, format: uuid}
+              error:
+                type: object
+                additionalProperties: false
+                required: [code]
+                properties:
+                  code:
+                    type: string
+                    enum: [service_unauthorized, service_forbidden, service_replay, service_unavailable, invalid_request, service_rate_limited]

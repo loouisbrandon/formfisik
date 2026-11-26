@@ -1,5 +1,6 @@
 import { loadEnvConfig } from '@next/env'
 import { Pool } from 'pg'
+import {expiredSessionsSql} from './session-cleanup-query'
 loadEnvConfig(process.cwd())
 async function main() {
 const pool = new Pool({ connectionString: process.env.DATABASE_URL })
@@ -9,7 +10,10 @@ try {
   await pool.query('DELETE FROM password_resets WHERE expires_at < now()')
   await pool.query('DELETE FROM settings_email_changes WHERE expires_at < now()')
   await pool.query('DELETE FROM abuse_limits WHERE expires_at < now()')
-  await pool.query("DELETE FROM sessions WHERE expires_at < now() OR revoked_at IS NOT NULL OR last_seen_at < now()-interval '30 minutes'")
+  await pool.query(expiredSessionsSql)
+  await pool.query('DELETE FROM session_login_challenges WHERE expires_at<now() OR consumed_at IS NOT NULL')
+  await pool.query('UPDATE mobile_refresh_receipts SET ciphertext=NULL WHERE expires_at<now() AND ciphertext IS NOT NULL')
+  await pool.query('DELETE FROM core_service_assertions WHERE expires_at<now()')
   await pool.query('DELETE FROM workout_documents WHERE expires_at <= now()')
   await pool.query('DELETE FROM ecoach_ai_requests WHERE expires_at <= now()')
   await pool.query('DELETE FROM ecoach_proposals WHERE expires_at <= now()')

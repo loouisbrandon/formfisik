@@ -1,5 +1,7 @@
 # Inventário de tratamento e retenção proposta — 015
 
+> Atualização local — 25/11/2026: por solicitação do fundador, o login Web agora persiste por 365 dias desde a emissão, sem os antigos cortes de 30 minutos/12 horas. Cookie persistente HttpOnly/Secure/SameSite, autorização por operação, logout, revogação, suspensão, encerramento e troca de senha permanecem. Inspeções passivas não renovam o prazo. Cleanup e contagem de sessões lógicas seguem o mesmo prazo Web. Sessões antigas não são reativadas nem têm seus cookies prorrogados: novo login emite o prazo novo. Política Mobile inalterada. Descrições de 30min/12h abaixo são históricas. Sem deploy ou homologação de produção.
+
 **Proposta para revisão jurídica e decisão operacional; não publicada nem aplicada automaticamente.** A FormFisik é empresa independente fundada por Brandon Louis. Independência operacional não comprova constituição jurídica. Responsável legal, canal de privacidade, papéis de controlador/operador e acordos com profissionais precisam ser definidos antes do uso de dados reais. Não há certificação LGPD.
 
 Proteção elevada para dados corporais e observações de saúde. Fotografias não são automaticamente biometria: o enquadramento depende de finalidade e uso; não existe reconhecimento facial, identificação biométrica ou IA nesta aplicação. Avaliar o contexto do conjunto, inclusive associação entre imagem, aluno e histórico físico. Referências de autorização registram uma declaração profissional, sem validar documentos ou estabelecer por si uma base legal.
@@ -182,8 +184,26 @@ Store — preferências locais de navegação: IDs públicos de curtidas e sacol
 
 Store checkout de demonstração: não coleta credenciais ou identidade de comprador; usa e-mail/endereço fictícios fixos. CEP digitado apenas no estado em memória, finalidade de validação visual, sem envio/log/persistência e descartado ao sair/recarregar. Interface orienta uso de CEP fictício. Nenhum dado de pagamento solicitado. OAuth e cadastro real permanecem não implementados e exigem avaliação própria antes de ativação.
 
+## AUTH-01/02 — sessões integradas (local, 25/11/2026)
+
+Finalidade: autenticação técnica Core/API, autenticação de contas existentes e continuidade/revogação de sessão Mobile. Não cria identidade paralela nem novos papéis. `core_service_assertions` contém issuer/ambiente/jti e prazo, sem dados de usuário; limpeza limitada retém apenas a janela antireplay. `mobile_session_families` contém userId, identificador de instalação autodeclarado, plataforma, rótulo e última atividade relevante; acesso somente pelo Core e desafio autenticado de escolha do próprio usuário. Metadados de dispositivo não comprovam identidade.
+
+Access/refresh são aleatórios e persistidos por digest. Recibos de refresh guardam digests da operação/prova e resposta cifrada AES-GCM recuperável por até5min; ciphertext expirado é eliminado na limpeza e nas novas rotações daquela família. Chaves versionadas em configuração privada separada. Digests de refresh consumidos permanecem durante a família para detectar replay; isso pode crescer em sessões longas, exige monitoramento/limpeza operacional, não contém senhas ou tokens claros. Access expirado também requer limpeza operacional; nenhuma cópia do histórico pessoal é criada aqui.
+
+Inatividade relevante365dias encerra a sessão lógica; refresh/polling não renovam esse prazo, não há expiração absoluta periódica. Revogar a âncora Web revoga a família; cleanup elimina âncoras revogadas/expiradas e suas estruturas em cascata. Desafios de sexta sessão duram5min, são digest-only e vinculados à versão da credencial. Configurar execução e evidenciar limpeza no ambiente alvo antes de produção. Sem alegação de homologação LGPD; NO-GO015 preservado.
+
 ## Rascunhos de treinos — atualização local de 2026-11-25
 
 Finalidade: recuperar trabalho de prescrição ainda não confirmado, incluindo vínculo com aluno e informações potencialmente sensíveis registradas pelo profissional. Persistência em `workout_editor_drafts`, acesso exclusivo do profissional proprietário com sessão/assinatura válidas; respostas privadas sem cache e sem conteúdo em logs ou armazenamento do navegador. Não disponível ao aluno nem usado como prescrição publicada.
 
 Retenção: até confirmação do planejamento ou eliminação da conta/dados relacionados; não há expiração automática por idade nesta entrega. A rotina de eliminação remove rascunhos do profissional e referências ao aluno/planejamento eliminado antes de apagar planos. Suspensão de assinatura bloqueia acesso, sem apagar automaticamente o trabalho. Não há exportação específica de rascunhos nesta entrega. Estado IMPLEMENTADO localmente; validação de produção e NO-GO da 015 permanecem independentes.
+
+## AUTH03 — cadastro pessoal e evidências legais (local, 25/11/2026)
+
+Cadastro reutiliza identidade/credencial e desafios efêmeros existentes; finalidade pessoal separada do cadastro profissional. Dados pendentes incluem nome, email, hash Argon2, digest de desafio/código e referência aos documentos apresentados; código10min, janela total30min e limpeza existente. A conta confirmada tem papel personal, sem vínculo automático com aluno/profissional ou liberação comercial.
+
+Documentos legais imutáveis guardam versão, hash SHA256 de UTF8, conteúdo, título, URL, vigência e marca sintética; ponteiros de publicação por ambiente são exclusivamente operacionais. Aceites mínimos vinculam conta/documento/operação, datas de apresentação e aceite no servidor, issuer e requestId, sem IP, senha ou texto livre adicional. Ciência da privacidade não representa consentimento genérico para saúde/marketing/IA. Runtime pode ler documentos e inserir aceites, sem editar/publicar documentos ou apagar recibos. Eliminação aprovada remove recibos pelo fluxo operador canônico antes da conta; não se declara base legal/prazo jurídico definitivo. Documentos sem dados pessoais mantêm versões; nenhum documento oficial publicado nesta entrega. Metadados e reaceite de conta existente independem da abertura de novos cadastros. Sem enforcement global de módulos por aceite nesta etapa; NO-GO015 preservado.
+
+## AUTH04 local — recuperação pessoal (26/11/2026)
+
+Mesmo cadastro users/credentials e password_resets, sem nova cópia de usuário ou segredo na API. Finalidade de recuperação de conta; email normalizado, hash de token aleatório e expiração30min. Todos links da conta consumidos em reset confirmado e sessões Web/Mobile revogadas na transação existente. App só recebe token por link temporário, sem persistência/analytics; validação passiva não revela identidade. Handoff custom exclusivo dev, fallbackWeb com fragmento; produção/AppLinks/UniversalLinks pendentes. CapturasSMTP locais sintéticas não são deliveryexterna; descartar arquivos privados do ensaio após homologação apropriada. Sem alteração de retenções jurídicas/NO-GO015.

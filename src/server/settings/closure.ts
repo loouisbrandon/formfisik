@@ -21,7 +21,7 @@ export async function closureStatus(userId:string) {
 async function guard(c:import('pg').PoolClient,userId:string,hash:string,password:string) {
  const row=(await c.query("SELECT u.id,c.password_hash FROM users u JOIN credentials c ON c.user_id=u.id WHERE u.id=$1 AND u.role='professional' AND u.disabled_at IS NULL AND u.email_verified_at IS NOT NULL AND NOT EXISTS(SELECT 1 FROM account_closures x WHERE x.user_id=u.id AND x.effective_at<=clock_timestamp()) FOR UPDATE OF u",[userId])).rows[0]
  if(!row||!await argon2.verify(row.password_hash,password))throw new ClosureUnauthorized()
- const live=await c.query("SELECT 1 FROM sessions WHERE user_id=$1 AND token_hash=$2 AND revoked_at IS NULL AND expires_at>clock_timestamp() AND last_seen_at>clock_timestamp()-interval '30 minutes'",[userId,hash])
+ const live=await c.query("SELECT 1 FROM sessions WHERE user_id=$1 AND token_hash=$2 AND revoked_at IS NULL AND expires_at>clock_timestamp() AND last_seen_at>clock_timestamp()-interval '365 days'",[userId,hash])
  if(!live.rowCount)throw new ClosureUnauthorized()
 }
 /** Session + password checked before provider I/O and again under the account lock. */

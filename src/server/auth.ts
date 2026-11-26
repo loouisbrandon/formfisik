@@ -1,19 +1,13 @@
 import 'server-only'
-import { randomBytes } from 'node:crypto'
-import { hash, verify, argon2id } from 'argon2'
 import { setTimeout as delay } from 'node:timers/promises'
 import { loginSchema, invalidCredentials } from '../modules/auth/schema'
 import { db } from './db'
 import { clientAddress, failure, jsonBody, limit, reply, sameOrigin } from './http'
 import { accessFor, destinationFor } from './access'
 import { CredentialsChanged, clearSessionCookie, createSession, readSession, revokeSession, sessionCookie, sessionToken,sessionContext } from './sessions'
+import {SessionLimit,createChallenge} from './core/logical-sessions'
+import {verifyCredentials} from './credential-verification'
 
-// Lazy per-process dummy hash uses the SAME Argon2 work as real credentials.
-// Existing/non-existing/unconfirmed accounts all perform password verification.
-let dummy: Promise<string> | undefined
-function dummyHash() {
-  return dummy ??= hash(randomBytes(32), { type: argon2id, memoryCost: 19456, timeCost: 2, parallelism: 1 })
-}
 const unauthenticated = () => reply({ message: 'Sua sessão não está disponível. Entre novamente.' }, 401, { 'Set-Cookie': clearSessionCookie() })
 
 export async function login(request: Request) {
@@ -26,15 +20,17 @@ export async function login(request: Request) {
     if (!parsed.success) return reply({ message: 'Confira os campos informados.', errors: parsed.error.flatten().fieldErrors }, 400)
     const { email, password } = parsed.data
     await limit(`login:email:${email}`, 5, 900)
-    const result = await db().query(`SELECT u.id,u.role,u.email_verified_at,u.disabled_at,c.password_hash FROM users u
-      JOIN credentials c ON c.user_id=u.id WHERE u.email=$1`, [email])
-    const user = result.rows[0]
-    const valid = await verify(user?.password_hash || await dummyHash(), password)
-    if (!user || !valid || !user.email_verified_at || user.disabled_at) {
+    const user = await verifyCredentials(email,password)
+    if (!user) {
       console.info('auth_login_rejected')
       return reply({ message: invalidCredentials }, 401)
     }
-    const session = await createSession(user.id, sessionToken(request.headers.get('cookie')), user.password_hash)
+    let session
+    try{session = await createSession(user.id, sessionToken(request.headers.get('cookie')), user.password_hash)}catch(error){
+      if(!(error instanceof SessionLimit))throw error
+      const c=await db().connect()
+      try{await c.query('BEGIN');const live=await c.query('SELECT c.password_hash FROM users u JOIN credentials c ON c.user_id=u.id WHERE u.id=$1 AND u.disabled_at IS NULL AND u.email_verified_at IS NOT NULL AND NOT EXISTS(SELECT 1 FROM account_closures x WHERE x.user_id=u.id AND x.effective_at<=clock_timestamp()) FOR UPDATE OF u',[user.id]);if(live.rows[0]?.password_hash!==user.password_hash)throw new CredentialsChanged();const challenge=await createChallenge(c,user.id,user.password_hash,'web');await c.query('COMMIT');return reply(challenge,409)}catch(e){await c.query('ROLLBACK');throw e}finally{c.release()}
+    }
     console.info('auth_login_succeeded')
     return reply({ destination: destinationFor(user) }, 200, { 'Set-Cookie': sessionCookie(session.token, session.expiresAt) })
   } catch (error) {

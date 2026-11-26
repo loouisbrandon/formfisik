@@ -1,0 +1,1006 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FormFisik Core Personal Registration \u2014 AUTH-03",
+    "version": "1.0.0",
+    "description": "Local AUTH03 implementation under isolated validation. NO-GO015 preserved. Migration043 applied only in synthetic loopback test databases. No official legal text or external email. Responses bounded to65536 UTF8 bytes after JSON serialization; legal documents <=12288 UTF8 bytes each."
+  },
+  "paths": {
+    "/api/core/v1/registration/legal": {
+      "post": {
+        "operationId": "coreRegistrationLegal",
+        "description": "Exact assertion scope core:registration:legal. No automatic retry of mutations. No spoofed Origin. Request body <=16384 bytes.",
+        "security": [
+          {
+            "serviceAssertion": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {},
+                "required": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Current server-controlled legal state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegalMetadata"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Controlled request/authorization error; service errors are integration failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Controlled request/authorization error; service errors are integration failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Controlled request/authorization error; service errors are integration failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Publication changed; restart and present current documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; respect Retry-After",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Legal publication unavailable or dependency failure; never simulate success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/core/v1/registration/start": {
+      "post": {
+        "operationId": "coreRegistrationStart",
+        "description": "Exact assertion scope core:registration:start. No automatic retry of mutations. No spoofed Origin. Request body <=16384 bytes.",
+        "security": [
+          {
+            "serviceAssertion": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Start"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Generic accepted response; never automatic session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Accepted"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Controlled request/authorization error; service errors are integration failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Controlled request/authorization error; service errors are integration failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Controlled request/authorization error; service errors are integration failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Publication changed; restart and present current documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; respect Retry-After",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Legal publication unavailable or dependency failure; never simulate success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/core/v1/registration/verify": {
+      "post": {
+        "operationId": "coreRegistrationVerify",
+        "description": "Exact assertion scope core:registration:verify. No automatic retry of mutations. No spoofed Origin. Request body <=16384 bytes.",
+        "security": [
+          {
+            "serviceAssertion": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Verify"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generic accepted response; never automatic session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Verified"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Controlled request/authorization error; service errors are integration failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Controlled request/authorization error; service errors are integration failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Controlled request/authorization error; service errors are integration failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Publication changed; restart and present current documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; respect Retry-After",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Legal publication unavailable or dependency failure; never simulate success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/core/v1/registration/resend": {
+      "post": {
+        "operationId": "coreRegistrationResend",
+        "description": "Exact assertion scope core:registration:resend. No automatic retry of mutations. No spoofed Origin. Request body <=16384 bytes.",
+        "security": [
+          {
+            "serviceAssertion": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Resend"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Generic accepted response; never automatic session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Resent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Controlled request/authorization error; service errors are integration failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Controlled request/authorization error; service errors are integration failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Controlled request/authorization error; service errors are integration failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Publication changed; restart and present current documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; respect Retry-After",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Legal publication unavailable or dependency failure; never simulate success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/core/v1/registration/legal-status": {
+      "post": {
+        "operationId": "coreRegistrationLegalStatus",
+        "description": "Exact assertion scope core:registration:legal-status. No automatic retry of mutations. No spoofed Origin. Request body <=16384 bytes.",
+        "security": [
+          {
+            "serviceAssertion": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LegalStatusInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Current server-controlled legal state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegalStatus"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Controlled request/authorization error; service errors are integration failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Controlled request/authorization error; service errors are integration failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Controlled request/authorization error; service errors are integration failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Publication changed; restart and present current documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; respect Retry-After",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Legal publication unavailable or dependency failure; never simulate success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/core/v1/registration/legal-accept": {
+      "post": {
+        "operationId": "coreRegistrationLegalAccept",
+        "description": "Exact assertion scope core:registration:legal-accept. No automatic retry of mutations. No spoofed Origin. Request body <=16384 bytes.",
+        "security": [
+          {
+            "serviceAssertion": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LegalAcceptInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Current server-controlled legal state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "accepted": {
+                      "const": true
+                    }
+                  },
+                  "required": [
+                    "accepted"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Controlled request/authorization error; service errors are integration failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Controlled request/authorization error; service errors are integration failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Controlled request/authorization error; service errors are integration failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Publication changed; restart and present current documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; respect Retry-After",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Legal publication unavailable or dependency failure; never simulate success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "serviceAssertion": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "AUTH01 direct service assertion ES256 with per-operation scope. Not a user credential."
+      }
+    },
+    "schemas": {
+      "LegalReference": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "terms",
+              "privacy"
+            ]
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "kind",
+          "version",
+          "sha256"
+        ]
+      },
+      "LegalAcceptance": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "documents": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "$ref": "#/components/schemas/LegalReference"
+            },
+            "description": "Exactly one terms and one privacy; Core checks version/hash against active publication."
+          },
+          "termsAccepted": {
+            "const": true
+          },
+          "privacyAcknowledged": {
+            "const": true
+          }
+        },
+        "required": [
+          "documents",
+          "termsAccepted",
+          "privacyAcknowledged"
+        ]
+      },
+      "LegalDocument": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "terms",
+              "privacy"
+            ]
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "content": {
+            "type": "string",
+            "maxLength": 12288,
+            "description": "Plain text only; SQL byte limit 12288 UTF-8 bytes. Synthetic content explicitly not official."
+          },
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 2048,
+            "description": "Official URL HTTPS only, no username/password, no fragment or control/space characters; <=2048 characters. Synthetic fixture strictly null."
+          },
+          "effectiveAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "synthetic": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "kind",
+          "version",
+          "sha256",
+          "title",
+          "content",
+          "url",
+          "effectiveAt",
+          "synthetic"
+        ]
+      },
+      "LegalMetadata": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "registrationAvailable": {
+            "type": "boolean"
+          },
+          "reason": {
+            "enum": [
+              "legal_unpublished",
+              null
+            ]
+          },
+          "documents": {
+            "type": "array",
+            "maxItems": 2,
+            "items": {
+              "$ref": "#/components/schemas/LegalDocument"
+            }
+          }
+        },
+        "required": [
+          "registrationAvailable",
+          "reason",
+          "documents"
+        ],
+        "description": "At most two current published documents; response serialized UTF8 <=65536 bytes. Registration flag only controls registrationAvailable, not document availability or existing-account reacceptance. If publication missing/invalid, documents empty and reason legal_unpublished; valid publication with registration disabled has reason null."
+      },
+      "LegalStatus": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "registrationAvailable": {
+            "type": "boolean"
+          },
+          "reason": {
+            "enum": [
+              "legal_unpublished",
+              null
+            ]
+          },
+          "documents": {
+            "type": "array",
+            "maxItems": 2,
+            "items": {
+              "$ref": "#/components/schemas/LegalDocument"
+            }
+          },
+          "acceptanceRequired": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "registrationAvailable",
+          "reason",
+          "documents",
+          "acceptanceRequired"
+        ]
+      },
+      "Start": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 120
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "description": "Unicode uppercase, lowercase, non-letter/non-number/non-whitespace special; unchanged password bytes."
+          },
+          "confirmPassword": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string",
+            "maxLength": 0
+          },
+          "legal": {
+            "$ref": "#/components/schemas/LegalAcceptance"
+          },
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "fullName",
+          "email",
+          "password",
+          "confirmPassword",
+          "legal",
+          "operationId"
+        ]
+      },
+      "Verify": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "verificationId": {
+            "type": "string",
+            "pattern": "^[\\w-]{43}$"
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^[0-9]{6}$"
+          }
+        },
+        "required": [
+          "verificationId",
+          "code"
+        ]
+      },
+      "Resend": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "verificationId": {
+            "type": "string",
+            "pattern": "^[\\w-]{43}$"
+          }
+        },
+        "required": [
+          "verificationId"
+        ]
+      },
+      "LegalStatusInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "pattern": "^[\\w-]{43}$"
+          }
+        },
+        "required": [
+          "accessToken"
+        ]
+      },
+      "LegalAcceptInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "pattern": "^[\\w-]{43}$"
+          },
+          "legal": {
+            "$ref": "#/components/schemas/LegalAcceptance"
+          },
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "accessToken",
+          "legal",
+          "operationId"
+        ]
+      },
+      "Accepted": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "verificationId": {
+            "type": "string",
+            "pattern": "^[\\w-]{43}$"
+          },
+          "resendAfter": {
+            "const": 60
+          }
+        },
+        "required": [
+          "message",
+          "verificationId",
+          "resendAfter"
+        ]
+      },
+      "Resent": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "resendAfter": {
+            "const": 60
+          }
+        },
+        "required": [
+          "message",
+          "resendAfter"
+        ]
+      },
+      "Verified": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "verified": {
+            "const": true
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "verified",
+          "message"
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "enum": [
+                  "legal_unpublished",
+                  "legal_version_changed",
+                  "invalid_verification",
+                  "invalid_request",
+                  "rate_limited",
+                  "dependency_unavailable",
+                  "session_invalid",
+                  "session_expired",
+                  "session_revoked",
+                  "access_expired",
+                  "service_unauthorized",
+                  "service_forbidden",
+                  "service_replay",
+                  "service_unavailable",
+                  "service_rate_limited"
+                ]
+              }
+            },
+            "required": [
+              "code"
+            ]
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "error",
+          "requestId"
+        ]
+      }
+    }
+  }
+}

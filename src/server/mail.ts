@@ -3,12 +3,13 @@ import nodemailer from 'nodemailer'
 import { mailConfig } from './config'
 import { verificationEmailHtml } from './verification-email'
 
-export async function sendVerification(email: string, token: string | null) {
+export async function sendVerification(email: string, token: string | null,purpose:'professional'|'personal'='professional') {
   const settings = mailConfig()
   const text = token
     ? `Confirme sua conta profissional FormFisik\n\nSeu código de confirmação: ${token}\n\nDigite este código na tela de cadastro. Ele expira em 10 minutos e só pode ser usado uma vez. Não compartilhe este código. Nenhuma assinatura ou período de teste será ativado. Se não solicitou, ignore esta mensagem.`
     : 'Recebemos uma solicitação de cadastro na FormFisik. Se você já possui uma conta, ela permanece inalterada. Se não solicitou, ignore esta mensagem.'
-  await sendAccountMail(email, 'Seu código de confirmação FormFisik', text, token ? verificationEmailHtml(settings.appUrl, token) : undefined)
+  const html=token?verificationEmailHtml(settings.appUrl,token):undefined
+  await sendAccountMail(email, 'Seu código de confirmação FormFisik',purpose==='personal'?text.replace('conta profissional','conta pessoal'):text,purpose==='personal'?html?.replaceAll('conta profissional','conta pessoal').replace('Conheça os planos FormFisik','Comece sua experiência FormFisik'):html)
 }
 
 async function sendAccountMail(email: string, subject: string, text: string, html?: string) {
@@ -33,12 +34,23 @@ async function sendAccountMail(email: string, subject: string, text: string, htm
   } finally { transport.close() }
 }
 
-export async function sendPasswordRecovery(email: string, token: string | null) {
+export function mobileRecoveryLink(token:string){
+  const base=process.env.CORE_MOBILE_RESET_LINK_BASE
+  if(!base)return null
+  if(base.length>2048||/[\u0000-\u0020\u007f]/.test(base))throw Error('RESET_LINK_CONFIGURATION_INVALID')
+  const url=new URL(base),scheme=process.env.CORE_MOBILE_APP_SCHEME
+  if(url.username||url.password||url.search||url.hash)throw Error('RESET_LINK_CONFIGURATION_INVALID')
+  const custom=scheme==='formfisik-dev'&&process.env.NODE_ENV!=='production'&&process.env.CORE_SERVICE_ENVIRONMENT==='local'&&url.protocol==='formfisik-dev:'&&base==='formfisik-dev://redefinir-senha'
+  if(url.protocol!=='https:'&&!custom)throw Error('RESET_LINK_CONFIGURATION_INVALID')
+  return base+'#'+token
+}
+export async function sendPasswordRecovery(email: string, token: string | null,mobile=false) {
+  const appLink=mobile?mobileRecoveryLink(token??''):null
   const url = token ? `${mailConfig().appUrl}/redefinir-senha#${token}` : null
   const text = url
     ? `Redefina sua senha FormFisik\n\nAbra o link para escolher uma nova senha:\n${url}\n\nO link expira em 30 minutos e só pode ser utilizado uma vez. Suas sessões serão encerradas após a alteração. Se não solicitou, ignore esta mensagem: sua senha permanece inalterada.`
     : 'Recebemos uma solicitação de recuperação na FormFisik. Se você ainda não concluiu o cadastro, confirme seu e-mail pelo link de cadastro. Se não solicitou, ignore esta mensagem. Nenhuma senha foi alterada.'
-  await sendAccountMail(email, 'Recuperação de senha FormFisik', text)
+  await sendAccountMail(email, 'Recuperação de senha FormFisik', text+(token&&appLink?`\n\nAbrir no aplicativo FormFisik:\n${appLink}\nSe necessário, utilize o link Web acima.`:''))
 }
 export async function sendPasswordChanged(email: string) {
   await sendAccountMail(email, 'Sua senha FormFisik foi alterada', 'A senha da sua conta FormFisik foi redefinida e suas sessões anteriores foram encerradas. Para acessar, entre novamente com a nova senha. Se não reconhece esta alteração, solicite imediatamente uma nova recuperação de senha no site oficial da FormFisik.')

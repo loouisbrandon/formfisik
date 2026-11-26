@@ -1,5 +1,7 @@
 # Controles e operação segura — 015
 
+> Atualização local — 25/11/2026: por solicitação do fundador, o login Web agora persiste por 365 dias desde a emissão, sem os antigos cortes de 30 minutos/12 horas. Cookie persistente HttpOnly/Secure/SameSite, autorização por operação, logout, revogação, suspensão, encerramento e troca de senha permanecem. Inspeções passivas não renovam o prazo. Cleanup e contagem de sessões lógicas seguem o mesmo prazo Web. Sessões antigas não são reativadas nem têm seus cookies prorrogados: novo login emite o prazo novo. Política Mobile inalterada. Descrições de 30min/12h abaixo são históricas. Sem deploy ou homologação de produção.
+
 Aplicação da FormFisik, empresa independente fundada por Brandon Louis. Preparação local; **não há autorização de produção, deploy, mudança de credenciais ou execução no banco existente**. Ver relatório 015 para resultados efetivos e veredito.
 
 ## Fronteiras de aplicação
@@ -138,3 +140,15 @@ SaaS: a [entrega de ambientes de assinatura](../engenharia/assinaturas-ambientes
 ## Produção em manutenção — 15/11/2026
 
 [Execução e evidências](../operacao/producao-controlada-2026-11-15.md): schema040, runtime TLS/grants e restore remoto do catálogo verificados; implantação produtiva fechada com health200 e páginas/APIs503. Cadastro, IA e cobranças permanecem fechados. Backup automático nativo bloqueado pelo plano; fundador optou manter plano atual temporariamente. Não levantar NO-GO de dados reais/abertura nem marcar checkboxes históricos como aprovados sem a respectiva evidência.
+
+## AUTH-01/02 local — 25/11/2026
+
+Asserções de serviço ES256/jose, audiência/ambiente/issuer/kid/scope exatos, TTL60s e jti persistido antireplay. Autenticação de serviço não concede permissões de usuário. `/api/core/v1/mobile-auth/*` aceita somente scopes por operação; tokens de usuário opacos continuam canônicos no Core. Não remover Origin/CSRF/cookies para facilitar integração. Banco e fixtures exclusivamente sintéticos/isolados.
+
+Sessões Mobile usam âncoras inacessíveis como cookie, para reutilizar revogação existente de reset/settings/admin/closure. Não reutilizar o digest/contexto público como credencial. Limite cinco lógicas globais sob lock por usuário; sexta emite desafio sem sessão plena e exige seleção explícita. Cookies Web mantêm12h/30min. Rotação tem recibo cifrado e prova da mesma operação, sem grace period genérico. Ver contratos AUTH01/AUTH02 e DEVLOG. Chaves de retry precisam rotação com retenção dos kids necessários aos recibos; nunca imprimir tokens/chaves/senhas. Sem deploy e NO-GO015 preservado; avisos moderados do Next existentes precisam triagem própria antes de produção.
+
+## AUTH03 local — 25/11/2026
+
+Rotas de cadastro pessoal Core exigem assertion de serviço por operação; não aceitam Origin forjado como identidade. Desafios por finalidade não são intercambiáveis com Web, confirmação não emite sessão/trial e conta personal não ganha autorização profissional. Cadastro e confirmação revalidam publicação legal sob lock; novos aceites autenticados são passivos para inatividade. Flag de cadastro fechado não dispensa reaceite de documentos vigentes. Fixture sintética somente processo não produção, ambiente local e DB loopback *_test explicitamente permitido. Publicação é operador, runtime somente leitura de documentos/inserção de recibos. Não houve envio externo ou liberação pública; NO-GO015 permanece.
+
+AUTH04 reutiliza recuperação Web no Core com asserção serviço por operação, sem spoofOrigin. Link/token no fragmento, validação antes de reset, limite compartilhadoemail/global e por serviço. Somente configservidor gera link; customformfisik-dev exato recusado em produção. Alteração revoga todas âncoras sessions e portanto famíliasMobile, sem JWTusuário/duplicidade de identidade. Não executar reset ao abrirlink, não logar token/senha. Gateexterno/produção não autorizado, NO-GO015 preservado.

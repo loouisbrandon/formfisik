@@ -20,6 +20,7 @@ export function LoginForm() {
   const [errors, setErrors] = useState<Errors>({})
   const [visible, setVisible] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [choice,setChoice]=useState<{challengeToken:string;sessions:{id:string;kind:string;label:string;lastRelevantAt:string}[]}|null>(null)
   const [message, setMessage] = useFeedbackMessage('',errorFallbacks.login)
   const feedback = useRef<HTMLDivElement>(null)
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -38,6 +39,7 @@ export function LoginForm() {
     try {
       const response = await fetch(endpoints.login, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(parsed.data) })
       const result = await response.json()
+      if(response.status===409&&result.error?.code==='session_limit'){setChoice(result);setValues(v=>({...v,password:''}));setBusy(false);return}
       if (response.ok) {
         notifySessionChanged()
         // Server owns the destination; do not accept arbitrary returnTo URLs.
@@ -51,6 +53,8 @@ export function LoginForm() {
     setBusy(false)
     requestAnimationFrame(() => feedback.current?.focus())
   }
+  async function choose(id:string){if(!choice||busy)return;setBusy(true);try{const response=await fetch('/api/auth/session-choice',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({challengeToken:choice.challengeToken,revokeSessionId:id})});const result=await response.json();if(response.status===409&&result.error?.code==='session_limit'){setChoice(result);return}if(response.ok){notifySessionChanged();window.location.replace(result.destination==='/admin'?'/admin':result.destination==='/dashboard'?'/dashboard':'/conta');return}setMessage(result.message??'Entre novamente.');setChoice(null)}catch{setMessage('Falha de conexão. Entre novamente para conferir suas sessões.');setChoice(null)}finally{setBusy(false)}}
+  if(choice)return <section className={styles.form} aria-busy={busy}><h2 className="text-xl font-semibold">Limite de sessões atingido</h2><p>Escolha uma sessão para encerrar e entrar neste navegador.</p>{choice.sessions.map(session=><Button key={session.id} type="button" variant="outline" disabled={busy} onClick={()=>choose(session.id)}>{session.label} · {session.kind==='web'?'Web':'Mobile'}</Button>)}<Button type="button" variant="outline" disabled={busy} onClick={()=>setChoice(null)}>Voltar ao login</Button><p role="alert">{message}</p></section>
   return <form method="post" action={endpoints.login} onSubmit={submit} noValidate aria-busy={busy} className={styles.form}>
     <div className="space-y-2">
       <label htmlFor="email" className={styles.fieldLabel}>E-mail</label>

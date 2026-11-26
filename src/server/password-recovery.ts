@@ -16,10 +16,15 @@ export async function requestRecovery(request: Request) {
   try {
     if (!sameOrigin(request)) return reply({ message: 'Origem não permitida.' }, 403)
     await limit(`recovery:ip:${clientAddress(request)}`, 10, 900)
-    await limit('recovery:global', 100, 60)
     const parsed = recoverySchema.safeParse(await jsonBody(request))
     if (!parsed.success) return reply({ message: 'Confira o e-mail informado.', errors: parsed.error.flatten().fieldErrors }, 400)
-    const { email } = parsed.data
+    return await requestRecoveryAccount(parsed.data)
+  } catch (error) { return failure(error, 'password_recovery_unavailable') }
+  finally { await delay(Math.max(0, 750 - (Date.now() - started))) }
+}
+export async function requestRecoveryAccount(input:{email:string},mobile=false){
+    await limit('recovery:global',100,60)
+    const { email } = input
     await limit(`recovery:email:${email}`, 3, 900)
     const token = randomBytes(32).toString('base64url')
     const client = await db().connect()
@@ -29,14 +34,12 @@ export async function requestRecovery(request: Request) {
         WHERE u.email=$1 AND u.email_verified_at IS NOT NULL AND u.disabled_at IS NULL FOR UPDATE OF u`, [email])
       if (user.rowCount) await client.query('INSERT INTO password_resets(token_hash,user_id) VALUES($1,$2)', [resetDigest(token), user.rows[0].id])
       // Same SMTP path for every valid address: provider failure must not reveal account existence.
-      await sendPasswordRecovery(email, user.rowCount ? token : null)
+      await sendPasswordRecovery(email, user.rowCount ? token : null,mobile)
       await client.query('COMMIT')
     } catch (error) { await client.query('ROLLBACK'); throw error }
     finally { client.release() }
     console.info('password_recovery_requested')
     return reply({ message: recoveryAccepted }, 202)
-  } catch (error) { return failure(error, 'password_recovery_unavailable') }
-  finally { await delay(Math.max(0, 750 - (Date.now() - started))) }
 }
 export async function validateReset(request: Request) {
   try {
@@ -44,22 +47,30 @@ export async function validateReset(request: Request) {
     await limit(`reset-validation:ip:${clientAddress(request)}`, 30, 900)
     const parsed = resetTokenSchema.safeParse(await jsonBody(request))
     if (!parsed.success) return invalid()
-    const result = await db().query(`SELECT 1 FROM password_resets r JOIN users u ON u.id=r.user_id
-      JOIN credentials c ON c.user_id=u.id WHERE r.token_hash=$1 AND r.expires_at>clock_timestamp() AND u.email_verified_at IS NOT NULL AND u.disabled_at IS NULL`, [resetDigest(parsed.data.token)])
-    return result.rowCount ? reply({ valid: true }, 200) : invalid()
+    return await validateResetToken(parsed.data.token)
   } catch (error) { return failure(error, 'password_recovery_unavailable') }
+}
+export async function validateResetToken(token:string){
+    const result = await db().query(`SELECT 1 FROM password_resets r JOIN users u ON u.id=r.user_id
+      JOIN credentials c ON c.user_id=u.id WHERE r.token_hash=$1 AND r.expires_at>clock_timestamp() AND u.email_verified_at IS NOT NULL AND u.disabled_at IS NULL`, [resetDigest(token)])
+    return result.rowCount ? reply({ valid: true }, 200) : invalid()
 }
 export async function resetPassword(request: Request) {
   try {
     if (!sameOrigin(request)) return reply({ message: 'Origem não permitida.' }, 403)
     await limit(`reset:ip:${clientAddress(request)}`, 15, 900)
-    await limit('reset:global', 100, 60)
     const parsed = resetPasswordSchema.safeParse(await jsonBody(request))
     if (!parsed.success) {
       if (parsed.error.flatten().fieldErrors.token) return invalid()
       return reply({ message: 'Confira a nova senha.', errors: parsed.error.flatten().fieldErrors }, 400)
     }
-    const { token, password } = parsed.data
+    return await resetAccountPassword(parsed.data)
+  } catch (error) { return failure(error, 'password_recovery_unavailable') }
+}
+
+export async function resetAccountPassword(input:{token:string;password:string}){
+    await limit('reset:global',100,60)
+    const { token, password } = input
     const key = resetDigest(token)
     const candidate = await db().query('SELECT user_id FROM password_resets WHERE token_hash=$1 AND expires_at>clock_timestamp()', [key])
     if (!candidate.rowCount) return invalid()
@@ -84,5 +95,4 @@ export async function resetPassword(request: Request) {
     try { await sendPasswordChanged(email) } catch { console.error('password_change_notification_unavailable') }
     console.info('password_reset_completed')
     return reply({ message: 'Senha alterada. Todas as sessões anteriores foram encerradas. Entre com sua nova senha.', destination: '/login' }, 200, { 'Set-Cookie': clearSessionCookie() })
-  } catch (error) { return failure(error, 'password_recovery_unavailable') }
 }

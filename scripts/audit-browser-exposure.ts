@@ -5,8 +5,9 @@ import {join} from 'node:path'
 
 // Never print values, matching bytes, database URLs or credential-bearing errors.
 loadEnvConfig(process.cwd())
-const keys=['ECOACH_OPENAI_API_KEY','ECOACH_ANTHROPIC_API_KEY','DATABASE_URL','ABUSE_HMAC_SECRET','STRIPE_SECRET_KEY','STRIPE_WEBHOOK_SECRET','STRIPE_CONNECT_SECRET_KEY','STRIPE_CONNECT_WEBHOOK_SECRET','SMTP_PASSWORD','RESEND_API_KEY','R2_SECRET_ACCESS_KEY','R2_ACCESS_KEY_ID','STREAM_API_TOKEN','STREAM_WEBHOOK_SECRET','SETTINGS_ENCRYPTION_KEY']
+const keys=['ECOACH_OPENAI_API_KEY','ECOACH_ANTHROPIC_API_KEY','DATABASE_URL','ABUSE_HMAC_SECRET','STRIPE_SECRET_KEY','STRIPE_WEBHOOK_SECRET','STRIPE_CONNECT_SECRET_KEY','STRIPE_CONNECT_WEBHOOK_SECRET','SMTP_PASSWORD','RESEND_API_KEY','R2_SECRET_ACCESS_KEY','R2_ACCESS_KEY_ID','STREAM_API_TOKEN','STREAM_WEBHOOK_SECRET','SETTINGS_ENCRYPTION_KEY','CORE_MOBILE_RETRY_KEYS_JSON']
 const secrets=keys.map(k=>process.env[k]).filter((v):v is string=>!!v&&v.length>=8)
+try{const retry=JSON.parse(process.env.CORE_MOBILE_RETRY_KEYS_JSON??'{}');for(const value of Object.values(retry.keys??{}))if(typeof value==='string'&&value.length>=8)secrets.push(value)}catch{/* configuration errors never print key material */}
 const database=process.env.DATABASE_URL
 if(database){try{const password=decodeURIComponent(new URL(database).password);if(password.length>=8)secrets.push(password)}catch{/* no credential-bearing parse errors */}}
 const credentialPattern=/\b(?:sk_(?:live|test)_[A-Za-z0-9]{24,}|re_[A-Za-z0-9]{24,}|AKIA[A-Z0-9]{16})\b|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----\r?\n[A-Za-z0-9+/]{24,}/

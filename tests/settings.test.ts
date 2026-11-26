@@ -27,7 +27,7 @@ test('sensitive settings reject a session that becomes idle while waiting for th
   let waiting=false
   for(let i=0;i<100;i++){await lock.query('SELECT pg_stat_clear_snapshot()');const r=await lock.query("SELECT 1 FROM pg_stat_activity WHERE wait_event_type='Lock' AND query LIKE 'SELECT id FROM users WHERE id=%FOR UPDATE%'");if(r.rowCount){waiting=true;break}await new Promise(r=>setTimeout(r,20))}
   assert.ok(waiting,'request has passed initial session validation and reached account lock')
-  await lock.query("UPDATE sessions SET last_seen_at=clock_timestamp()-interval '31 minutes' WHERE user_id=$1",[owner]);await lock.query('COMMIT')
+  await lock.query("UPDATE sessions SET last_seen_at=clock_timestamp()-interval '366 days' WHERE user_id=$1",[owner]);await lock.query('COMMIT')
   assert.equal((await response).status,401)
   assert.equal((await db().query('SELECT 1 FROM settings_privacy_requests WHERE user_id=$1',[owner])).rowCount,0)
  }finally{await lock.query('ROLLBACK');lock.release();await response?.catch(()=>{})}
@@ -47,7 +47,7 @@ test('email change rejects idle expiry while waiting for the user lock, before i
   let waiting=false
   for(let i=0;i<100;i++){await lock.query('SELECT pg_stat_clear_snapshot()');const r=await lock.query("SELECT 1 FROM pg_stat_activity WHERE wait_event_type='Lock' AND query LIKE 'SELECT c.password_hash FROM users%FOR UPDATE OF u%'");if(r.rowCount){waiting=true;break}await new Promise(r=>setTimeout(r,20))}
   assert.ok(waiting)
-  await lock.query("UPDATE sessions SET last_seen_at=clock_timestamp()-interval '31 minutes' WHERE user_id=$1",[owner]);await lock.query('COMMIT')
+  await lock.query("UPDATE sessions SET last_seen_at=clock_timestamp()-interval '366 days' WHERE user_id=$1",[owner]);await lock.query('COMMIT')
   assert.equal((await response).status,401)
   assert.equal((await db().query('SELECT 1 FROM settings_email_changes WHERE user_id=$1',[owner])).rowCount,0)
  }finally{await lock.query('ROLLBACK');lock.release();await response?.catch(()=>{})}

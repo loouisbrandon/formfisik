@@ -1,0 +1,778 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FormFisik Core Mobile Auth",
+    "version": "1.0.0",
+    "description": "Local implementation; no production/iOS homologation. Canonical users.id; opaque user tokens, direct ES256 service assertion."
+  },
+  "paths": {
+    "/api/core/v1/mobile-auth/login": {
+      "post": {
+        "operationId": "mobileAuthLogin",
+        "description": "Exact service assertion scope core:mobile-auth:login. Login/choice operationId does not guarantee retry; refresh requires persistent retrySecret. No Origin spoofing.",
+        "security": [
+          {
+            "serviceAssertion": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Session"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Restricted challenge; no full session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionLimit"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/core/v1/mobile-auth/refresh": {
+      "post": {
+        "operationId": "mobileAuthRefresh",
+        "description": "Exact service assertion scope core:mobile-auth:refresh. Login/choice operationId does not guarantee retry; refresh requires persistent retrySecret. No Origin spoofing.",
+        "security": [
+          {
+            "serviceAssertion": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Refresh"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Session"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/core/v1/mobile-auth/inspect": {
+      "post": {
+        "operationId": "mobileAuthInspect",
+        "description": "Exact service assertion scope core:mobile-auth:inspect. Login/choice operationId does not guarantee retry; refresh requires persistent retrySecret. No Origin spoofing.",
+        "security": [
+          {
+            "serviceAssertion": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Inspect"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "sessionId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "identity": {
+                      "$ref": "#/components/schemas/Identity"
+                    }
+                  },
+                  "required": [
+                    "sessionId",
+                    "identity"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/core/v1/mobile-auth/logout": {
+      "post": {
+        "operationId": "mobileAuthLogout",
+        "description": "Exact service assertion scope core:mobile-auth:logout. Login/choice operationId does not guarantee retry; refresh requires persistent retrySecret. No Origin spoofing.",
+        "security": [
+          {
+            "serviceAssertion": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Logout"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "revoked": {
+                      "const": true
+                    }
+                  },
+                  "required": [
+                    "revoked"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/core/v1/mobile-auth/session-choice": {
+      "post": {
+        "operationId": "mobileAuthSessionChoice",
+        "description": "Exact service assertion scope core:mobile-auth:session-choice. Login/choice operationId does not guarantee retry; refresh requires persistent retrySecret. No Origin spoofing.",
+        "security": [
+          {
+            "serviceAssertion": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Choice"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Session"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Controlled error; service_* codes are integration failures, not user auth failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Restricted challenge; no full session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionLimit"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "serviceAssertion": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Device": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "installationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "platform": {
+            "enum": [
+              "android",
+              "ios"
+            ]
+          }
+        },
+        "required": [
+          "installationId",
+          "label",
+          "platform"
+        ]
+      },
+      "Identity": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "role": {
+            "type": "string"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "AUTH02 technical capabilities only; not a full commercial/domain authorization projection"
+          }
+        },
+        "required": [
+          "id",
+          "fullName",
+          "email",
+          "role",
+          "capabilities"
+        ]
+      },
+      "Session": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "pattern": "^[\\w-]{43}$"
+          },
+          "refreshToken": {
+            "type": "string",
+            "pattern": "^[\\w-]{43}$"
+          },
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expiresIn": {
+            "const": 300
+          },
+          "identity": {
+            "$ref": "#/components/schemas/Identity"
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken",
+          "sessionId",
+          "expiresIn",
+          "identity"
+        ]
+      },
+      "Login": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "device": {
+            "$ref": "#/components/schemas/Device"
+          },
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "device",
+          "operationId"
+        ]
+      },
+      "Refresh": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "pattern": "^[\\w-]{43}$"
+          },
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "retrySecret": {
+            "type": "string",
+            "pattern": "^[\\w-]{43}$"
+          }
+        },
+        "required": [
+          "refreshToken",
+          "operationId",
+          "retrySecret"
+        ]
+      },
+      "Inspect": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "pattern": "^[\\w-]{43}$"
+          },
+          "interaction": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "accessToken"
+        ]
+      },
+      "Logout": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "accessToken": {
+                "type": "string",
+                "pattern": "^[\\w-]{43}$"
+              }
+            },
+            "required": [
+              "accessToken"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "refreshToken": {
+                "type": "string",
+                "pattern": "^[\\w-]{43}$"
+              }
+            },
+            "required": [
+              "refreshToken"
+            ]
+          }
+        ]
+      },
+      "Choice": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "challengeToken": {
+            "type": "string",
+            "pattern": "^[\\w-]{43}$"
+          },
+          "revokeSessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "challengeToken",
+          "revokeSessionId",
+          "operationId"
+        ]
+      },
+      "SessionLimit": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "const": "session_limit"
+              }
+            },
+            "required": [
+              "code"
+            ]
+          },
+          "challengeToken": {
+            "type": "string",
+            "pattern": "^[\\w-]{43}$"
+          },
+          "sessions": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "kind": {
+                  "enum": [
+                    "web",
+                    "mobile"
+                  ]
+                },
+                "label": {
+                  "type": "string"
+                },
+                "lastRelevantAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "label",
+                "lastRelevantAt"
+              ]
+            }
+          }
+        },
+        "required": [
+          "error",
+          "challengeToken",
+          "sessions"
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code"
+            ]
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "error",
+          "requestId"
+        ]
+      }
+    }
+  }
+}
