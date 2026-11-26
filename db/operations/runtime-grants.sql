@@ -109,4 +109,6 @@ GRANT SELECT,INSERT,UPDATE,DELETE ON ecoach_ai_requests,ecoach_proposals TO :"ru
 GRANT SELECT,INSERT,UPDATE ON communication_assistance_settings,communication_inbox_threads,communication_inbox_messages,communication_inbox_rules,communication_inbox_jobs,communication_inbox_operations TO :"runtime_role";
 GRANT DELETE ON communication_inbox_threads TO :"runtime_role";
 GRANT SELECT,INSERT ON communication_inbox_events TO :"runtime_role";
+GRANT SELECT,INSERT,UPDATE,DELETE ON workout_editor_drafts TO :"runtime_role";
+GRANT USAGE ON SEQUENCE workout_editor_drafts_revision_seq TO :"runtime_role";
 COMMIT;

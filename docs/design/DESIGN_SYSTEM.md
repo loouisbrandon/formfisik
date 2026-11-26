@@ -935,3 +935,11 @@ Store — conclusão do checkout demonstrativo: ações separadas em botões com
 
 
 Store — banner de agradecimento recebe Energia Atlética em Neon fornecida pelo fundador,2172×724, sem edição. Imagem integral em contain, fundo escuro e máscara lateral para fusão; mobile mantém arte3:1 acima do texto. Substitui placeholder, conserva fraseHTML e CTA.
+
+### AUTH-02 — escolha restrita de sessão no login Web
+
+Quando o limite global de cinco sessões é atingido após validar credenciais, o formulário apresenta escolha explícita com os componentes Button existentes (outline), texto explicativo e retorno ao login. Nenhuma sessão é encerrada automaticamente. Mantém shell/cores/fontes; labels mínimos de dispositivo sem detalhes sensíveis. Não altera telas Mobile. Lista limitada a cinco itens, teclado e estado busy nativos dos botões. Validação visual em navegador ainda pendente; não declarar homologação responsiva nesta etapa.
+
+## Editor de treinos: estado de salvamento automático (2026-11-25)
+
+Usar a barra de ações existente, status textual com `role=status` para pendente/salvando/recuperado e alerta com `role=alert` e ação de repetir em falhas. Recuperação bloqueia edição até terminar, evitando sobrescrever trabalho existente. A lista “Continuar criando” usa ações e bordas do sistema, 20 itens por página, sem estruturas próprias de rolagem global. O shell profissional compartilhado mantém a responsabilidade pelo scroll.

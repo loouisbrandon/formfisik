@@ -117,6 +117,7 @@ async function finalize(j:Job,lease:string){return transaction(async c=>{
  await c.query('UPDATE professional_contracts SET previous_id=NULL WHERE professional_id=$1 AND id IN('+commercialTarget+')',commercialArgs)
  await c.query('DELETE FROM professional_contracts WHERE professional_id=$1 AND id IN('+commercialTarget+')',commercialArgs)
  const args=[j.owner_id,j.scope,j.subject_id],plans="SELECT id FROM workout_plans WHERE owner_id=$1 AND (($2::text='professional' AND kind='template') OR ($2::text='student' AND student_link_id=$3))"
+ await c.query(`DELETE FROM workout_editor_drafts WHERE owner_id=$1 AND ($2::text='professional' OR document->>'studentId'=$3::text OR context='new:individual:'||$3::text OR context IN (SELECT 'edit:'||id::text FROM workout_plans WHERE owner_id=$1 AND student_link_id=$3))`,args)
  await c.query(`UPDATE workout_operation_keys SET result_ids=ARRAY(SELECT unnest(result_ids) EXCEPT ${plans}),invalidated_at=clock_timestamp() WHERE owner_id=$1 AND result_ids && ARRAY(${plans})`,args)
  await c.query(`DELETE FROM workout_exercise_references WHERE owner_id=$1 AND plan_id IN (${plans})`,args)
  await c.query(`UPDATE workout_plans SET source_template_id=NULL,source_template_version=NULL,copied_from_id=NULL,copied_from_version=NULL WHERE owner_id=$1 AND id IN (${plans})`,args)

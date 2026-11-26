@@ -22,3 +22,12 @@ Códigos: 400 entrada/estado incompleto, 401 sessão, 403 perfil/comercial/orige
 Headers: private/no-store, Vary Cookie, no-referrer. Body até 512 KiB exclusivamente nestes handlers; o helper compartilhado mantém 8 KiB por padrão nas rotas anteriores. Leituras 120/min, mutações 30/min, aplicação em lote 5/min por operação/profissional; limite persistente antes de consultar o provedor comercial. Ordenação por whitelist, filtros parametrizados e paginação SQL limitada.
 
 Uma operação já concluída pode retornar resultado idempotente mesmo que a origem tenha outra versão no momento da repetição: não cria novas entidades. Falha parcial nunca retorna sucesso; transação é integralmente revertida. Novo fluxo/tentativa permite reaplicação intencional, com nova confirmação.
+
+## API de rascunhos do editor — 2026-11-25
+
+- `GET /api/workouts/drafts?context=...`: `{draft:null|{context,revision,baseVersion,fields,exerciseDefinitions,studentName}}`; definições restritas aos exercícios/versionamentos referenciados e autorizados.
+- `GET /api/workouts/drafts?page=1`: `{items,total,pages,page}`, 20 itens, ordenação `updated_at DESC, context`, páginas vazias retornam `items:[]`; filtros da lista de planos são independentes.
+- `PUT /api/workouts/drafts`: `{context,revision,baseVersion,fields}`; revisão inicial zero, retorno `{revision}`. Campos estruturais limitados aceitam nomes vazios e séries incompletas; confirmação final aplica o schema completo. Repetição de conteúdo idêntico é segura; revisão divergente retorna 409.
+- POST de criação e PUT de edição existentes aceitam `draft:{context,revision}` opcional. Confirmação idempotente e exclusão transacional do rascunho; mudança de base impede publicação silenciosa.
+
+Todas as operações exigem sessão profissional e assinatura no servidor. Escrita exige mesma origem; limites de frequência (escrita 60/min), corpo de até 524288 bytes e validação estrita. Propriedade e acesso a aluno/exercício são revalidados. Migração `044_workout_editor_drafts.sql` e grants correspondentes devem ser aplicados pelo processo operacional antes de deploy. Não foi executado deploy nesta entrega.

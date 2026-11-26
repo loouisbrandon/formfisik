@@ -49,6 +49,7 @@ async function main(){
    else if(url.pathname==='/api/professional/presentation')response=await documentHandler(incoming.method==='PUT'?'savePresentation':'presentation',provider)(request)
    else if(url.pathname.startsWith('/api/workout-documents/'))response=await documentHandler('read',provider)(request,url.pathname.split('/').pop())
    else if(/^\/api\/workouts\/[^/]+\/documents$/.test(url.pathname))response=await documentHandler('generate',provider)(request,url.pathname.split('/')[3])
+   else if(url.pathname==='/api/workouts/drafts')response=await createWorkoutHandler(incoming.method==='PUT'?'draft-save':url.searchParams.has('context')?'draft-get':'draft-list',provider)(request)
    else if(url.pathname.startsWith('/api/workouts')){const parts=url.pathname.slice('/api/workouts'.length).split('/').filter(Boolean);const op:WorkoutOperation=parts[1]==='history'?'history':parts[1]==='status'?'status':parts[1]==='duplicate'?'duplicate':parts[1]==='apply'?'apply':parts[0]?(incoming.method==='PUT'?'edit':'get'):incoming.method==='POST'?'create':'list';response=await createWorkoutHandler(op,provider)(request,parts[0])}
    else if(url.pathname.startsWith('/api/exercises')){
     const path=url.pathname.slice('/api/exercises'.length),parts=path.split('/').filter(Boolean)

@@ -181,3 +181,9 @@ A [política de escopo](../seguranca/ecoach-escopo-e-abuso.md) limita geração 
 Store — preferências locais de navegação: IDs públicos de curtidas e sacola armazenados no navegador (localStorage), sem identidade, rastreamento, envio a servidor ou vínculo com conta profissional. Finalidade: preservar seleção entre páginas/reloads; até50 IDs conhecidos por lista. Retenção até remoção individual ou limpeza do armazenamento pelo usuário. Sem operação comercial ou reserva decorrente desses IDs.
 
 Store checkout de demonstração: não coleta credenciais ou identidade de comprador; usa e-mail/endereço fictícios fixos. CEP digitado apenas no estado em memória, finalidade de validação visual, sem envio/log/persistência e descartado ao sair/recarregar. Interface orienta uso de CEP fictício. Nenhum dado de pagamento solicitado. OAuth e cadastro real permanecem não implementados e exigem avaliação própria antes de ativação.
+
+## Rascunhos de treinos — atualização local de 2026-11-25
+
+Finalidade: recuperar trabalho de prescrição ainda não confirmado, incluindo vínculo com aluno e informações potencialmente sensíveis registradas pelo profissional. Persistência em `workout_editor_drafts`, acesso exclusivo do profissional proprietário com sessão/assinatura válidas; respostas privadas sem cache e sem conteúdo em logs ou armazenamento do navegador. Não disponível ao aluno nem usado como prescrição publicada.
+
+Retenção: até confirmação do planejamento ou eliminação da conta/dados relacionados; não há expiração automática por idade nesta entrega. A rotina de eliminação remove rascunhos do profissional e referências ao aluno/planejamento eliminado antes de apagar planos. Suspensão de assinatura bloqueia acesso, sem apagar automaticamente o trabalho. Não há exportação específica de rascunhos nesta entrega. Estado IMPLEMENTADO localmente; validação de produção e NO-GO da 015 permanecem independentes.

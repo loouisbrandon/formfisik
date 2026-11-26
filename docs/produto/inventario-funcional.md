@@ -134,3 +134,9 @@ IMPLEMENTADO localmente: propostas confirmáveis de treinos, criação/edição 
 - Comunicação/eCoach039 (14/11/2026): IMPLEMENTADO localmente inbox de recebimentos declarados, rascunhos manuais/IA, revisão/aprovação, regras por palavras/canal, consentimento independente, pausa/revogação, retries, exclusão/retenção. Limites: 500 conversas, 1.000 mensagens/conversa,20 por página,20 regras; inferência real não homologada. PREPARADO o estado/requisitos de conexão; NÃO IMPLEMENTADOS Meta/e-mail de atendimento, webhook, entrega e envio autônomo. Não contar rascunhos aprovados como mensagens enviadas. Ver `docs/modulos/atendimento-assistido.md`.
 
 - eCoach / segurança de escopo: IMPLEMENTADO localmente — filtro de entrada, intenção de ferramentas, saída, propostas e mídia, com cota compartilhada de chamadas. Homologação real do provedor e acesso de alunos NÃO IMPLEMENTADOS por esta entrega. Ver [política e evidências](../seguranca/ecoach-escopo-e-abuso.md).
+
+### Recuperação automática de treinos — 2026-11-25
+
+IMPLEMENTADO em código local: rascunhos privados no servidor, retomada de criação/edição e confirmação separada da publicação, lista paginada de 20 itens. Evidências: migração 044, API `/api/workouts/drafts`, 20 testes PostgreSQL aprovados, TypeScript/lint e build com canários sem achados de exposição. Escopo e limitações em `docs/modulos/treinos.md`; não comprova deploy ou homologação. NO-GO015 preservado.
+
+Navegador focado: recuperação pela lista e recarga aprovadas, acessibilidade em 1440/768/320 px, texto a 200% e foco de teclado verificados. A suíte completa de treinos não concluiu por timeout em campo de carga oculto; não declarar regressão visual completa homologada.
